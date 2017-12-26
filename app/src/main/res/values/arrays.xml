@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--凭证类型-->
+    <string-array name="credentials_type">
+        <item>身份证</item>
+        <item>IC卡</item>
+    </string-array>
+    <!--事由类型-->
+    <string-array name="reason_type">
+        <item>公务</item>
+        <item>探访</item>
+    </string-array>
+</resources>
