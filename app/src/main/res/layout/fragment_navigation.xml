@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="net.jiaobaowang.visitor.manage.NavigationFragment">
+
+    <Button
+        android:id="@+id/btn_sign_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/visitor_signIn" />
+
+    <Button
+        android:id="@+id/btn_query"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/visitor_query" />
+
+    <Button
+        android:id="@+id/btn_sign_off"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/visitor_signOff" />
+
+</LinearLayout>

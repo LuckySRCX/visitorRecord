@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">访客系统</string>
+    <string name="app_name">visitor system</string>
+
+    <!--manage.NavigationFragment-->
+    <string name="visitor_signIn">visitor sign in</string>
+    <string name="visitor_query">visitor query</string>
+    <string name="visitor_signOff">visitor sign off</string>
 </resources>
