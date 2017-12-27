@@ -5,4 +5,7 @@
     <string name="visitor_signIn">visitor sign in</string>
     <string name="visitor_query">visitor query</string>
     <string name="visitor_signOff">visitor sign off</string>
+    <!--SignQueryFragment-->
+    <string name="sign_query_head">visitor/visitor query</string>
+    <string name="keywords_hint">visitor name,phone number,ID</string>
 </resources>

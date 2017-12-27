@@ -4,4 +4,7 @@
     <string name="visitor_signIn">访客登记</string>
     <string name="visitor_query">访客查询</string>
     <string name="visitor_signOff">访客签离</string>
+    <!--SignQueryFragment-->
+    <string name="sign_query_head">访客/访客查询</string>
+    <string name="keywords_hint">访客姓名、手机号、身份证</string>
 </resources>
