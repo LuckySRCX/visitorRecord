@@ -9,8 +9,8 @@
     <string name="sign_query_head">visitor/visitor query</string>
     <string name="keywords_hint">visitor name,phone number,ID</string>
     <string name="visitor_info">访客信息</string>
-    <string name="id_card_read">读取身份证</string>
-    <string name="id_card_ocr">识别身份证</string>
+    <string name="id_card_read">读卡器读取身份证</string>
+    <string name="id_card_ocr">摄像头识别身份证</string>
     <string name="name">姓名：</string>
     <string name="input_visitor_name">请输入访客姓名</string>
     <string name="gender">性别：</string>
@@ -48,4 +48,6 @@
     <!--SignOffFragment-->
     <string name="scan_code">scan code</string>
     <string name="read_card">read card</string>
+    <string name="identify_read_fail">连接身份证读卡器失败，无法读取身份证信息</string>
+    <string name="identify_ocr_fail">未安装API模块，无法识别身份证</string>
 </resources>

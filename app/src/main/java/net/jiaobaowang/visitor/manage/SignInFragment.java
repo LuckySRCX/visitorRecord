@@ -1,9 +1,14 @@
 package net.jiaobaowang.visitor.manage;
 
 
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -18,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.google.zxing.other.BeepManager;
 import com.telpo.tps550.api.TelpoException;
@@ -26,14 +30,19 @@ import com.telpo.tps550.api.idcard.IdCard;
 import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.utils.DialogUtils;
+import net.jiaobaowang.visitor.utils.ToastUtils;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link SignInFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SignInFragment extends Fragment implements View.OnClickListener{
+public class SignInFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "RegistrationFragment";
+    private final int ID_REQ1 = 1;//正面
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
@@ -58,18 +67,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener{
     private EditText remarksEt;//备注
 
     public SignInFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment SignInFragment.
-     */
     public static SignInFragment newInstance() {
         return new SignInFragment();
-
     }
 
     @Override
@@ -121,12 +122,18 @@ public class SignInFragment extends Fragment implements View.OnClickListener{
                         @Override
                         public void run() {
                             idCardReadBtn.setEnabled(false);
-                            Toast.makeText(getActivity(), "连接身份证读卡器失败，无法读取身份证信息", Toast.LENGTH_SHORT).show();
+                            ToastUtils.showMessage(mContext, R.string.identify_read_fail);
                         }
                     });
                 }
             }
         }).start();
+        if (!checkPackage("com.telpo.tps550.api")) {
+            ToastUtils.showMessage(mContext, R.string.identify_ocr_fail);
+            idCardOCRBtn.setEnabled(false);
+        } else {
+            idCardOCRBtn.setEnabled(true);
+        }
     }
 
     @Override
@@ -141,9 +148,27 @@ public class SignInFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.id_card_read_btn://读取身份证
+                clearVisitorInfo();
                 new GetIDInfoTask().execute();
                 break;
             case R.id.id_card_ocr_btn://识别身份证
+                idCardOCRBtn.setEnabled(false);
+                clearVisitorInfo();
+                Intent intent = new Intent();
+                intent.setClassName("com.telpo.tps550.api",
+                        "com.telpo.tps550.api.ocr.IdCardOcr");
+                intent.putExtra("type", true);
+                intent.putExtra("show_head_photo", true);
+
+                //intent.putExtra("isKeepPicture", true);// 是否保存图片
+                // true是，false:否，不传入时，默认为否
+                //intent.putExtra("PictPath", "/sdcard/DCIM/Camera/003.png");// 图片路径，不传入时保存到默认路径/sdcard/OCRPict
+                //intent.putExtra("PictFormat", "PNG");// 图片格式：JPEG，PNG，WEBP，不传入时默认为PNG格式
+                try {
+                    startActivityForResult(intent, ID_REQ1);
+                } catch (ActivityNotFoundException exception) {
+                    ToastUtils.showMessage(mContext, R.string.identify_ocr_fail);
+                }
                 break;
         }
     }
@@ -156,7 +181,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener{
             //在execute被调用后立即执行
             super.onPreExecute();
             idCardReadBtn.setEnabled(false);
-            idCardOCRBtn.setEnabled(false);
             dialog = new ProgressDialog(mContext);
             dialog.setTitle("操作中");
             dialog.setMessage("连接读卡器...");
@@ -199,55 +223,112 @@ public class SignInFragment extends Fragment implements View.OnClickListener{
             super.onPostExecute(result);
             dialog.dismiss();
             idCardReadBtn.setEnabled(true);
-            idCardOCRBtn.setEnabled(true);
             if (result == null) {
-                beepManager.playBeepSoundAndVibrate();
-                idCardHeadIv.setImageBitmap(headImage);
-                nameEt.setText(idCardInfo.getName());
-                String sex = idCardInfo.getSex();
-                if ("男 / M".equals(sex)) {
-                    maleRb.setChecked(true);
-                    femaleRb.setChecked(false);
-                } else if ("女 / F".equals(sex)) {
-                    maleRb.setChecked(false);
-                    femaleRb.setChecked(true);
-                }
-                dateOfBirthEt.setText(idCardInfo.getBorn());
-                credentialsSpinner.setSelection(0, true);
-                idNumberEt.setText(idCardInfo.getNo());
-                addressEt.setText(idCardInfo.getAddress());
-                Log.i(TAG, "---身份证---" + "\n"
-                        + "姓名：" + idCardInfo.getName() + "\n"
-                        + "性别：" + idCardInfo.getSex() + "\n"
-                        + "民族：" + idCardInfo.getNation() + "\n"
-                        + "出生日期：" + idCardInfo.getBorn() + "\n"
-                        + "地址：" + idCardInfo.getAddress() + "\n"
-                        + "签发机关：" + idCardInfo.getApartment() + "\n"
-                        + "有效期限：" + idCardInfo.getPeriod() + "\n"
-                        + "身份证号码：" + idCardInfo.getNo() + "\n"
-                        + "国籍或所在地区代码：" + idCardInfo.getCountry() + "\n"
-                        + "中文姓名：" + idCardInfo.getCn_name() + "\n"
-                        + "证件类型：" + idCardInfo.getCard_type() + "\n"
-                        + "保留信息：" + idCardInfo.getReserve());
+                inputIdCardInfo();
             } else {
-                String resultStr = result.toString();
-                if (resultStr.equals("com.telpo.tps550.api.TimeoutException")) {
-                    resultStr = "超时，请重新尝试";
-                } else if (resultStr.equals("com.telpo.tps550.api.DeviceNotOpenException")) {
-                    resultStr = "读卡器未打开";
+                String errorStr = result.toString();
+                if (errorStr.equals("com.telpo.tps550.api.TimeoutException")) {
+                    errorStr = "超时，请重新尝试";
+                } else if (errorStr.equals("com.telpo.tps550.api.DeviceNotOpenException")) {
+                    errorStr = "读卡器未打开";
                 }
-                new AlertDialog.Builder(mContext)
-                        .setTitle("身份证读取失败")
-                        .setMessage(resultStr)
-                        .setNegativeButton("返回", null)
-                        .show();
-                idCardHeadIv.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-                nameEt.setText("");
-                dateOfBirthEt.setText("");
-                idNumberEt.setText("");
-                addressEt.setText("");
+                DialogUtils.showAlert(mContext, errorStr);
             }
         }
     }
 
+    private boolean checkPackage(String packageName) {
+        PackageManager manager = getActivity().getPackageManager();
+        Intent intent = new Intent().setPackage(packageName);
+        @SuppressLint("WrongConstant") List<ResolveInfo> infos = manager.queryIntentActivities(intent,
+                PackageManager.GET_INTENT_FILTERS);
+        if (infos == null || infos.size() < 1) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ID_REQ1) {
+            //识别身份证
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //成功
+                try {
+                    idCardOCRBtn.setEnabled(true);
+                    if (data != null) {
+                        idCardInfo = (IdentityInfo) data.getSerializableExtra("idInfo");
+                        if (idCardInfo != null && idCardInfo.getName() != null && idCardInfo.getSex() != null && idCardInfo.getBorn() != null && idCardInfo.getNo() != null && idCardInfo.getAddress() != null && idCardInfo.getHead_photo() != null) {
+                            //成功
+                            headImage = BitmapFactory.decodeByteArray(idCardInfo.getHead_photo(), 0, idCardInfo.getHead_photo().length);
+                            inputIdCardInfo();
+                        } else {
+                            DialogUtils.showAlert(mContext, "识别身份证失败，请重新尝试");
+                        }
+                    } else {
+                        DialogUtils.showAlert(mContext, "识别身份证失败，请重新尝试");
+                    }
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                    String errorStr = e.toString();
+                    DialogUtils.showAlert(mContext, errorStr);
+                }
+            } else {
+                DialogUtils.showAlert(mContext, "识别身份证失败，请重新尝试");
+            }
+        }
+    }
+
+    /**
+     * 清空访客信息
+     */
+    public void clearVisitorInfo() {
+        idCardHeadIv.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+        nameEt.setText("");
+        dateOfBirthEt.setText("");
+        idNumberEt.setText("");
+        addressEt.setText("");
+        phoneNumberEt.setText("");
+        visitorNumberEt.setText("");
+        belongingsEt.setText("");
+        organizationEt.setText("");
+        plateNumberEt.setText("");
+        remarksEt.setText("");
+    }
+
+    /**
+     * 输入身份证信息
+     */
+    public void inputIdCardInfo() {
+        if (beepManager != null) {
+            beepManager.playBeepSoundAndVibrate();
+        }
+        credentialsSpinner.setSelection(0, true);
+        idCardHeadIv.setImageBitmap(headImage);
+        nameEt.setText(idCardInfo.getName());
+        String sex = idCardInfo.getSex();
+        if ("男 / M".equals(sex)) {
+            maleRb.setChecked(true);
+            femaleRb.setChecked(false);
+        } else if ("女 / F".equals(sex)) {
+            maleRb.setChecked(false);
+            femaleRb.setChecked(true);
+        }
+        dateOfBirthEt.setText(idCardInfo.getBorn());
+        idNumberEt.setText(idCardInfo.getNo());
+        addressEt.setText(idCardInfo.getAddress());
+        Log.i(TAG, "---身份证---" + "\n"
+                + "姓名：" + idCardInfo.getName() + "\n"
+                + "性别：" + idCardInfo.getSex() + "\n"
+                + "民族：" + idCardInfo.getNation() + "\n"
+                + "出生日期：" + idCardInfo.getBorn() + "\n"
+                + "地址：" + idCardInfo.getAddress() + "\n"
+                + "签发机关：" + idCardInfo.getApartment() + "\n"
+                + "有效期限：" + idCardInfo.getPeriod() + "\n"
+                + "身份证号码：" + idCardInfo.getNo() + "\n"
+                + "国籍或所在地区代码：" + idCardInfo.getCountry() + "\n"
+                + "中文姓名：" + idCardInfo.getCn_name() + "\n"
+                + "证件类型：" + idCardInfo.getCard_type() + "\n"
+                + "保留信息：" + idCardInfo.getReserve());
+    }
 }
