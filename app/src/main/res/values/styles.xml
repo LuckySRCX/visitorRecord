@@ -7,5 +7,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="rectangle_edit">
+        <item name="android:background">@drawable/rectangle_focus</item>
+        <item name="android:textSize">@dimen/edit_text_size</item>
+        <item name="android:longClickable">false</item>
+    </style>
 
 </resources>
