@@ -5,7 +5,7 @@
     <string name="visitor_signIn">visitor sign in</string>
     <string name="visitor_query">visitor query</string>
     <string name="visitor_signOff">visitor sign off</string>
-    <!--SignQueryFragment-->
+    <!--SignInFragment-->
     <string name="sign_query_head">visitor/visitor query</string>
     <string name="keywords_hint">visitor name,phone number,ID</string>
     <string name="visitor_info">访客信息</string>
@@ -37,4 +37,15 @@
     <string name="remarks">备注：</string>
     <string name="input_remarks">请输入备注</string>
     <string name="visitor_register"><![CDATA[访客 > 访客登记]]></string>
+    <!--SignQueryFragment-->
+    <string name="keywords_">keywords</string>
+    <string name="sign_in_date_">sign in date:</string>
+    <string name="sign_off_date_">sign off date:</string>
+    <string name="to">to</string>
+    <string name="query">query</string>
+    <string name="output_excel">output excel</string>
+    <string name="visitor_state_">visitor state:</string>
+    <!--SignOffFragment-->
+    <string name="scan_code">scan code</string>
+    <string name="read_card">read card</string>
 </resources>

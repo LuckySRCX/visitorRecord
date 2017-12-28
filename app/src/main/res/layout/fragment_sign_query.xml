@@ -11,21 +11,97 @@
         android:layout_height="wrap_content"
         android:text="@string/sign_query_head"
         android:textSize="@dimen/detail_page_title"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="关键字："/>
+            android:text="@string/keywords_" />
+
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/keywords_hint"
-            />
+            android:hint="@string/keywords_hint" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/visitor_state_" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/is_leave_option">
+
+        </Spinner>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_in_date_"
+            android:labelFor="@id/sign_in_begin"/>
+
+        <EditText
+            android:id="@+id/sign_in_begin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/to"
+            android:labelFor="@id/sign_in_end"/>
+
+        <EditText
+            android:id="@+id/sign_in_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_off_date_"
+            android:labelFor="@id/sign_off_begin"/>
+
+        <EditText
+            android:id="@+id/sign_off_begin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="date" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/to"
+            android:labelFor="@id/sign_off_end"/>
+
+        <EditText
+            android:id="@+id/sign_off_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="date" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/query" />
     </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="@string/output_excel"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_query"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>

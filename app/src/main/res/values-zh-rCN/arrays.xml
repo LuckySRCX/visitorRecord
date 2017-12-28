@@ -10,10 +10,10 @@
         <item>公务</item>
         <item>探访</item>
     </string-array>
-    <!--sign stat-->
+    <!--签到状态-->
     <string-array name="is_leave_option">
-        <item>all</item>
-        <item>left</item>
-        <item>not leave</item>
+        <item>全部</item>
+        <item>已签离</item>
+        <item>未签离</item>
     </string-array>
 </resources>
