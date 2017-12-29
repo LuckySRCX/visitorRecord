@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="@dimen/default_padding"
     tools:context="net.jiaobaowang.visitor.manage.SignOffFragment">
 
     <TextView
@@ -21,52 +22,53 @@
             android:text="@string/keywords_" />
 
         <EditText
+            style="@style/rectangle_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/keywords_hint"
-            style="@style/rectangle_edit"/>
+            android:hint="@string/keywords_hint" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sign_in_date_"
-            android:labelFor="@id/sign_in_begin"/>
+            android:labelFor="@id/sign_in_begin"
+            android:text="@string/sign_in_date_" />
 
-        <EditText
+        <TextView
             android:id="@+id/sign_in_begin"
+            style="@style/rectangle_dateText"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="date"
-            style="@style/rectangle_edit"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/to"
-            android:labelFor="@id/sign_in_end"/>
+            android:labelFor="@id/sign_in_end"
+            android:text="@string/to" />
 
-        <EditText
+        <TextView
             android:id="@+id/sign_in_end"
+            style="@style/rectangle_dateText"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="date"
-            style="@style/rectangle_edit"/>
+            android:layout_weight="1"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
             android:text="@string/scan_code" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
             android:text="@string/read_card" />
     </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>
