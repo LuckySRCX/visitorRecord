@@ -10,7 +10,7 @@
     <!--SignQueryFragment-->
     <string name="keywords_">关键字:</string>
     <string name="sign_in_date_">签到日期:</string>
-    <string name="sign_off_date_">潜力日期:</string>
+    <string name="sign_off_date_">签离日期:</string>
     <string name="to">至</string>
     <string name="query">查询</string>
     <string name="output_excel">导出EXCEL</string>

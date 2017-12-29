@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import net.jiaobaowang.visitor.R;
 
@@ -14,6 +15,8 @@ import net.jiaobaowang.visitor.R;
  */
 
 public abstract class BaseFragmentActivity extends AppCompatActivity {
+    private  String TAG;
+
     public abstract Fragment createFragment();
 
     protected int getLayoutResId() {
@@ -23,11 +26,13 @@ public abstract class BaseFragmentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TAG = getLocalClassName();
+        Log.d(TAG, "-------created------");
         setContentView(getLayoutResId());
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragmentNav = fm.findFragmentById(R.id.fragment_navigation);
         if (fragmentNav == null) {
-            fragmentNav=createFragment();
+            fragmentNav = createFragment();
             fm.beginTransaction().add(R.id.fragment_navigation, fragmentNav).commit();
         }
     }

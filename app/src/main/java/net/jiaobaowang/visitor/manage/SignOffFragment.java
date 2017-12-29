@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.base.BaseFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,7 +18,7 @@ import net.jiaobaowang.visitor.R;
  * Use the {@link SignOffFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SignOffFragment extends Fragment {
+public class SignOffFragment extends BaseFragment {
 
     public SignOffFragment() {
         // Required empty public constructor
