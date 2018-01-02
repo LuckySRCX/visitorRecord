@@ -50,4 +50,6 @@
     <string name="read_card">read card</string>
     <string name="identify_read_fail">连接身份证读卡器失败，无法读取身份证信息</string>
     <string name="identify_ocr_fail">未安装API模块，无法识别身份证</string>
+    <string name="save">保存</string>
+    <string name="print_tape">打印凭条</string>
 </resources>
