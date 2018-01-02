@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import net.jiaobaowang.visitor.R;
@@ -22,6 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
+ * 访客查询界面
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * to handle interaction events.
@@ -63,49 +63,69 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_query, container, false);
-        v.findViewById(R.id.sign_in_begin).setOnClickListener(this);
-        v.findViewById(R.id.sign_in_end).setOnClickListener(this);
-        v.findViewById(R.id.sign_off_begin).setOnClickListener(this);
-        v.findViewById(R.id.sign_off_end).setOnClickListener(this);
+        setTextView((TextView) v.findViewById(R.id.sign_in_begin), mDateSIBegin);
+        setTextView((TextView) v.findViewById(R.id.sign_in_end), mDateSIEnd);
+        setTextView((TextView) v.findViewById(R.id.sign_off_begin), mDateSOBegin);
+        setTextView((TextView) v.findViewById(R.id.sign_off_end), mDateSOEnd);
         return v;
+    }
+
+    private void setTextView(TextView view, Date date) {
+        if (date != null) {
+            view.setText(formatDate(date));
+        }
+        view.setOnClickListener(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onClick(View v) {
-        int type = 0;
-        Date beginDate = null;
+        Date minDate = null;
+        Date selectDate = null;
         int code = 0;
         mSelectText = (TextView) v;
         switch (v.getId()) {
             case R.id.sign_in_begin://签到开始时间
-                type = 0;
+                selectDate = mDateSIBegin;
                 code = REQUEST_SIBFGIN_CODE;
                 break;
             case R.id.sign_in_end://签到结束时间
-                type = 1;
+
+                selectDate = mDateSIEnd;
                 code = REQUEST_SIOFF_CODE;
-                beginDate = mDateSIBegin;
+                minDate = mDateSIBegin;
                 break;
             case R.id.sign_off_begin://签离开始时间
-                type = 1;
+
+                selectDate = mDateSOBegin;
                 code = REQUEST_SOBFGIN_CODE;
-                beginDate = mDateSIBegin;
+                minDate = mDateSIBegin;
                 break;
             case R.id.sign_off_end://签离结束时间
-                type = 1;
+
+                selectDate = mDateSOEnd;
                 code = REQUEST_SOOFF_CODE;
-                beginDate = mDateSOBegin == null ? mDateSIBegin : mDateSOBegin;
+                minDate = mDateSOBegin == null ? mDateSIBegin : mDateSOBegin;
                 break;
             default:
                 break;
         }
-        showDialog(code, type, beginDate);
+        showDialog(code, selectDate, minDate);
     }
 
-    private void showDialog(int requestCode, int type, Date beginDate) {
-
+    /**
+     *
+     * @param requestCode 请求代码
+     * @param selectDate 已选日期
+     * @param beginDate 最小日期
+     */
+    private void showDialog(int requestCode,  Date selectDate, Date beginDate) {
         FragmentManager fragmentManager = getFragmentManager();
-        DatePickerFragment dialog = DatePickerFragment.newInstance(type, beginDate);
+        DatePickerFragment dialog = DatePickerFragment.newInstance(selectDate, beginDate);
         dialog.setTargetFragment(SignQueryFragment.this, requestCode);
         dialog.show(fragmentManager, DIALOG_DATE);
     }
@@ -136,6 +156,11 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         mSelectText.setText(formatDate(resultDate));
     }
 
+    /**
+     * 格式化 日期
+     * @param date 日期
+     * @return 返回 yyyy-MM-dd 格式的时间字符串
+     */
     private String formatDate(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return dateFormat.format(date);
