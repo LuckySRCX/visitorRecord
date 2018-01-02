@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/print_tape_ll"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="444px"
+        android:layout_height="wrap_content"
+        android:background="@drawable/print_tape_border"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="访客单"
+            android:textSize="24px" />
+
+        <TextView
+            android:id="@+id/tape_type_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text=""
+            android:textSize="16px" />
+
+        <TextView
+            android:id="@+id/info_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="16px" />
+        <!--<TextView-->
+        <!--android:id="@+id/name_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="姓名："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/gender_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="性别："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/organization_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="来访单位："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/reason_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="来访事由："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/interviewee_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="被访人："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/department_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="被访部门："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/grade_name_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="年级："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/class_name_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="班级："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/headmaster_name_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="班主任："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/entry_time_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="进入时间："-->
+        <!--android:textSize="16px" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/registrant_tv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="登记人："-->
+        <!--android:textSize="16px" />-->
+
+        <ImageView
+            android:id="@+id/bar_code_iv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/bar_code_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="0000000000"
+            android:textSize="16px" />
+
+        <TextView
+            android:id="@+id/remarks_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="注：离开请交回值班室" />
+    </LinearLayout>
+</LinearLayout>
