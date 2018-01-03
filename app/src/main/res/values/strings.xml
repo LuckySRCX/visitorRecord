@@ -52,4 +52,5 @@
     <string name="identify_ocr_fail">未安装API模块，无法识别身份证</string>
     <string name="save">保存</string>
     <string name="print_tape">打印凭条</string>
+    <string name="print_tape_remarks">注：离开请交回值班室</string>
 </resources>

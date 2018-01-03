@@ -131,6 +131,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="注：离开请交回值班室" />
+            android:text="@string/print_tape_remarks" />
     </LinearLayout>
 </LinearLayout>
