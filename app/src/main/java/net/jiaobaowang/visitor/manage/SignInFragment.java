@@ -20,6 +20,7 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -58,12 +59,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "RegistrationFragment";
 
     private final int ID_REQ1 = 1;//身份证正面
-    private final int NOPAPER = 2;//打印机缺纸
-    private final int LOWBATTERY = 3;//打印机低电量
-    private final int PRINTCONTENT = 4;//打印机打印内容
-    private final int CANCELPROMPT = 5;//取消打印
-    private final int OVERHEAT = 6;//打印机过热
-    private final int PRINTERR = 7;//
+    private final int ID_CAMERA = 2;//摄像头
+    //打印机
+    private final int NOPAPER = 1;//打印机缺纸
+    private final int LOWBATTERY = 2;//打印机低电量
+    private final int PRINTCONTENT = 3;//打印机打印内容
+    private final int CANCELPROMPT = 4;//取消打印
+    private final int OVERHEAT = 5;//打印机过热
+    private final int PRINTERR = 6;//
     //身份证
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
@@ -84,21 +87,22 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private Button printTapeBtn;//打印凭条
     private Button idCardReadBtn;//读取身份证
     private Button idCardOCRBtn;//识别身份证
+    private Button cameraBtn;//拍照
     private ImageView idCardHeadIv;//身份证头像
     private EditText nameEt;//姓名
-    private RadioButton maleRb;//男
-    private RadioButton femaleRb;//女
     private EditText dateOfBirthEt;//出生日期
-    private Spinner credentialsSpinner;//证件类型
     private EditText idNumberEt;//证件号码
     private EditText addressEt;//地址
-    private Spinner reasonSpinner;//事由类型
     private EditText phoneNumberEt;//电话号码
     private EditText visitorNumberEt;//访客人数
     private EditText belongingsEt;//随身物品
     private EditText organizationEt;//单位名称
     private EditText plateNumberEt;//车牌号
     private EditText remarksEt;//备注
+    private RadioButton maleRb;//男
+    private RadioButton femaleRb;//女
+    private Spinner credentialsSpinner;//证件类型
+    private Spinner reasonSpinner;//事由类型
 
     public SignInFragment() {
     }
@@ -142,6 +146,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
@@ -156,6 +165,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         printTapeBtn = view.findViewById(R.id.print_tape_btn);
         idCardReadBtn = view.findViewById(R.id.id_card_read_btn);
         idCardOCRBtn = view.findViewById(R.id.id_card_ocr_btn);
+        cameraBtn = view.findViewById(R.id.camera_btn);
         idCardHeadIv = view.findViewById(R.id.id_card_head_iv);
         nameEt = view.findViewById(R.id.name_et);
         maleRb = view.findViewById(R.id.male_rb);
@@ -175,6 +185,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         printTapeBtn.setOnClickListener(this);
         idCardReadBtn.setOnClickListener(this);
         idCardOCRBtn.setOnClickListener(this);
+        cameraBtn.setOnClickListener(this);
     }
 
     public void initPrinter() {
@@ -311,7 +322,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.save_btn://保存
-
                 break;
             case R.id.print_tape_btn://显示凭条
                 showPrintTape();
@@ -338,6 +348,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
                 } catch (ActivityNotFoundException exception) {
                     ToastUtils.showMessage(mContext, R.string.identify_ocr_fail);
                 }
+                break;
+            case R.id.camera_btn:
+                Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(camera, ID_CAMERA);
                 break;
         }
     }
@@ -417,6 +431,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        Log.i(TAG, "requestCode:" + requestCode + "\n" + "resultCode:" + resultCode);
         if (requestCode == ID_REQ1) {
             //识别身份证
             if (resultCode == Activity.RESULT_CANCELED) {
@@ -442,6 +457,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
                 }
             } else {
                 DialogUtils.showAlert(mContext, "识别身份证失败，请重新尝试");
+            }
+        } else if (requestCode == ID_CAMERA && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                idCardHeadIv.setImageBitmap(photo);
             }
         }
     }
@@ -586,6 +606,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
                 mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
                 mUsbThermalPrinter.setTextSize(56);
                 mUsbThermalPrinter.addString("访客单");
+                mUsbThermalPrinter.addStringOffset(8, tapeType);
                 mUsbThermalPrinter.printString();
                 //访客单类型
                 mUsbThermalPrinter.setTextSize(48);
@@ -616,7 +637,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
                 mUsbThermalPrinter.addString(getResources().getString(R.string.print_tape_remarks));
                 mUsbThermalPrinter.printString();
 
-                mUsbThermalPrinter.walkPaper(15);
+
+                mUsbThermalPrinter.walkPaper(20);
             } catch (Exception e) {
                 e.printStackTrace();
                 printCatch(e.toString());

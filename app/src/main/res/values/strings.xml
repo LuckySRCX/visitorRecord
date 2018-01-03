@@ -53,4 +53,5 @@
     <string name="save">保存</string>
     <string name="print_tape">打印凭条</string>
     <string name="print_tape_remarks">注：离开请交回值班室</string>
+    <string name="photograph">拍照</string>
 </resources>
