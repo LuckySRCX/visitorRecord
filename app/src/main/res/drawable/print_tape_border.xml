@@ -8,8 +8,13 @@
         android:color="#000000" />
 
     <padding
-        android:bottom="15px"
-        android:left="30px"
-        android:right="30px"
-        android:top="15px" />
+        android:bottom="20px"
+        android:left="20px"
+        android:right="20px"
+        android:top="20px" />
+    <corners
+        android:bottomLeftRadius="20px"
+        android:bottomRightRadius="20px"
+        android:topLeftRadius="20px"
+        android:topRightRadius="20px" />
 </shape>

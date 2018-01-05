@@ -3,12 +3,10 @@ package net.jiaobaowang.visitor.manage;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -31,10 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
 import com.google.zxing.other.BeepManager;
 import com.telpo.tps550.api.TelpoException;
 import com.telpo.tps550.api.idcard.IdCard;
@@ -44,8 +39,12 @@ import com.telpo.tps550.api.util.StringUtil;
 import com.telpo.tps550.api.util.SystemUtil;
 
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.entity.Guard;
+import net.jiaobaowang.visitor.entity.User;
+import net.jiaobaowang.visitor.entity.Visitor;
+import net.jiaobaowang.visitor.entity.VisitorForm;
+import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
-import net.jiaobaowang.visitor.utils.PrinterCodeUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 
 import java.text.SimpleDateFormat;
@@ -67,6 +66,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private final int CANCELPROMPT = 4;//取消打印
     private final int OVERHEAT = 5;//打印机过热
     private final int PRINTERR = 6;//
+
     //身份证
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
@@ -525,53 +525,52 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
      * 显示打印凭条dialog
      */
     public void showPrintTape() {
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        View printTapeViewGroup = layoutInflater.inflate(R.layout.print_tape_dialog, null, false);
-        View layout = printTapeViewGroup.findViewById(R.id.print_tape_ll);
-        TextView tapeTypeTv = layout.findViewById(R.id.tape_type_tv);
-        TextView infoTv = layout.findViewById(R.id.info_tv);
-        ImageView barCodeIv = layout.findViewById(R.id.bar_code_iv);
-        TextView barCodeTv = layout.findViewById(R.id.bar_code_tv);
-        String visitorName = "姓名：" + nameEt.getText().toString() + "\n";
-        String visitorGender = "性别：男" + "\n";
-        if (femaleRb.isChecked()) {
-            visitorGender = "性别：女" + "\n";
+        //用户
+        User user = new User();
+        user.setId("zhangsan");
+        user.setName("张三");
+        user.setType("学生");
+        user.setGradeName("一年级");
+        user.setClassName("1303班");
+        user.setHeadMaster("王五");
+        //访客
+        Visitor visitor = new Visitor();
+        visitor.setName(nameEt.getText().toString());
+        if (maleRb.isChecked()) {
+            visitor.setGender("男");
+        } else {
+            visitor.setGender("女");
         }
-        String organization = "来访单位：" + organizationEt.getText().toString() + "\n";
-        String reason = "来访事由：" + reasonSpinner.getSelectedItem().toString() + "\n";
-        String interviewee = "被访人：李四" + "\n";
-        String department = "被访人部门：行政部" + "\n";
-        String gradeName = "年级：三年级" + "\n";
-        String className = "班级：一班" + "\n";
-        String headmaster = "班主任：王五" + "\n";
+        visitor.setBorn(dateOfBirthEt.getText().toString());
+        visitor.setAddress(addressEt.getText().toString());
+        visitor.setCardNumber(idNumberEt.getText().toString());
+        visitor.setCardType(credentialsSpinner.getSelectedItem().toString());
+        visitor.setImage(headImage);
+        //门卫
+        Guard guard = new Guard();
+        guard.setId("lisi");
+        guard.setName("李四");
+        //访客单
+        VisitorForm visitorForm = new VisitorForm();
+        visitorForm.setVisitor(visitor);
+        visitorForm.setUser(user);
+        visitorForm.setGuard(guard);
+        visitorForm.setReason(reasonSpinner.getSelectedItem().toString());
+        visitorForm.setPhoneNumber(phoneNumberEt.getText().toString());
+        visitorForm.setVisitorNumber(visitorNumberEt.getText().toString());
+        visitorForm.setBelongings(belongingsEt.getText().toString());
+        visitorForm.setOrganization(organizationEt.getText().toString());
+        visitorForm.setPlateNumber(plateNumberEt.getText().toString());
+        visitorForm.setRemarks(remarksEt.getText().toString());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date curDate = new Date(System.currentTimeMillis());
-        String entryTime = "进入时间：" + sdf.format(curDate) + "\n";
-        String registrant = "登记人：张三";
-        tapeType = "教职工";
-        infoStr = visitorName + visitorGender + organization + reason + interviewee + department + gradeName + className + headmaster + entryTime + registrant;
-        barCodeStr = "12345678901234567890";
-        barCodeBm = null;
-        try {
-            barCodeBm = PrinterCodeUtils.CreateCode(barCodeStr, BarcodeFormat.CODE_128, 320, 88);
-        } catch (WriterException e) {
-            e.printStackTrace();
-            DialogUtils.showAlert(mContext, "条码生成失败，请重新尝试:" + e.toString());
-        }
-        tapeTypeTv.setText(tapeType);
-        infoTv.setText(infoStr);
-        barCodeTv.setText(barCodeStr);
-        if (barCodeBm != null) {
-            barCodeIv.setImageBitmap(barCodeBm);
-        }
-        new AlertDialog.Builder(mContext).setTitle("打印凭条").setView(layout)
-                .setPositiveButton("确定打印", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        initStartPrinting(PRINTCONTENT);
-                    }
-                })
-                .setNegativeButton("取消", null).show();
+        String time = sdf.format(curDate);
+        visitorForm.setRegisterTime(time);
+        visitorForm.setEntryTime(time);
+        Intent intent = new Intent(mContext, PrinterActivity.class);
+        intent.putExtra("type", 0);
+        intent.putExtra("data", visitorForm);
+        startActivity(intent);
     }
 
     /**

@@ -7,14 +7,17 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="rectangle_edit" parent="Base.V7.Widget.AppCompat.EditText">
         <item name="android:background">@drawable/rectangle_focus</item>
         <item name="android:textSize">@dimen/edit_text_size</item>
         <item name="android:longClickable">false</item>
     </style>
+
     <style name="rectangle_dateText" parent="rectangle_edit">
         <item name="android:minWidth">50dp</item>
     </style>
+
     <style name="rectangle_spinner">
         <item name="android:background">@drawable/spinner_bg</item>
         <item name="android:paddingRight">20dp</item>
@@ -22,4 +25,12 @@
         <item name="android:textColor">#fc0000</item>
     </style>
 
+    <style name="Theme.ActivityDialogStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/bg_dialog</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
 </resources>
