@@ -3,14 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/print_tape_border"
     tools:context="net.jiaobaowang.visitor.printer.PrinterActivity">
 
     <LinearLayout
         android:id="@+id/print_tape_ll"
         android:layout_width="424px"
         android:layout_height="wrap_content"
-
+        android:background="@drawable/print_tape_border"
         android:orientation="vertical">
 
         <TextView
@@ -25,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="教职工"
+            android:text=""
             android:textSize="16px" />
 
         <TextView

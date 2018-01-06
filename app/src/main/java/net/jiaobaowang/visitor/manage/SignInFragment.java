@@ -94,7 +94,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private EditText idNumberEt;//证件号码
     private EditText addressEt;//地址
     private EditText phoneNumberEt;//电话号码
-    private EditText visitorNumberEt;//访客人数
     private EditText belongingsEt;//随身物品
     private EditText organizationEt;//单位名称
     private EditText plateNumberEt;//车牌号
@@ -103,6 +102,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private RadioButton femaleRb;//女
     private Spinner credentialsSpinner;//证件类型
     private Spinner reasonSpinner;//事由类型
+    private Spinner visitorNumberSpinner;//访客人数
 
     public SignInFragment() {
     }
@@ -176,7 +176,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         addressEt = view.findViewById(R.id.address_et);
         reasonSpinner = view.findViewById(R.id.reason_spinner);
         phoneNumberEt = view.findViewById(R.id.phone_number_et);
-        visitorNumberEt = view.findViewById(R.id.visitor_number_et);
+        visitorNumberSpinner = view.findViewById(R.id.visitor_number_spinner);
         belongingsEt = view.findViewById(R.id.belongings_et);
         organizationEt = view.findViewById(R.id.organization_et);
         plateNumberEt = view.findViewById(R.id.plate_number_et);
@@ -314,9 +314,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
             progressDialog = null;
         }
         getActivity().unregisterReceiver(printReceive);
-        try{
+        try {
             mUsbThermalPrinter.stop();
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         super.onDestroy();
@@ -482,7 +482,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         idNumberEt.setText("");
         addressEt.setText("");
         phoneNumberEt.setText("");
-        visitorNumberEt.setText("");
         belongingsEt.setText("");
         organizationEt.setText("");
         plateNumberEt.setText("");
@@ -561,7 +560,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         visitorForm.setGuard(guard);
         visitorForm.setReason(reasonSpinner.getSelectedItem().toString());
         visitorForm.setPhoneNumber(phoneNumberEt.getText().toString());
-        visitorForm.setVisitorNumber(visitorNumberEt.getText().toString());
+        visitorForm.setVisitorNumber(visitorNumberSpinner.getSelectedItem().toString());
         visitorForm.setBelongings(belongingsEt.getText().toString());
         visitorForm.setOrganization(organizationEt.getText().toString());
         visitorForm.setPlateNumber(plateNumberEt.getText().toString());
@@ -572,7 +571,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         visitorForm.setRegisterTime(time);
         visitorForm.setEntryTime(time);
         Intent intent = new Intent(mContext, PrinterActivity.class);
-        intent.putExtra("type", 0);
         intent.putExtra("data", visitorForm);
         startActivity(intent);
     }

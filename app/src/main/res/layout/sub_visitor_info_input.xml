@@ -206,12 +206,11 @@
                         android:layout_height="wrap_content"
                         android:text="@string/visitor_number" />
 
-                    <EditText
-                        android:id="@+id/visitor_number_et"
-                        android:layout_width="match_parent"
+                    <Spinner
+                        android:id="@+id/visitor_number_spinner"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="@string/input_visitor_number"
-                        android:inputType="number" />
+                        android:entries="@array/visitor_number" />
 
                 </LinearLayout>
 
