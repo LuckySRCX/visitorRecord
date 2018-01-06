@@ -33,4 +33,9 @@
         <item name="android:windowCloseOnTouchOutside">false</item>
         <item name="android:windowIsFloating">true</item>
     </style>
+    <style name="Login_style" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlNormal">#c5c5c5</item>
+        <item name="colorControlActivated">#63bbff</item>
+        <item name="colorControlHighlight">#63bbff</item>
+    </style>
 </resources>

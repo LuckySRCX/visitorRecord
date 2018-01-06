@@ -314,7 +314,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
             progressDialog = null;
         }
         getActivity().unregisterReceiver(printReceive);
-        mUsbThermalPrinter.stop();
+        try{
+            mUsbThermalPrinter.stop();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 
