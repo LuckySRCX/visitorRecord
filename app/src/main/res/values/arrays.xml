@@ -3,12 +3,20 @@
     <!--凭证类型-->
     <string-array name="credentials_type">
         <item>身份证</item>
-        <item>IC卡</item>
+        <item>学生证</item>
+        <item>护照</item>
     </string-array>
     <!--事由类型-->
     <string-array name="reason_type">
         <item>公务</item>
-        <item>探访</item>
+        <item>探亲</item>
+        <item>其他</item>
+    </string-array>
+    <!--随行人数-->
+    <string-array name="visitor_number">
+        <item>1人</item>
+        <item>2–5人</item>
+        <item>5人以上</item>
     </string-array>
     <!--sign stat-->
     <string-array name="is_leave_option">

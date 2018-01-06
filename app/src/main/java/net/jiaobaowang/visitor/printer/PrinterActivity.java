@@ -15,14 +15,13 @@ public class PrinterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_prenter);
-        type = getIntent().getIntExtra("type", 0);
         visitorForm = (VisitorForm) getIntent().getSerializableExtra("data");
+        setContentView(R.layout.activity_prenter);
         initView();
     }
 
-    public void initView(){
-        TextView tapeTypeTv=findViewById(R.id.tape_type_tv);
-        TextView name_tv=findViewById(R.id.name_tv);
+    public void initView() {
+        TextView tapeTypeTv = findViewById(R.id.tape_type_tv);
+        TextView name_tv = findViewById(R.id.name_tv);
     }
 }
