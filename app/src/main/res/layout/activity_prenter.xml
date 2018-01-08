@@ -1,73 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="384dp"
     android:layout_height="wrap_content"
+    android:background="@drawable/print_tape_border"
+    android:orientation="vertical"
     tools:context="net.jiaobaowang.visitor.printer.PrinterActivity">
 
     <LinearLayout
-        android:id="@+id/print_tape_ll"
-        android:layout_width="424px"
+        android:id="@+id/print_tape_content_ll"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/print_tape_border"
         android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="访客单"
-            android:textSize="24px" />
+            android:text="@string/visitor_form"
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/tape_type_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/Print_TextView_Content"
             android:gravity="center_horizontal"
-            android:text=""
-            android:textSize="16px" />
+            android:text="" />
 
         <TextView
-            android:id="@+id/name_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="姓名："
-            android:textSize="16px" />
+            android:id="@+id/vis_name_tv"
+            style="@style/Print_TextView_Content"
+            android:text="@string/name" />
 
         <TextView
-            android:id="@+id/gender_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="性别："
-            android:textSize="16px" />
+            android:id="@+id/vis_gender_tv"
+            style="@style/Print_TextView_Content"
+            android:text="@string/gender" />
 
         <TextView
-            android:id="@+id/organization_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="来访单位："
-            android:textSize="16px" />
+            android:id="@+id/vis_org_tv"
+            style="@style/Print_TextView_Content"
+            android:text="@string/visitor_org" />
 
         <TextView
-            android:id="@+id/reason_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="来访事由："
-            android:textSize="16px" />
+            android:id="@+id/vis_reason_tv"
+            style="@style/Print_TextView_Content"
+            android:text="@string/visitor_reason" />
 
         <TextView
-            android:id="@+id/interviewee_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="被访人："
-            android:textSize="16px" />
+            android:id="@+id/user_name_tv"
+            style="@style/Print_TextView_Content"
+            android:text="@string/interviewee" />
 
         <TextView
-            android:id="@+id/department_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="被访部门："
-            android:textSize="16px" />
+            android:id="@+id/user_department_tv"
+            style="@style/Print_TextView_Content"
+            android:text="@string/interviewee_department" />
 
         <LinearLayout
             android:id="@+id/student_ll"
@@ -78,40 +65,29 @@
 
             <TextView
                 android:id="@+id/grade_name_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="年级："
-                android:textSize="16px" />
+                style="@style/Print_TextView_Content"
+                android:text="@string/grade" />
 
             <TextView
                 android:id="@+id/class_name_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="班级："
-                android:textSize="16px" />
+                style="@style/Print_TextView_Content"
+                android:text="@string/classes" />
 
             <TextView
                 android:id="@+id/headmaster_name_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="班主任："
-                android:textSize="16px" />
+                style="@style/Print_TextView_Content"
+                android:text="@string/head_master" />
         </LinearLayout>
-
 
         <TextView
             android:id="@+id/entry_time_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="进入时间："
-            android:textSize="16px" />
+            style="@style/Print_TextView_Content"
+            android:text="@string/entry_time" />
 
         <TextView
             android:id="@+id/registrant_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="登记人："
-            android:textSize="16px" />
+            style="@style/Print_TextView_Content"
+            android:text="@string/registrant" />
 
         <ImageView
             android:id="@+id/bar_code_iv"
@@ -123,50 +99,48 @@
 
         <TextView
             android:id="@+id/bar_code_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="0000000000"
-            android:textSize="16px" />
+            style="@style/Print_TextView_Content"
+            android:gravity="center_horizontal" />
 
         <TextView
             android:id="@+id/remarks_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/Print_TextView_Content"
             android:gravity="center_horizontal"
-            android:text="@string/print_tape_remarks" />
+            android:textColor="@color/colorRed" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
 
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <Button
+                android:id="@+id/confirm_print_btn"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal">
+                android:text="@string/confirm_print" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/confirm_print_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/confirm_print" />
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <Button
+                android:id="@+id/cancel_btn"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal">
-
-                <Button
-                    android:id="@+id/cancel_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/cancel" />
-            </LinearLayout>
+                android:text="@string/cancel" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
+

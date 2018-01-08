@@ -5,19 +5,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.BatteryManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -34,15 +29,9 @@ import com.google.zxing.other.BeepManager;
 import com.telpo.tps550.api.TelpoException;
 import com.telpo.tps550.api.idcard.IdCard;
 import com.telpo.tps550.api.idcard.IdentityInfo;
-import com.telpo.tps550.api.printer.UsbThermalPrinter;
-import com.telpo.tps550.api.util.StringUtil;
-import com.telpo.tps550.api.util.SystemUtil;
 
 import net.jiaobaowang.visitor.R;
-import net.jiaobaowang.visitor.entity.Guard;
-import net.jiaobaowang.visitor.entity.User;
-import net.jiaobaowang.visitor.entity.Visitor;
-import net.jiaobaowang.visitor.entity.VisitorForm;
+import net.jiaobaowang.visitor.entity.PrintForm;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
@@ -59,35 +48,16 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
 
     private final int ID_REQ1 = 1;//身份证正面
     private final int ID_CAMERA = 2;//摄像头
-    //打印机
-    private final int NOPAPER = 1;//打印机缺纸
-    private final int LOWBATTERY = 2;//打印机低电量
-    private final int PRINTCONTENT = 3;//打印机打印内容
-    private final int CANCELPROMPT = 4;//取消打印
-    private final int OVERHEAT = 5;//打印机过热
-    private final int PRINTERR = 6;//
 
     //身份证
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
-    //打印凭条
-    private String tapeType;
-    private String infoStr;
-    private Bitmap barCodeBm;
-    private String barCodeStr;
-    private ProgressDialog progressDialog;
-    private Boolean mLowBattery = false;//低电量
-    private Boolean mNoPaper = false;//缺纸
-    private UsbThermalPrinter mUsbThermalPrinter;
-    private MyHandler handler;
 
     private Context mContext;
     private Button saveBtn;//保存
-    private Button printTapeBtn;//打印凭条
     private Button idCardReadBtn;//读取身份证
     private Button idCardOCRBtn;//识别身份证
-    private Button cameraBtn;//拍照
     private ImageView idCardHeadIv;//身份证头像
     private EditText nameEt;//姓名
     private EditText dateOfBirthEt;//出生日期
@@ -111,34 +81,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         return new SignInFragment();
     }
 
-    private class MyHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case NOPAPER://缺纸
-                    DialogUtils.showAlert(mContext, "打印缺纸，请放入纸后重试!");
-                    break;
-                case LOWBATTERY://低电量
-                    DialogUtils.showAlert(mContext, "电池电量低，请连接充电器！");
-                    break;
-                case PRINTCONTENT:
-                    new contentPrintThread().start();
-                    break;
-                case CANCELPROMPT://取消提示
-                    if (progressDialog != null && !getActivity().isFinishing()) {
-                        progressDialog.dismiss();
-                        progressDialog = null;
-                    }
-                    break;
-                case OVERHEAT://过热
-                    DialogUtils.showAlert(mContext, "打印过热！");
-                    break;
-                default:
-                    ToastUtils.showMessage(mContext, "Print Error!");
-                    break;
-            }
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,16 +98,15 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         mContext = getActivity();
         initView(view);
-        initPrinter();
         return view;
     }
 
     public void initView(View view) {
         saveBtn = view.findViewById(R.id.save_btn);
-        printTapeBtn = view.findViewById(R.id.print_tape_btn);
+        Button printTapeBtn = view.findViewById(R.id.print_tape_btn);
         idCardReadBtn = view.findViewById(R.id.id_card_read_btn);
         idCardOCRBtn = view.findViewById(R.id.id_card_ocr_btn);
-        cameraBtn = view.findViewById(R.id.camera_btn);
+        Button cameraBtn = view.findViewById(R.id.camera_btn);
         idCardHeadIv = view.findViewById(R.id.id_card_head_iv);
         nameEt = view.findViewById(R.id.name_et);
         maleRb = view.findViewById(R.id.male_rb);
@@ -187,86 +128,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         idCardOCRBtn.setOnClickListener(this);
         cameraBtn.setOnClickListener(this);
     }
-
-    public void initPrinter() {
-        handler = new MyHandler();
-        mUsbThermalPrinter = new UsbThermalPrinter(mContext);
-        IntentFilter pIntentFilter = new IntentFilter();
-        pIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        pIntentFilter.addAction("android.intent.action.BATTERY_CAPACITY_EVENT");
-        mContext.registerReceiver(printReceive, pIntentFilter);
-        final ProgressDialog getVersionDialog = new ProgressDialog(mContext);
-        getVersionDialog.setTitle("操作中");
-        getVersionDialog.setMessage("正在检测驱动版本，请稍候...");
-        getVersionDialog.setCancelable(false);
-        getVersionDialog.show();
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    mUsbThermalPrinter.start(0);
-                    mUsbThermalPrinter.reset();
-                    String printVersion = mUsbThermalPrinter.getVersion();
-                    if (printVersion != null) {
-                        Log.i(TAG, "打印机版本：" + printVersion);
-                    }
-                } catch (TelpoException e) {
-                    e.printStackTrace();
-                } finally {
-                    getVersionDialog.dismiss();
-                }
-            }
-        }).start();
-    }
-
-    /**
-     * 电量的广播
-     */
-    BroadcastReceiver printReceive = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
-                int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
-                        BatteryManager.BATTERY_STATUS_NOT_CHARGING);
-                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-                int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 0);
-                // TPS390 can not print,while in low battery,whether is charging or not charging
-                if (SystemUtil.getDeviceType() == StringUtil.DeviceModelEnum.TPS390.ordinal()) {
-                    if (level * 5 <= scale) {
-                        mLowBattery = true;
-                    } else {
-                        mLowBattery = false;
-                    }
-                } else {
-                    if (status != BatteryManager.BATTERY_STATUS_CHARGING) {
-                        if (level * 5 <= scale) {
-                            mLowBattery = true;
-                        } else {
-                            mLowBattery = false;
-                        }
-                    } else {
-                        mLowBattery = false;
-                    }
-                }
-            }
-            // Only use for TPS550MTK devices
-            else if (action.equals("android.intent.action.BATTERY_CAPACITY_EVENT")) {
-                int status = intent.getIntExtra("action", 0);
-                int level = intent.getIntExtra("level", 0);
-                if (status == 0) {
-                    if (level < 1) {
-                        mLowBattery = true;
-                    } else {
-                        mLowBattery = false;
-                    }
-                } else {
-                    mLowBattery = false;
-                }
-            }
-        }
-    };
 
     @Override
     public void onResume() {
@@ -305,21 +166,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         beepManager.close();
         beepManager = null;
         IdCard.close();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (progressDialog != null && !getActivity().isFinishing()) {
-            progressDialog.dismiss();
-            progressDialog = null;
-        }
-        getActivity().unregisterReceiver(printReceive);
-        try {
-            mUsbThermalPrinter.stop();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        super.onDestroy();
     }
 
     @Override
@@ -528,155 +374,33 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
      * 显示打印凭条dialog
      */
     public void showPrintTape() {
-        //用户
-        User user = new User();
-        user.setId("zhangsan");
-        user.setName("张三");
-        user.setType("学生");
-        user.setGradeName("一年级");
-        user.setClassName("1303班");
-        user.setHeadMaster("王五");
-        //访客
-        Visitor visitor = new Visitor();
-        visitor.setName(nameEt.getText().toString());
-        if (maleRb.isChecked()) {
-            visitor.setGender("男");
-        } else {
-            visitor.setGender("女");
-        }
-        visitor.setBorn(dateOfBirthEt.getText().toString());
-        visitor.setAddress(addressEt.getText().toString());
-        visitor.setCardNumber(idNumberEt.getText().toString());
-        visitor.setCardType(credentialsSpinner.getSelectedItem().toString());
-        visitor.setImage(headImage);
-        //门卫
-        Guard guard = new Guard();
-        guard.setId("lisi");
-        guard.setName("李四");
         //访客单
-        VisitorForm visitorForm = new VisitorForm();
-        visitorForm.setVisitor(visitor);
-        visitorForm.setUser(user);
-        visitorForm.setGuard(guard);
-        visitorForm.setReason(reasonSpinner.getSelectedItem().toString());
-        visitorForm.setPhoneNumber(phoneNumberEt.getText().toString());
-        visitorForm.setVisitorNumber(visitorNumberSpinner.getSelectedItem().toString());
-        visitorForm.setBelongings(belongingsEt.getText().toString());
-        visitorForm.setOrganization(organizationEt.getText().toString());
-        visitorForm.setPlateNumber(plateNumberEt.getText().toString());
-        visitorForm.setRemarks(remarksEt.getText().toString());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date curDate = new Date(System.currentTimeMillis());
-        String time = sdf.format(curDate);
-        visitorForm.setRegisterTime(time);
-        visitorForm.setEntryTime(time);
-        Intent intent = new Intent(mContext, PrinterActivity.class);
-        intent.putExtra("data", visitorForm);
-        startActivity(intent);
-    }
+        PrintForm printForm = new PrintForm();
+        printForm.setFormId("2017321466841265");
 
-    /**
-     * 开始打印
-     */
-    private void initStartPrinting(int type) {
-        if (mLowBattery) {
-            handler.sendMessage(handler.obtainMessage(LOWBATTERY, 1, 0, null));
+        printForm.setVisName(nameEt.getText().toString());
+        if (maleRb.isChecked()) {
+            printForm.setVisGender(0);
         } else {
-            if (!mNoPaper) {
-                progressDialog = ProgressDialog.show(mContext, "打印", "打印中，请稍候……");
-                handler.sendMessage(handler.obtainMessage(type, 1, 0, null));
-            } else {
-                DialogUtils.showAlert(mContext, "打印机初始化中，请稍后再试");
-            }
+            printForm.setVisGender(1);
         }
-    }
+        printForm.setVisOrg(organizationEt.getText().toString());
+        printForm.setVisReason(reasonSpinner.getSelectedItem().toString());
 
-    /**
-     * 文字打印
-     */
-    private class contentPrintThread extends Thread {
-        @Override
-        public void run() {
-            super.run();
-            try {
-                mUsbThermalPrinter.reset();
-                mUsbThermalPrinter.setLeftIndent(0);
-                mUsbThermalPrinter.setLineSpace(0);
-                mUsbThermalPrinter.setGray(0);
+        printForm.setUserType(1);
+        printForm.setUserName("张三");
+        printForm.setUserGradeName("一年级");
+        printForm.setUserClassName("1303班");
+        printForm.setUserHeadMaster("王浩");
 
-                mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
-                mUsbThermalPrinter.setTextSize(56);
-                mUsbThermalPrinter.addString("访客单");
-                mUsbThermalPrinter.addStringOffset(8, tapeType);
-                mUsbThermalPrinter.printString();
-                //访客单类型
-                mUsbThermalPrinter.setTextSize(48);
-                mUsbThermalPrinter.addString(tapeType);
-                mUsbThermalPrinter.printString();
-                //访客单基本信息
-                mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_LEFT);
-                mUsbThermalPrinter.setTextSize(24);
-                mUsbThermalPrinter.addString(infoStr);
-                mUsbThermalPrinter.printString();
+        printForm.setRegisterName("刘室温");
+        printForm.setRemarks(remarksEt.getText().toString());
 
-                mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
-//                if (headImage != null) {
-//                    mUsbThermalPrinter.printLogo(headImage, true);
-//                    mUsbThermalPrinter.printString();
-//                }
-                //打印条码
-                if (barCodeBm != null) {
-                    mUsbThermalPrinter.printLogo(barCodeBm, true);
-                    mUsbThermalPrinter.printString();
-                }
-                //打印条码数字信息
-                mUsbThermalPrinter.setTextSize(16);
-                mUsbThermalPrinter.addString(barCodeStr);
-                mUsbThermalPrinter.printString();
-                //打印备注
-                mUsbThermalPrinter.setTextSize(20);
-                mUsbThermalPrinter.addString(getResources().getString(R.string.print_tape_remarks));
-                mUsbThermalPrinter.printString();
-
-
-                mUsbThermalPrinter.walkPaper(20);
-            } catch (Exception e) {
-                e.printStackTrace();
-                printCatch(e.toString());
-            } finally {
-                printFinally();
-            }
-        }
-    }
-
-    /**
-     * 打印异常
-     */
-    private void printCatch(String error) {
-        switch (error) {
-            case "com.telpo.tps550.api.printer.NoPaperException":
-                //打印机缺纸
-                mNoPaper = true;
-                break;
-            case "com.telpo.tps550.api.printer.OverHeatException":
-                //打印机过热
-                handler.sendMessage(handler.obtainMessage(OVERHEAT, 1, 0, null));
-                break;
-            default:
-                handler.sendMessage(handler.obtainMessage(PRINTERR, 1, 0, null));
-                break;
-        }
-
-    }
-
-    /**
-     * 打印异常
-     */
-    private void printFinally() {
-        handler.sendMessage(handler.obtainMessage(CANCELPROMPT, 1, 0, null));
-        if (mNoPaper) {
-            handler.sendMessage(handler.obtainMessage(NOPAPER, 1, 0, null));
-            mNoPaper = false;
-        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        Date curDate = new Date(System.currentTimeMillis());
+        printForm.setEntryTime(sdf.format(curDate));
+        Intent intent = new Intent(mContext, PrinterActivity.class);
+        intent.putExtra("printForm", printForm);
+        startActivity(intent);
     }
 }

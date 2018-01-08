@@ -9,6 +9,7 @@
     <string name="sign_query_head">visitor/visitor query</string>
     <string name="keywords_hint">visitor name,phone number,ID</string>
     <string name="visitor_info">访客信息</string>
+    <string name="visitor_form">访客单</string>
     <string name="id_card_read">读卡器读取身份证</string>
     <string name="id_card_ocr">摄像头识别身份证</string>
     <string name="name">姓名：</string>
@@ -23,14 +24,14 @@
     <string name="input_id_number">请输入证件号码</string>
     <string name="address">地址：</string>
     <string name="input_address">请输入地址</string>
-    <string name="reason">事由：</string>
+    <string name="visitor_reason">访问事由：</string>
     <string name="phone_number">手机号码：</string>
     <string name="input_phone_number">请输入手机号码</string>
     <string name="visitor_number">访客人数：</string>
     <string name="input_visitor_number">请输入访客人数</string>
     <string name="belongings">随身物品：</string>
     <string name="input_belongings">请输入随身物品</string>
-    <string name="organization">单位名称：</string>
+    <string name="visitor_org">来访单位：</string>
     <string name="input_organization">请输入单位名称</string>
     <string name="plate_number">车牌号：</string>
     <string name="input_plate_number">请输入车牌号</string>
@@ -71,4 +72,13 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="interviewee">被访人：</string>
+    <string name="interviewee_department">被访部门：</string>
+    <string name="grade">年级：</string>
+    <string name="classes">班级：</string>
+    <string name="head_master">班主任：</string>
+    <string name="entry_time">进入时间：</string>
+    <string name="registrant">登记人：</string>
+    <string name="teacher">教职工</string>
+    <string name="student">学生</string>
 </resources>
