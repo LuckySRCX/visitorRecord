@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="384dp"
+    android:layout_width="464dp"
     android:layout_height="wrap_content"
     android:background="@drawable/print_tape_border"
     android:orientation="vertical"
@@ -14,8 +14,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/Print_TextView_Content"
             android:gravity="center_horizontal"
             android:text="@string/visitor_form"
             android:textSize="24sp" />
@@ -24,7 +23,7 @@
             android:id="@+id/tape_type_tv"
             style="@style/Print_TextView_Content"
             android:gravity="center_horizontal"
-            android:text="" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/vis_name_tv"
@@ -94,19 +93,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:src="@mipmap/ic_launcher" />
+            android:layout_marginTop="10dp" />
 
         <TextView
             android:id="@+id/bar_code_tv"
             style="@style/Print_TextView_Content"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/remarks_tv"
             style="@style/Print_TextView_Content"
             android:gravity="center_horizontal"
-            android:textColor="@color/colorRed" />
+            android:textColor="@color/colorRed"
+            android:textSize="16sp" />
     </LinearLayout>
 
 
