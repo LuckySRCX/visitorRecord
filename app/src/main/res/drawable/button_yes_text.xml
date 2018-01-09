@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--默认-->
+    <item android:color="@color/button_yes" android:state_pressed="false" />
+    <!--点击-->
+    <item android:color="@color/colorWhite" android:state_pressed="true" />
+</selector>

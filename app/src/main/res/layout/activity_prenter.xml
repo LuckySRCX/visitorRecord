@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="464dp"
     android:layout_height="wrap_content"
-    android:background="@drawable/print_tape_border"
+    android:background="@drawable/shape_print_tape_border"
     android:orientation="vertical"
     tools:context="net.jiaobaowang.visitor.printer.PrinterActivity">
 
@@ -124,9 +124,11 @@
 
             <Button
                 android:id="@+id/confirm_print_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/confirm_print" />
+                style="@style/button_yes"
+                android:layout_width="116dp"
+                android:layout_height="46dp"
+                android:text="@string/confirm_print"
+                android:textSize="20sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -137,9 +139,11 @@
 
             <Button
                 android:id="@+id/cancel_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/cancel" />
+                style="@style/button_no"
+                android:layout_width="116dp"
+                android:layout_height="46dp"
+                android:text="@string/cancel"
+                android:textSize="20sp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -47,4 +47,14 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/print_content</item>
     </style>
+
+    <style name="button_yes">
+        <item name="android:textColor">@drawable/button_yes_text</item>
+        <item name="android:background">@drawable/button_yes_bg</item>
+    </style>
+
+    <style name="button_no">
+        <item name="android:textColor">@drawable/button_no_text</item>
+        <item name="android:background">@drawable/button_no_bg</item>
+    </style>
 </resources>

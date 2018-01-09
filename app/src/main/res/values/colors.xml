@@ -8,4 +8,6 @@
     <color name="colorRed">#FF0000</color>
     <color name="print_content">#333333</color>
     <color name="print_remarks">#f96161</color>
+    <color name="button_yes">#1296db</color>
+    <color name="button_no">#999999</color>
 </resources>
