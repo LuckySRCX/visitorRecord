@@ -5,22 +5,35 @@
     android:orientation="vertical"
     tools:context="net.jiaobaowang.visitor.manage.NavigationFragment">
 
-    <Button
-        android:id="@+id/btn_sign_in"
+    <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/visitor_signIn" />
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btn_query"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/visitor_query" />
+        <RadioButton
+            android:id="@+id/btn_home"
+            style="@style/manage_left"
+            android:drawableTop="@drawable/manage_home"
+            android:text="@string/home" />
 
-    <Button
-        android:id="@+id/btn_sign_off"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/visitor_signOff" />
+        <RadioButton
+            android:id="@+id/btn_sign_in"
+            style="@style/manage_left"
+            android:checked="true"
+            android:drawableTop="@drawable/manage_sign_in"
+            android:text="@string/visitor_signIn" />
+
+        <RadioButton
+            android:id="@+id/btn_query"
+            style="@style/manage_left"
+            android:drawableTop="@drawable/manage_sign_query"
+            android:text="@string/visitor_query" />
+
+        <RadioButton
+            android:id="@+id/btn_sign_off"
+            style="@style/manage_left"
+            android:drawableTop="@drawable/manage_sign_off"
+            android:text="@string/visitor_signOff" />
+    </RadioGroup>
+
 
 </LinearLayout>

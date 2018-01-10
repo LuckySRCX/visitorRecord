@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">访客系统</string>
     <!--manage.NavigationFragment-->
-    <string name="visitor_signIn">访客登记</string>
+    <string name="visitor_signIn">来访登记</string>
     <string name="visitor_query">访客查询</string>
     <string name="visitor_signOff">访客签离</string>
     <!--SignQueryFragment-->

@@ -45,7 +45,7 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v=inflater.inflate(R.layout.fragment_navigation, container, false);
+        View v = inflater.inflate(R.layout.fragment_navigation, container, false);
         v.findViewById(R.id.btn_sign_in).setOnClickListener(this);
         v.findViewById(R.id.btn_query).setOnClickListener(this);
         v.findViewById(R.id.btn_sign_off).setOnClickListener(this);
