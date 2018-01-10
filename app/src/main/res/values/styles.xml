@@ -85,4 +85,30 @@
         <item name="android:paddingRight">10dp</item>
         <item name="android:background">@color/colorWhite</item>
     </style>
+
+    <!--来访登记访客信息-->
+    <!--布局-->
+    <style name="visitor_edit_ll">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <!--输入框-->
+    <style name="visitor_edit_edit_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:background">@drawable/edit_border</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <!--下拉列表-->
+    <style name="visitor_edit_spinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:background">@drawable/sign_in_spinner</item>
+    </style>
+    <!--来访登记访客信息-->
 </resources>
