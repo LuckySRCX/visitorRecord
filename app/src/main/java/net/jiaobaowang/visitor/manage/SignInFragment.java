@@ -31,6 +31,7 @@ import com.telpo.tps550.api.idcard.IdCard;
 import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.PrintForm;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
@@ -46,8 +47,6 @@ import java.util.List;
 public class SignInFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "RegistrationFragment";
 
-    private final int ID_REQ1 = 1;//身份证正面
-    private final int ID_CAMERA = 2;//摄像头
 
     //身份证
     private IdentityInfo idCardInfo;//二代身份证信息
@@ -194,14 +193,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
                 //intent.putExtra("PictPath", "/sdcard/DCIM/Camera/003.png");// 图片路径，不传入时保存到默认路径/sdcard/OCRPict
                 //intent.putExtra("PictFormat", "PNG");// 图片格式：JPEG，PNG，WEBP，不传入时默认为PNG格式
                 try {
-                    startActivityForResult(intent, ID_REQ1);
+                    startActivityForResult(intent, VisitorConstant.ARC_SIGN_IN_REQ);
                 } catch (ActivityNotFoundException exception) {
                     ToastUtils.showMessage(mContext, R.string.identify_ocr_fail);
                 }
                 break;
             case R.id.camera_btn:
                 Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(camera, ID_CAMERA);
+                startActivityForResult(camera, VisitorConstant.ARC_SIGN_IN_CAMERA);
                 break;
         }
     }
@@ -282,7 +281,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        Log.i(TAG, "requestCode:" + requestCode + "\n" + "resultCode:" + resultCode);
-        if (requestCode == ID_REQ1) {
+        if (requestCode == VisitorConstant.ARC_SIGN_IN_REQ) {
             //识别身份证
             if (resultCode == Activity.RESULT_CANCELED) {
                 //成功
@@ -308,7 +307,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
             } else {
                 DialogUtils.showAlert(mContext, "识别身份证失败，请重新尝试");
             }
-        } else if (requestCode == ID_CAMERA && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == VisitorConstant.ARC_SIGN_IN_CAMERA && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 Bitmap photo = (Bitmap) data.getExtras().get("data");
                 idCardHeadIv.setImageBitmap(photo);
