@@ -63,6 +63,12 @@
         <item name="android:background">@drawable/button_no_bg</item>
     </style>
 
+    <style name="button_save_print">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@drawable/button_save_print_text</item>
+        <item name="android:background">@drawable/button_save_print_bg</item>
+    </style>
+
     <!--ManageActivity 左侧列表-->
     <style name="manage_left">
         <item name="android:layout_width">match_parent</item>
@@ -99,8 +105,8 @@
     <!--输入框-->
     <style name="visitor_edit_edit_text">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">36dp</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:layout_height">@dimen/default_edit_text_height</item>
+        <item name="android:textSize">@dimen/edit_text_size</item>
         <item name="android:background">@drawable/edit_border</item>
         <item name="android:singleLine">true</item>
     </style>

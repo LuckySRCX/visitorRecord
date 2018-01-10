@@ -47,6 +47,7 @@
 
         <Button
             android:id="@+id/print_tape_btn"
+            style="@style/button_save_print"
             android:layout_width="140dp"
             android:layout_height="46dp"
             android:layout_marginLeft="40dp"

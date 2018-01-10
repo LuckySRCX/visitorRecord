@@ -34,6 +34,7 @@
         <activity android:name=".manage.ManageActivity" />
         <activity
             android:name=".printer.PrinterActivity"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.ActivityDialogStyle" />
         <activity
             android:name=".login.LoginActivity"

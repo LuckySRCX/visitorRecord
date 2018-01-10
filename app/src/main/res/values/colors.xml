@@ -13,4 +13,5 @@
     <color name="button_no">#999999</color>
     <color name="border">#e4e4e4</color>
     <color name="info_title">#ff6600</color>
+    <color name="save_print">#339933</color>
 </resources>

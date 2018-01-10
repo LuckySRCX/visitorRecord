@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -101,19 +102,32 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         maleRb = view.findViewById(R.id.male_rb);
         femaleRb = view.findViewById(R.id.female_rb);
         dateOfBirthEt = view.findViewById(R.id.date_of_birth_et);
-        credentialsSpinner = view.findViewById(R.id.credentials_spinner);
         idNumberEt = view.findViewById(R.id.id_number_et);
         addressEt = view.findViewById(R.id.address_et);
-        reasonSpinner = view.findViewById(R.id.reason_spinner);
         phoneNumberEt = view.findViewById(R.id.phone_number_et);
-        visitorNumberSpinner = view.findViewById(R.id.visitor_number_spinner);
         belongingsEt = view.findViewById(R.id.belongings_et);
         organizationEt = view.findViewById(R.id.organization_et);
         plateNumberEt = view.findViewById(R.id.plate_number_et);
         remarksEt = view.findViewById(R.id.remarks_et);
+        credentialsSpinner = view.findViewById(R.id.credentials_spinner);
+        reasonSpinner = view.findViewById(R.id.reason_spinner);
+        visitorNumberSpinner = view.findViewById(R.id.visitor_number_spinner);
+
         saveBtn.setOnClickListener(this);
         printTapeBtn.setOnClickListener(this);
         idCardReadBtn.setOnClickListener(this);
+        //证件类型
+        ArrayAdapter<String> credentialAadapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.credentials_type));
+        credentialAadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        credentialsSpinner.setAdapter(credentialAadapter);
+        //访问事由类型
+        ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.reason_type));
+        reasonAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        reasonSpinner.setAdapter(reasonAdapter);
+        //随行人数类型
+        ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.visitor_number));
+        visitorNumberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        visitorNumberSpinner.setAdapter(visitorNumberAdapter);
     }
 
     @Override
