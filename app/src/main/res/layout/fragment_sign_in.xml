@@ -15,7 +15,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/info_border"
             android:orientation="vertical">
 
@@ -33,9 +33,156 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/info_border"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="53dp"
+                android:background="@drawable/image_border"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:id="@+id/type_teacher_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        style="@style/visitor_edit_ll"
+                        android:layout_marginEnd="40dp"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/department" />
+
+                        <Spinner
+                            android:id="@+id/teacher_department_spinner"
+                            style="@style/visitor_edit_spinner" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/visitor_edit_ll"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/name" />
+
+                        <Spinner
+                            android:id="@+id/teacher_name_spinner"
+                            style="@style/visitor_edit_spinner" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/type_student_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        style="@style/visitor_edit_ll"
+                        android:layout_marginEnd="40dp"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/grade" />
+
+                        <Spinner
+                            android:id="@+id/student_grade_spinner"
+                            style="@style/visitor_edit_spinner" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/visitor_edit_ll"
+                        android:layout_marginEnd="40dp"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/classes" />
+
+                        <Spinner
+                            android:id="@+id/student_classes_spinner"
+                            style="@style/visitor_edit_spinner" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/visitor_edit_ll"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/name" />
+
+                        <Spinner
+                            android:id="@+id/student_name_spinner"
+                            style="@style/visitor_edit_spinner" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/user_type_teacher"
+                    android:layout_width="82dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/button_type_checked"
+                    android:button="@null"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:text="@string/teacher">
+
+                </RadioButton>
+
+                <RadioButton
+                    android:id="@+id/user_type_student"
+                    android:layout_width="82dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/button_type_checked"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="@string/student" />
+            </RadioGroup>
+
+        </RelativeLayout>
+
+        <TextView
+            style="@style/info_title"
+            android:text="@string/interviewee_info" />
+
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:gravity="center">
 
         <Button

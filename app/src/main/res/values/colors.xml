@@ -14,4 +14,6 @@
     <color name="border">#e4e4e4</color>
     <color name="info_title">#ff6600</color>
     <color name="save_print">#339933</color>
+    <color name="user_type_bg">#f2f2f2</color>
+    <color name="user_type_border">#d7d7d7</color>
 </resources>

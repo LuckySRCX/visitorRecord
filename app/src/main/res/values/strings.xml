@@ -85,4 +85,6 @@
     <string name="save_and_print">保存并打印</string>
     <string name="read_id_card">读证</string>
     <string name="id_card_image">身份证照片</string>
+    <string name="interviewee_info">被访人信息</string>
+    <string name="department">部门：</string>
 </resources>
