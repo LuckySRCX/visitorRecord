@@ -1,74 +1,63 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    android:padding="20dp"
     tools:context="net.jiaobaowang.visitor.manage.SignInFragment">
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/info_border"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/visitor_register" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right">
-
-                <Button
-                    android:id="@+id/save_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/save" />
-
-                <Button
-                    android:id="@+id/print_tape_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/print_tape" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/visitor_info" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/id_card_read_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_card_read" />
-
-                <Button
-                    android:id="@+id/id_card_ocr_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_card_ocr" />
-                <Button
-                    android:id="@+id/camera_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/photograph" />
-            </LinearLayout>
 
             <include
                 android:id="@+id/visitor_info"
-                layout="@layout/sub_visitor_info_input" />
+                layout="@layout/sub_visitor_info_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
         </LinearLayout>
-    </ScrollView>
-</FrameLayout>
+
+        <TextView
+            style="@style/info_title"
+            android:text="@string/visitor_info" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/save_btn"
+            style="@style/button_yes"
+            android:layout_width="140dp"
+            android:layout_height="46dp"
+            android:text="@string/save" />
+
+        <Button
+            android:id="@+id/print_tape_btn"
+            android:layout_width="140dp"
+            android:layout_height="46dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:text="@string/save_and_print" />
+
+        <Button
+            android:id="@+id/cancel_btn"
+            style="@style/button_no"
+            android:layout_width="140dp"
+            android:layout_height="46dp"
+            android:text="@string/cancel" />
+    </LinearLayout>
+</LinearLayout>

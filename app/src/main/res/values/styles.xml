@@ -4,6 +4,10 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:textColorPrimary">@color/print_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/print_content</item>
     </style>
 
     <style name="rectangle_edit" parent="Base.V7.Widget.AppCompat.EditText">
@@ -47,11 +51,13 @@
     </style>
 
     <style name="button_yes">
+        <item name="android:textSize">20sp</item>
         <item name="android:textColor">@drawable/button_yes_text</item>
         <item name="android:background">@drawable/button_yes_bg</item>
     </style>
 
     <style name="button_no">
+        <item name="android:textSize">20sp</item>
         <item name="android:textColor">@drawable/button_no_text</item>
         <item name="android:background">@drawable/button_no_bg</item>
     </style>
@@ -65,5 +71,17 @@
         <item name="android:button">@null</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">@drawable/manage_left_text</item>
+    </style>
+
+    <!--信息的标题-->
+    <style name="info_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/info_title</item>
+        <item name="android:layout_marginStart">25dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:background">@color/colorWhite</item>
     </style>
 </resources>

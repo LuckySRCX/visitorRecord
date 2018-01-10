@@ -82,4 +82,7 @@
     <string name="teacher">教职工</string>
     <string name="student">学生</string>
     <string name="home">首页</string>
+    <string name="save_and_print">保存并打印</string>
+    <string name="read_id_card">读证</string>
+    <string name="id_card_image">身份证照片</string>
 </resources>
