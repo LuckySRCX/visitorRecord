@@ -5,23 +5,41 @@
     android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_weight="1">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/id_card_head_iv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="10dp"
-            android:src="@mipmap/ic_launcher" />
+        <LinearLayout
+            android:layout_width="208dp"
+            android:layout_height="268dp"
+            android:background="@drawable/image_border"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/id_card_head_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="@dimen/edit_text_size"
+                android:text="@string/id_card_image"
+                android:textColor="@color/button_no" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/id_card_read_btn"
+            style="@style/button_yes"
+            android:layout_width="86dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/read_id_card" />
     </LinearLayout>
 
+
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="4"
+        android:layout_marginStart="20dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -34,33 +52,28 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:paddingRight="20dp">
+                android:paddingRight="40dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/name" />
 
                     <EditText
                         android:id="@+id/name_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_visitor_name" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/gender" />
 
                     <RadioGroup
@@ -73,82 +86,74 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            android:text="@string/male" />
+                            android:text="@string/male"
+                            android:textColor="@color/button_no"
+                            android:textSize="@dimen/edit_text_size" />
 
                         <RadioButton
                             android:id="@+id/female_rb"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/female" />
+                            android:layout_marginStart="20dp"
+                            android:text="@string/female"
+                            android:textColor="@color/button_no"
+                            android:textSize="@dimen/edit_text_size" />
                     </RadioGroup>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/date_of_birth" />
 
                     <EditText
                         android:id="@+id/date_of_birth_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_visitor_date_of_birth" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/credentials_type" />
 
                     <Spinner
                         android:id="@+id/credentials_spinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:entries="@array/credentials_type" />
+                        style="@style/visitor_edit_spinner" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/id_number" />
 
                     <EditText
                         android:id="@+id/id_number_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_id_number" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/address" />
 
                     <EditText
                         android:id="@+id/address_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_address" />
                 </LinearLayout>
             </LinearLayout>
@@ -157,136 +162,110 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingRight="20dp">
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/visitor_reason" />
 
                     <Spinner
                         android:id="@+id/reason_spinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:entries="@array/reason_type" />
+                        style="@style/visitor_edit_spinner" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/phone_number" />
 
                     <EditText
                         android:id="@+id/phone_number_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_phone_number"
                         android:inputType="number" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/visitor_number" />
 
                     <Spinner
                         android:id="@+id/visitor_number_spinner"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:entries="@array/visitor_number" />
+                        style="@style/visitor_edit_spinner" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/belongings" />
 
                     <EditText
                         android:id="@+id/belongings_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_belongings" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/visitor_org" />
 
                     <EditText
                         android:id="@+id/organization_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_organization" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                <LinearLayout style="@style/visitor_edit_ll">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="110dp"
                         android:text="@string/plate_number" />
 
                     <EditText
                         android:id="@+id/plate_number_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_plate_number" />
 
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingRight="20dp">
+        <LinearLayout style="@style/visitor_edit_ll">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minWidth="110dp"
                 android:text="@string/remarks" />
 
             <EditText
                 android:id="@+id/remarks_et"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/input_remarks"
-                android:text="@string/print_tape_remarks_default" />
+                style="@style/visitor_edit_edit_text"
+                android:hint="@string/input_remarks" />
 
         </LinearLayout>
     </LinearLayout>

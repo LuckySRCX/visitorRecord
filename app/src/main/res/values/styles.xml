@@ -4,6 +4,11 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:textColorPrimary">@color/print_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/print_content</item>
+        <item name="android:textColorHint">@color/button_no</item>
     </style>
 
     <style name="rectangle_edit" parent="Base.V7.Widget.AppCompat.EditText">
@@ -47,13 +52,21 @@
     </style>
 
     <style name="button_yes">
+        <item name="android:textSize">20sp</item>
         <item name="android:textColor">@drawable/button_yes_text</item>
         <item name="android:background">@drawable/button_yes_bg</item>
     </style>
 
     <style name="button_no">
+        <item name="android:textSize">20sp</item>
         <item name="android:textColor">@drawable/button_no_text</item>
         <item name="android:background">@drawable/button_no_bg</item>
+    </style>
+
+    <style name="button_save_print">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@drawable/button_save_print_text</item>
+        <item name="android:background">@drawable/button_save_print_bg</item>
     </style>
 
     <!--ManageActivity 左侧列表-->
@@ -66,4 +79,42 @@
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">@drawable/manage_left_text</item>
     </style>
+
+    <!--信息的标题-->
+    <style name="info_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/info_title</item>
+        <item name="android:layout_marginStart">25dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:background">@color/colorWhite</item>
+    </style>
+
+    <!--来访登记访客信息-->
+    <!--布局-->
+    <style name="visitor_edit_ll">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <!--输入框-->
+    <style name="visitor_edit_edit_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/default_edit_text_height</item>
+        <item name="android:textSize">@dimen/edit_text_size</item>
+        <item name="android:background">@drawable/edit_border</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <!--下拉列表-->
+    <style name="visitor_edit_spinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:background">@drawable/sign_in_spinner</item>
+    </style>
+    <!--来访登记访客信息-->
 </resources>
