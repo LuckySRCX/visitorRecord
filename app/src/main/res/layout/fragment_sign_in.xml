@@ -76,6 +76,7 @@
 
                     <LinearLayout
                         style="@style/visitor_edit_ll"
+                        android:layout_marginEnd="40dp"
                         android:layout_weight="1">
 
                         <TextView
@@ -87,6 +88,10 @@
                             android:id="@+id/teacher_name_spinner"
                             style="@style/visitor_edit_spinner" />
                     </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/visitor_edit_ll"
+                        android:layout_weight="1"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -150,7 +155,7 @@
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/user_type_teacher"
+                    android:id="@+id/type_teacher_rb"
                     android:layout_width="82dp"
                     android:layout_height="42dp"
                     android:background="@drawable/button_type_checked"
@@ -162,7 +167,7 @@
                 </RadioButton>
 
                 <RadioButton
-                    android:id="@+id/user_type_student"
+                    android:id="@+id/type_student_rb"
                     android:layout_width="82dp"
                     android:layout_height="42dp"
                     android:background="@drawable/button_type_checked"
