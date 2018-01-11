@@ -2,22 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    android:orientation="horizontal">
 
     <FrameLayout
         android:id="@+id/fragment_navigation"
-        android:layout_width="0dp"
+        android:layout_width="130dp"
         android:layout_height="match_parent"
-        android:layout_weight="1">
-
-    </FrameLayout>
+        android:background="@drawable/manage_left_fg_bg"
+        android:translationZ="10dp" />
 
     <FrameLayout
         android:id="@+id/fragment_detail"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="7">
-    </FrameLayout>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

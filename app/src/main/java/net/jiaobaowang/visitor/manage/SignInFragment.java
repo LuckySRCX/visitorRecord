@@ -42,7 +42,7 @@ import java.util.Date;
  * 访客登记
  */
 public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-    private static final String TAG = "RegistrationFragment";
+    private static final String TAG = "SignInFragment";
 
     //身份证
     private IdentityInfo idCardInfo;//二代身份证信息
@@ -98,7 +98,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         return view;
     }
 
-    public void initView(View view) {
+    private void initView(View view) {
         typeTeacherLl = view.findViewById(R.id.type_teacher_ll);
         typeStudentLl = view.findViewById(R.id.type_student_ll);
         Button saveBtn = view.findViewById(R.id.save_btn);
@@ -130,9 +130,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         typeTeacherRb.setOnCheckedChangeListener(this);
         typeStudentRb.setOnCheckedChangeListener(this);
         //证件类型
-        ArrayAdapter<String> credentialAadapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.credentials_type));
-        credentialAadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        credentialsSpinner.setAdapter(credentialAadapter);
+        ArrayAdapter<String> credentialAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.credentials_type));
+        credentialAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        credentialsSpinner.setAdapter(credentialAdapter);
         //访问事由类型
         ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.reason_type));
         reasonAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -272,7 +272,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     /**
      * 清空访客信息
      */
-    public void clearVisitorInfo() {
+    private void clearVisitorInfo() {
         idCardInfo = null;
         headImage = null;
         idCardHeadTv.setText(getResources().getString(R.string.id_card_image));
@@ -290,7 +290,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     /**
      * 输入身份证信息
      */
-    public void inputIdCardInfo() {
+    private void inputIdCardInfo() {
         if (beepManager != null) {
             beepManager.playBeepSoundAndVibrate();
         }
@@ -329,7 +329,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     /**
      * 显示打印凭条dialog
      */
-    public void showPrintTape() {
+    private void showPrintTape() {
         //访客单
         PrintForm printForm = new PrintForm();
         printForm.setFormId("2017321466841265");
