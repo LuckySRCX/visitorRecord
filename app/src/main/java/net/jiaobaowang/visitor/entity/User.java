@@ -8,72 +8,63 @@ import java.io.Serializable;
  */
 
 public class User implements Serializable {
-    private String id;//用户id
-    private String name;//姓名
-    private String type;//类型：教职工；学生
-    private String department;//部门
-    private String gradeName;//年级名称
-    private String className;//班级名称
-    private String headMaster;//班主任
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    public String getGradeName() {
-        return gradeName;
-    }
-
-    public void setGradeName(String gradeName) {
-        this.gradeName = gradeName;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public String getHeadMaster() {
-        return headMaster;
-    }
-
-    public void setHeadMaster(String headMaster) {
-        this.headMaster = headMaster;
-    }
+    private String userId;//用户id
+    private String userName;//用户名称
+    private String userType;//类型：0，教职工；1，学生
+    private String departId;//部门id
+    private String gradeId;//年级id
+    private String classId;//班级id
 
     @Override
     public String toString() {
-        return name;
+        return userName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getDepartId() {
+        return departId;
+    }
+
+    public void setDepartId(String departId) {
+        this.departId = departId;
+    }
+
+    public String getGradeId() {
+        return gradeId;
+    }
+
+    public void setGradeId(String gradeId) {
+        this.gradeId = gradeId;
+    }
+
+    public String getClassId() {
+        return classId;
+    }
+
+    public void setClassId(String classId) {
+        this.classId = classId;
     }
 }
