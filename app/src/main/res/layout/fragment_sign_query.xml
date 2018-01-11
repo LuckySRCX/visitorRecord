@@ -24,7 +24,7 @@
             android:text="@string/keywords_" />
 
         <EditText
-            style="@style/rectangle_edit"
+            style="@style/visitor_edit_edit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/keywords_hint"

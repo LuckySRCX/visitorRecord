@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_personal_setting"
+        android:title="个人设置"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_quit"
+        android:title="退出"
+        app:showAsAction="always"/>
+
+</menu>

@@ -12,6 +12,7 @@ import net.jiaobaowang.visitor.base.BaseFragmentActivity;
  * 访客管理界面
  */
 public class ManageActivity extends BaseFragmentActivity implements NavigationFragment.OnFragmentInteractionListener {
+    public static final String EXTRA_CODE="net.jiaobaowang.visitor.extra.home_Code";
     private int curId;
 
     @Override

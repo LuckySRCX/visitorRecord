@@ -40,6 +40,10 @@
             android:name=".login.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/Login_style" />
+        <activity
+            android:name=".login.HomeActivity"
+            android:label="智慧校园管理系统"
+            android:theme="@style/HomePageStyle" />
     </application>
 
 </manifest>

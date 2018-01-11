@@ -18,7 +18,7 @@
     </style>
 
     <style name="rectangle_dateText" parent="rectangle_edit">
-        <item name="android:minWidth">50dp</item>
+        <item name="android:minWidth">80dp</item>
     </style>
 
     <style name="rectangle_spinner">
@@ -117,4 +117,8 @@
         <item name="android:background">@drawable/sign_in_spinner</item>
     </style>
     <!--来访登记访客信息-->
+
+    <style name="HomePageStyle" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/home_title_bg</item>
+    </style>
 </resources>

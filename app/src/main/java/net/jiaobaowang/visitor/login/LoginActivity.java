@@ -16,9 +16,6 @@ import com.google.gson.Gson;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.entity.LoginResult;
-import net.jiaobaowang.visitor.manage.ManageActivity;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -113,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         LoginResult result1 = gson.fromJson(result, LoginResult.class);
         if (result1.getCode().equals("0000")) {
             Intent intent = new Intent();
-            intent.setClass(this, ManageActivity.class);
+            intent.setClass(this, HomeActivity.class);
             startActivity(intent);
         } else {
             mHandler.sendEmptyMessage(0);
