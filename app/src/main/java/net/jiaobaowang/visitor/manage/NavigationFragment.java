@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 
 import net.jiaobaowang.visitor.R;
 
@@ -18,10 +19,8 @@ import net.jiaobaowang.visitor.R;
  * create an instance of this fragment.
  */
 public class NavigationFragment extends Fragment implements View.OnClickListener {
-
-
     private OnFragmentInteractionListener mListener;
-
+    private final static String BC_CHECKED_ID = "checkedId";
     public NavigationFragment() {
         // Required empty public constructor
     }
@@ -32,8 +31,12 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
      *
      * @return A new instance of fragment NavigationFragment.
      */
-    public static NavigationFragment newInstance() {
-        return new NavigationFragment();
+    public static NavigationFragment newInstance(int checkedId) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(BC_CHECKED_ID, checkedId);
+        NavigationFragment navigationFragment = new NavigationFragment();
+        navigationFragment.setArguments(bundle);
+        return navigationFragment;
     }
 
     @Override
@@ -44,11 +47,32 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_navigation, container, false);
+        v.findViewById(R.id.btn_home).setOnClickListener(this);
         v.findViewById(R.id.btn_sign_in).setOnClickListener(this);
         v.findViewById(R.id.btn_query).setOnClickListener(this);
         v.findViewById(R.id.btn_sign_off).setOnClickListener(this);
+        int checkId = 1;
+        RadioButton rb;
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            checkId = bundle.getInt(BC_CHECKED_ID);
+        }
+        switch (checkId) {
+            case 1://SignIn
+                rb = v.findViewById(R.id.btn_sign_in);
+                break;
+            case 2://query
+                rb = v.findViewById(R.id.btn_query);
+                break;
+            case 3://signOff
+                rb = v.findViewById(R.id.btn_sign_off);
+                break;
+            default:
+                rb = v.findViewById(R.id.btn_sign_in);
+                break;
+        }
+        rb.setChecked(true);
         return v;
     }
 
@@ -87,23 +111,27 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
      */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(int id);
+
     }
 
     @Override
     public void onClick(View v) {
         int id;
         switch (v.getId()) {
-            case R.id.btn_sign_in://签到
+            case R.id.btn_home://首页
                 id = 0;
                 break;
-            case R.id.btn_query://查询
+            case R.id.btn_sign_in://签到
                 id = 1;
                 break;
-            case R.id.btn_sign_off://签离
+            case R.id.btn_query://查询
                 id = 2;
                 break;
+            case R.id.btn_sign_off://签离
+                id = 3;
+                break;
             default:
-                id = 0;
+                id = 1;
                 break;
         }
         onButtonPressed(id);

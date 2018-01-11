@@ -73,11 +73,13 @@
     <style name="manage_left">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">10dp</item>
+        <item name="android:paddingTop">22dp</item>
+        <item name="android:paddingBottom">22dp</item>
         <item name="android:gravity">center</item>
         <item name="android:button">@null</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textColor">@drawable/manage_left_text</item>
+        <item name="android:background">@drawable/manage_left_bg</item>
     </style>
 
     <!--信息的标题-->

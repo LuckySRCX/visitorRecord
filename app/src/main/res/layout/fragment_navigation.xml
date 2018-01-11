@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:translationZ="10dp"
     tools:context="net.jiaobaowang.visitor.manage.NavigationFragment">
 
     <RadioGroup
@@ -18,7 +19,6 @@
         <RadioButton
             android:id="@+id/btn_sign_in"
             style="@style/manage_left"
-            android:checked="true"
             android:drawableTop="@drawable/manage_sign_in"
             android:text="@string/visitor_signIn" />
 
@@ -33,7 +33,7 @@
             style="@style/manage_left"
             android:drawableTop="@drawable/manage_sign_off"
             android:text="@string/visitor_signOff" />
-    </RadioGroup>
 
+    </RadioGroup>
 
 </LinearLayout>
