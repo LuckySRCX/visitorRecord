@@ -17,7 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,7 +41,7 @@ import java.util.Date;
 /**
  * 访客登记
  */
-public class SignInFragment extends Fragment implements View.OnClickListener {
+public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "RegistrationFragment";
 
     //身份证
@@ -48,7 +50,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private BeepManager beepManager;//bee声音
 
     private Context mContext;
-    private Button saveBtn;//保存
+    private LinearLayout typeTeacherLl;//教职工区域
+    private LinearLayout typeStudentLl;//学生区域
     private Button idCardReadBtn;//读取身份证
     private TextView idCardHeadTv;//身份证头像
     private EditText nameEt;//姓名
@@ -62,6 +65,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     private EditText remarksEt;//备注
     private RadioButton maleRb;//男
     private RadioButton femaleRb;//女
+    private RadioButton typeTeacherRb;//教职工类型
+    private RadioButton typeStudentRb;//学生类型
     private Spinner credentialsSpinner;//证件类型
     private Spinner reasonSpinner;//事由类型
     private Spinner visitorNumberSpinner;//访客人数
@@ -94,13 +99,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
     }
 
     public void initView(View view) {
-        saveBtn = view.findViewById(R.id.save_btn);
+        typeTeacherLl = view.findViewById(R.id.type_teacher_ll);
+        typeStudentLl = view.findViewById(R.id.type_student_ll);
+        Button saveBtn = view.findViewById(R.id.save_btn);
         Button printTapeBtn = view.findViewById(R.id.print_tape_btn);
+        Button cancelBtn = view.findViewById(R.id.cancel_btn);
         idCardReadBtn = view.findViewById(R.id.id_card_read_btn);
         idCardHeadTv = view.findViewById(R.id.id_card_head_tv);
         nameEt = view.findViewById(R.id.name_et);
-        maleRb = view.findViewById(R.id.male_rb);
-        femaleRb = view.findViewById(R.id.female_rb);
         dateOfBirthEt = view.findViewById(R.id.date_of_birth_et);
         idNumberEt = view.findViewById(R.id.id_number_et);
         addressEt = view.findViewById(R.id.address_et);
@@ -109,13 +115,20 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
         organizationEt = view.findViewById(R.id.organization_et);
         plateNumberEt = view.findViewById(R.id.plate_number_et);
         remarksEt = view.findViewById(R.id.remarks_et);
+        maleRb = view.findViewById(R.id.male_rb);
+        femaleRb = view.findViewById(R.id.female_rb);
+        typeTeacherRb = view.findViewById(R.id.type_teacher_rb);
+        typeStudentRb = view.findViewById(R.id.type_student_rb);
         credentialsSpinner = view.findViewById(R.id.credentials_spinner);
         reasonSpinner = view.findViewById(R.id.reason_spinner);
         visitorNumberSpinner = view.findViewById(R.id.visitor_number_spinner);
 
         saveBtn.setOnClickListener(this);
         printTapeBtn.setOnClickListener(this);
+        cancelBtn.setOnClickListener(this);
         idCardReadBtn.setOnClickListener(this);
+        typeTeacherRb.setOnCheckedChangeListener(this);
+        typeStudentRb.setOnCheckedChangeListener(this);
         //证件类型
         ArrayAdapter<String> credentialAadapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.credentials_type));
         credentialAadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -171,11 +184,27 @@ public class SignInFragment extends Fragment implements View.OnClickListener {
             case R.id.print_tape_btn://显示凭条
                 showPrintTape();
                 break;
+            case R.id.cancel_btn:
+                getActivity().finish();
+                break;
             case R.id.id_card_read_btn://读取身份证
                 clearVisitorInfo();
                 new GetIDInfoTask().execute();
                 break;
         }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (typeTeacherRb.isChecked()) {
+            typeTeacherLl.setVisibility(View.VISIBLE);
+            typeStudentLl.setVisibility(View.GONE);
+        }
+        if (typeStudentRb.isChecked()) {
+            typeTeacherLl.setVisibility(View.GONE);
+            typeStudentLl.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private class GetIDInfoTask extends AsyncTask<Void, Integer, TelpoException> {
