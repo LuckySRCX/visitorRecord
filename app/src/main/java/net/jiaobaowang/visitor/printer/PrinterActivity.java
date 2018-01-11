@@ -79,7 +79,7 @@ public class PrinterActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void initView() {
+    private void initView() {
         TextView tapeTypeTv = findViewById(R.id.tape_type_tv);
         TextView visNameTv = findViewById(R.id.vis_name_tv);
         TextView visGenderTv = findViewById(R.id.vis_gender_tv);
@@ -246,7 +246,7 @@ public class PrinterActivity extends AppCompatActivity {
         }
     }
 
-    public void initPrinter() {
+    private void initPrinter() {
         handler = new MyHandler();
         mUsbThermalPrinter = new UsbThermalPrinter(mContext);
         IntentFilter pIntentFilter = new IntentFilter();

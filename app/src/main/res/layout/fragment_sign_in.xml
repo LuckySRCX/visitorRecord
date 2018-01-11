@@ -70,7 +70,7 @@
                             android:text="@string/department" />
 
                         <Spinner
-                            android:id="@+id/teacher_department_spinner"
+                            android:id="@+id/department_spinner"
                             style="@style/visitor_edit_spinner" />
                     </LinearLayout>
 
@@ -113,7 +113,7 @@
                             android:text="@string/grade" />
 
                         <Spinner
-                            android:id="@+id/student_grade_spinner"
+                            android:id="@+id/grade_spinner"
                             style="@style/visitor_edit_spinner" />
                     </LinearLayout>
 
@@ -128,7 +128,7 @@
                             android:text="@string/classes" />
 
                         <Spinner
-                            android:id="@+id/student_classes_spinner"
+                            android:id="@+id/classes_spinner"
                             style="@style/visitor_edit_spinner" />
                     </LinearLayout>
 

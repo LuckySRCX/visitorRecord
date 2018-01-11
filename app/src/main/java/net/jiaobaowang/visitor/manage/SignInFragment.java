@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -30,24 +31,29 @@ import com.telpo.tps550.api.idcard.IdCard;
 import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.entity.Department;
 import net.jiaobaowang.visitor.entity.PrintForm;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 访客登记
  */
-public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
     private static final String TAG = "SignInFragment";
 
     //身份证
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
+    private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter;
+
 
     private Context mContext;
     private LinearLayout typeTeacherLl;//教职工区域
@@ -70,6 +76,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private Spinner credentialsSpinner;//证件类型
     private Spinner reasonSpinner;//事由类型
     private Spinner visitorNumberSpinner;//访客人数
+    private Spinner departmentSpinner;//部门
+    private Spinner gradeSpinner;//年级
+    private Spinner classesSpinner;//班级
 
     public SignInFragment() {
     }
@@ -95,6 +104,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         mContext = getActivity();
         initView(view);
+        initDepartmentData();
+        initGradeData();
         return view;
     }
 
@@ -122,6 +133,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         credentialsSpinner = view.findViewById(R.id.credentials_spinner);
         reasonSpinner = view.findViewById(R.id.reason_spinner);
         visitorNumberSpinner = view.findViewById(R.id.visitor_number_spinner);
+        departmentSpinner = view.findViewById(R.id.department_spinner);
+        gradeSpinner = view.findViewById(R.id.grade_spinner);
+        classesSpinner = view.findViewById(R.id.classes_spinner);
 
         saveBtn.setOnClickListener(this);
         printTapeBtn.setOnClickListener(this);
@@ -141,6 +155,61 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.visitor_number));
         visitorNumberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         visitorNumberSpinner.setAdapter(visitorNumberAdapter);
+        //部门
+        departmentAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item);
+        departmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        departmentSpinner.setAdapter(departmentAdapter);
+        departmentSpinner.setOnItemSelectedListener(this);
+        //年级
+        gradeAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item);
+        gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        gradeSpinner.setAdapter(gradeAdapter);
+        gradeSpinner.setOnItemSelectedListener(this);
+        //班级
+        classesAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item);
+        classesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        classesSpinner.setAdapter(classesAdapter);
+        classesSpinner.setOnItemSelectedListener(this);
+    }
+
+    /**
+     * 获取部门列表
+     */
+    private void initDepartmentData() {
+        List<Department> departments = new ArrayList<>();
+        departments.add(new Department("0", "行政部"));
+        departments.add(new Department("1", "开发部"));
+        departments.add(new Department("2", "财务部"));
+        departments.add(new Department("3", "工程部"));
+        departmentAdapter.addAll(departments);
+    }
+
+    /**
+     * 获取年级列表
+     */
+    private void initGradeData() {
+        List<Department> grade = new ArrayList<>();
+        grade.add(new Department("1", "1年级"));
+        grade.add(new Department("2", "2年级"));
+        grade.add(new Department("3", "3年级"));
+        grade.add(new Department("4", "4年级"));
+        grade.add(new Department("5", "5年级"));
+        grade.add(new Department("6", "6年级"));
+        gradeAdapter.addAll(grade);
+    }
+
+    /**
+     * 获取班级列表
+     */
+    private void initClassesData() {
+        List<Department> classes = new ArrayList<>();
+        classes.add(new Department("1", "1班"));
+        classes.add(new Department("2", "2班"));
+        classes.add(new Department("3", "3班"));
+        classes.add(new Department("4", "4班"));
+        classes.add(new Department("5", "5班"));
+        classes.add(new Department("6", "6班"));
+        classesAdapter.addAll(classes);
     }
 
     @Override
@@ -197,14 +266,43 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (typeTeacherRb.isChecked()) {
+            //显示教职工
             typeTeacherLl.setVisibility(View.VISIBLE);
             typeStudentLl.setVisibility(View.GONE);
         }
         if (typeStudentRb.isChecked()) {
+            //显示学生
             typeTeacherLl.setVisibility(View.GONE);
             typeStudentLl.setVisibility(View.VISIBLE);
         }
+    }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (parent.getId()) {
+            case R.id.department_spinner:
+                Department dpart = (Department) parent.getSelectedItem();
+                Log.i(TAG, "------onItemSelected:部门---" + dpart.toString() + "------");
+                break;
+            case R.id.grade_spinner:
+                Department grade = (Department) parent.getSelectedItem();
+                Log.i(TAG, "------onItemSelected:年级---" + grade.toString() + "------");
+                classesAdapter.clear();
+                initClassesData();
+                classesSpinner.setSelection(0);
+                break;
+            case R.id.classes_spinner:
+                Department classes = (Department) parent.getSelectedItem();
+                Log.i(TAG, "------onItemSelected:班级---" + classes.toString() + "------");
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Log.i(TAG, "------onNothingSelected------");
     }
 
     private class GetIDInfoTask extends AsyncTask<Void, Integer, TelpoException> {
