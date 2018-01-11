@@ -60,7 +60,8 @@
                     android:drawablePadding="10dp"
                     android:drawableStart="@mipmap/login_user"
                     android:hint="请输入用户名"
-                    android:textCursorDrawable="@drawable/edit_cursor" />
+                    android:textCursorDrawable="@drawable/edit_cursor"
+                    android:singleLine="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -75,7 +76,8 @@
                     android:drawableStart="@mipmap/login_passwords"
                     android:hint="请输入密码"
                     android:inputType="textPassword"
-                    android:textCursorDrawable="@drawable/edit_cursor" />
+                    android:textCursorDrawable="@drawable/edit_cursor"
+                    android:singleLine="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
