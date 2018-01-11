@@ -54,6 +54,7 @@
                     android:layout_weight="1" />
 
                 <EditText
+                    android:id="@+id/login_userName"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:drawablePadding="10dp"
@@ -67,11 +68,13 @@
                     android:layout_weight="1" />
 
                 <EditText
+                    android:id="@+id/login_password"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:drawablePadding="10dp"
                     android:drawableStart="@mipmap/login_passwords"
                     android:hint="请输入密码"
+                    android:inputType="textPassword"
                     android:textCursorDrawable="@drawable/edit_cursor" />
 
                 <TextView
