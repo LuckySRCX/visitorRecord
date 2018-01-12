@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/visit_record_header"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/visitor_name"
+        style="@style/visit_record_header"
+        android:layout_weight="1"
+        android:text="姓名" />
+
+    <TextView
+        android:id="@+id/visitor_counter"
+        style="@style/visit_record_header"
+        android:layout_weight="0.5"
+        android:text="随行人数" />
+
+    <TextView
+        android:id="@+id/visit_reason"
+        style="@style/visit_record_header"
+        android:layout_weight="2"
+        android:text="访问事由" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/visit_record_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="被访教职工"
+            android:background="@drawable/visit_record_bottom_line"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/depart_name"
+                style="@style/visit_record_header"
+                android:layout_weight="1"
+                android:text="部门" />
+
+            <TextView
+                android:id="@+id/tea_name"
+                style="@style/visit_record_header"
+                android:layout_weight="1"
+                android:text="姓名" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="4">
+
+        <TextView
+            style="@style/visit_record_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="被访学生"
+            android:background="@drawable/visit_record_bottom_line"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/grade_name"
+                style="@style/visit_record_header"
+                android:layout_weight="1"
+                android:text="年级"/>
+
+            <TextView
+                android:id="@+id/class_name"
+                style="@style/visit_record_header"
+                android:layout_weight="1"
+                android:text="班级"/>
+
+            <TextView
+                android:id="@+id/stu_name"
+                style="@style/visit_record_header"
+                android:layout_weight="1"
+                android:text="学生"/>
+
+            <TextView
+                android:id="@+id/headTea_name"
+                style="@style/visit_record_header"
+                android:layout_weight="1"
+                android:text="班主任"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/in_time"
+        style="@style/visit_record_header"
+        android:layout_weight="1"
+        android:text="进入时间"/>
+
+    <TextView
+        android:id="@+id/is_left"
+        style="@style/visit_record_header"
+        android:layout_weight="0.5"
+        android:text="是否离开"/>
+
+    <TextView
+        android:id="@+id/leave_time"
+        style="@style/visit_record_header"
+        android:layout_weight="1"
+        android:text="离开时间"/>
+
+    <TextView
+        android:id="@+id/manage"
+        style="@style/visit_record_header"
+        android:layout_weight="1"
+        android:text="操作"/>
+</LinearLayout>

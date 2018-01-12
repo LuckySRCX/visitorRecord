@@ -123,6 +123,7 @@
     <style name="HomePageStyle" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/home_title_bg</item>
     </style>
+
     <style name="inputHintStyle">
         <item name="android:textColor">#333333</item>
         <item name="android:textSize">20sp</item>
@@ -131,7 +132,20 @@
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
     </style>
+
     <style name="query_edit_text" parent="visitor_edit_edit_text">
         <item name="android:minHeight">40dp</item>
+    </style>
+
+    <style name="visit_record_item_cell">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/visit_record_item_cell</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#666666</item>
+    </style>
+    <style name="visit_record_header" parent="visit_record_item_cell">
+        <item name="android:textColor">#333333</item>
     </style>
 </resources>
