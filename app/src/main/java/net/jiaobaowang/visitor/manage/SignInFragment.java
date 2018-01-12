@@ -304,7 +304,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         switch (v.getId()) {
             case R.id.save_btn://保存
                 break;
-            case R.id.print_tape_btn://显示凭条
+            case R.id.print_tape_btn://保存并打印
                 showPrintTape();
                 break;
             case R.id.cancel_btn:

@@ -40,11 +40,15 @@
             android:name=".login.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/Login_style"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".login.HomeActivity"
             android:label="智慧校园管理系统"
             android:theme="@style/HomePageStyle" />
+        <activity
+            android:name=".printer.VisitorFormDetailsActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.ActivityDialogStyle" />
     </application>
 
 </manifest>

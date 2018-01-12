@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/visitor_edit_ll">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="100dp"
+            android:text="@string/visitor_form_org_name" />
+
+        <EditText
+            android:id="@+id/visitor_org_et"
+            style="@style/visitor_edit_edit_text"
+            android:enabled="false" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_width="528dp"
+            android:layout_marginEnd="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/address" />
+
+            <EditText
+                android:id="@+id/visitor_address_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/visitor_edit_ll">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/plate_number" />
+
+            <EditText
+                android:id="@+id/visitor_plate_number_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="528dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp">
+
+            <LinearLayout
+                style="@style/visitor_edit_ll"
+                android:layout_width="0dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:text="@string/entry_time" />
+
+                <EditText
+                    android:id="@+id/visitor_entry_time_et"
+                    style="@style/visitor_edit_edit_text"
+                    android:enabled="false" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/visitor_edit_ll"
+                android:layout_width="0dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:text="@string/visitor_form_is_leave" />
+
+                <EditText
+                    android:id="@+id/visitor_is_leave_et"
+                    style="@style/visitor_details_edit_gender"
+                    android:enabled="false" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/visitor_edit_ll">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/visitor_form_leave_time" />
+
+            <EditText
+                android:id="@+id/visitor_leave_time_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/visitor_edit_ll"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="100dp"
+            android:text="@string/remarks" />
+
+        <EditText
+            android:id="@+id/visitor_remarks_et"
+            style="@style/visitor_edit_edit_text"
+            android:enabled="false" />
+
+    </LinearLayout>
+
+</LinearLayout>
