@@ -24,4 +24,9 @@
         <item>left</item>
         <item>not leave</item>
     </string-array>
+    <string-array name="person_identity">
+        <item>all</item>
+        <item>teacher</item>
+        <item>student</item>
+    </string-array>
 </resources>

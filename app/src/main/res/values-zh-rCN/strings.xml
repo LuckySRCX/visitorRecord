@@ -9,12 +9,12 @@
     <string name="keywords_hint">访客姓名、手机号、身份证</string>
     <!--SignQueryFragment-->
     <string name="keywords_">关键字:</string>
-    <string name="sign_in_date_">签到日期:</string>
+    <string name="sign_in_date_">进入时间:</string>
     <string name="sign_off_date_">签离日期:</string>
     <string name="to">至</string>
     <string name="query">查询</string>
     <string name="output_excel">导出EXCEL</string>
-    <string name="visitor_state_">游客状态:</string>
+    <string name="visitor_state_">是否离开:</string>
     <!--SignOffFragment-->
     <string name="scan_code">扫码</string>
     <string name="read_card">读卡</string>

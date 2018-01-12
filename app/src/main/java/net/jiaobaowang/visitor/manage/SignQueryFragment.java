@@ -65,8 +65,6 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         View v = inflater.inflate(R.layout.fragment_sign_query, container, false);
         setTextView((TextView) v.findViewById(R.id.sign_in_begin), mDateSIBegin);
         setTextView((TextView) v.findViewById(R.id.sign_in_end), mDateSIEnd);
-        setTextView((TextView) v.findViewById(R.id.sign_off_begin), mDateSOBegin);
-        setTextView((TextView) v.findViewById(R.id.sign_off_end), mDateSOEnd);
         return v;
     }
 
@@ -98,18 +96,6 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 selectDate = mDateSIEnd;
                 code = REQUEST_SIOFF_CODE;
                 minDate = mDateSIBegin;
-                break;
-            case R.id.sign_off_begin://签离开始时间
-
-                selectDate = mDateSOBegin;
-                code = REQUEST_SOBFGIN_CODE;
-                minDate = mDateSIBegin;
-                break;
-            case R.id.sign_off_end://签离结束时间
-
-                selectDate = mDateSOEnd;
-                code = REQUEST_SOOFF_CODE;
-                minDate = mDateSOBegin == null ? mDateSIBegin : mDateSOBegin;
                 break;
             default:
                 break;

@@ -6,106 +6,169 @@
     android:padding="@dimen/default_padding"
     tools:context="net.jiaobaowang.visitor.manage.SignQueryFragment">
 
-    <TextView
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/back_up"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sign_query_head"
-        android:textSize="@dimen/detail_page_title"
-        android:textStyle="bold" />
+        android:layout_gravity="end"
+        android:background="#2ba1bf"
+        android:drawablePadding="4dp"
+        android:drawableStart="@mipmap/ic_backup"
+        android:padding="8dp"
+        android:text="返回"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/detail_page_title" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp">
 
         <TextView
+            style="@style/inputHintStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/keywords_" />
 
         <EditText
-            style="@style/visitor_edit_edit_text"
+            style="@style/query_edit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/keywords_hint"
             android:inputType="text"
+            android:minWidth="300dp"
             android:singleLine="false" />
 
         <TextView
+            style="@style/inputHintStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/visitor_state_" />
 
         <Spinner
-            style="@style/rectangle_spinner"
+            style="@style/visitor_edit_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:entries="@array/is_leave_option">
+            android:entries="@array/is_leave_option"
+            android:minWidth="120dp"
+            android:textSize="12sp">
 
         </Spinner>
 
         <TextView
+            style="@style/inputHintStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="被访人:" />
+
+        <Spinner
+            style="@style/visitor_edit_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/person_identity"
+            android:minWidth="120dp"
+            android:textSize="12sp">
+
+        </Spinner>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingBottom="8dp">
+
+        <TextView
+            style="@style/inputHintStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@id/sign_in_begin"
             android:text="@string/sign_in_date_" />
 
-        <TextView
-            android:id="@+id/sign_in_begin"
-            style="@style/rectangle_dateText"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            style="@style/query_edit_text">
+
+            <TextView
+                android:id="@+id/sign_in_begin"
+
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:minWidth="100dp" />
+
+            <TextView
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#e4e4e4"/>
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="8dp"
+                android:src="@mipmap/ic_date" />
+        </LinearLayout>
 
         <TextView
+            style="@style/inputHintStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:labelFor="@id/sign_in_end"
+            android:minWidth="36dp"
             android:text="@string/to" />
 
-        <TextView
-            android:id="@+id/sign_in_end"
-            style="@style/rectangle_dateText"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            style="@style/query_edit_text">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/sign_off_begin"
-            android:text="@string/sign_off_date_" />
 
-        <TextView
-            android:id="@+id/sign_off_begin"
-            style="@style/rectangle_dateText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/sign_in_end"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:minWidth="100dp" />
+            <TextView
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#e4e4e4" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/sign_off_end"
-            android:text="@string/to" />
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="8dp"
+                android:src="@mipmap/ic_date" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/sign_off_end"
-            style="@style/rectangle_dateText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <Button
+            android:layout_width="75dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/query_btn"
+            android:text="@string/query"
+            android:textColor="@drawable/query_btn_text" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
+
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/query" />
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:background="@drawable/output_excel"
+            android:text="@string/output_excel"
+            android:textColor="@drawable/ouput_excel_text" />
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:text="@string/output_excel" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_query"
