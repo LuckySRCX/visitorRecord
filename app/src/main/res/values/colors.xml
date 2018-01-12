@@ -18,4 +18,5 @@
     <color name="user_type_border">#d7d7d7</color>
     <color name="home_title_bg">#199edb</color>
     <color name="visit_record_dark_bg">#f2f2f2</color>
+    <color name="edit_text_enable">#666666</color>
 </resources>

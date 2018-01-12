@@ -148,4 +148,7 @@
     <style name="visit_record_header" parent="visit_record_item_cell">
         <item name="android:textColor">#333333</item>
     </style>
+    <style name="visitor_details_edit_gender" parent="visitor_edit_edit_text">
+        <item name="android:background">@drawable/edit_visitor_details_gender</item>
+    </style>
 </resources>
