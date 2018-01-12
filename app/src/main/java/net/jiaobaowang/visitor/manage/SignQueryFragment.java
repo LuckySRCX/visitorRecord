@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +32,6 @@ import java.util.Locale;
 public class SignQueryFragment extends BaseFragment implements View.OnClickListener {
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
-    private Date mDateSOBegin;//签离开始时间
-    private Date mDateSOEnd;//签离结束时间
     private TextView mSelectText;
     private final int REQUEST_SIBFGIN_CODE = 0;
     private final int REQUEST_SIOFF_CODE = 1;
@@ -65,6 +64,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         View v = inflater.inflate(R.layout.fragment_sign_query, container, false);
         setTextView((TextView) v.findViewById(R.id.sign_in_begin), mDateSIBegin);
         setTextView((TextView) v.findViewById(R.id.sign_in_end), mDateSIEnd);
+        v.findViewById(R.id.back_up).setOnClickListener(this);
         return v;
     }
 
@@ -85,31 +85,36 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         Date minDate = null;
         Date selectDate = null;
         int code = 0;
-        mSelectText = (TextView) v;
+
         switch (v.getId()) {
             case R.id.sign_in_begin://签到开始时间
+                mSelectText = (TextView) v;
                 selectDate = mDateSIBegin;
                 code = REQUEST_SIBFGIN_CODE;
+                showDialog(code, selectDate, minDate);
                 break;
             case R.id.sign_in_end://签到结束时间
-
+                mSelectText = (TextView) v;
                 selectDate = mDateSIEnd;
                 code = REQUEST_SIOFF_CODE;
                 minDate = mDateSIBegin;
+                showDialog(code, selectDate, minDate);
+                break;
+            case R.id.back_up:
+                getActivity().onBackPressed();
                 break;
             default:
                 break;
         }
-        showDialog(code, selectDate, minDate);
+
     }
 
     /**
-     *
      * @param requestCode 请求代码
-     * @param selectDate 已选日期
-     * @param beginDate 最小日期
+     * @param selectDate  已选日期
+     * @param beginDate   最小日期
      */
-    private void showDialog(int requestCode,  Date selectDate, Date beginDate) {
+    private void showDialog(int requestCode, Date selectDate, Date beginDate) {
         FragmentManager fragmentManager = getFragmentManager();
         DatePickerFragment dialog = DatePickerFragment.newInstance(selectDate, beginDate);
         dialog.setTargetFragment(SignQueryFragment.this, requestCode);
@@ -130,12 +135,6 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             case REQUEST_SIOFF_CODE:
                 mDateSIEnd = resultDate;
                 break;
-            case REQUEST_SOBFGIN_CODE:
-                mDateSOBegin = resultDate;
-                break;
-            case REQUEST_SOOFF_CODE:
-                mDateSOEnd = resultDate;
-                break;
             default:
                 break;
         }
@@ -144,6 +143,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
 
     /**
      * 格式化 日期
+     *
      * @param date 日期
      * @return 返回 yyyy-MM-dd 格式的时间字符串
      */
