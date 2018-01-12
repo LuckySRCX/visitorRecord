@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -52,12 +53,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
-    private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter;
+    private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter;
 
 
     private Context mContext;
-    private LinearLayout typeTeacherLl;//教职工区域
-    private LinearLayout typeStudentLl;//学生区域
+    private LinearLayout typeTeacherLL;//教职工区域
+    private LinearLayout typeStudentLL;//学生区域
     private Button idCardReadBtn;//读取身份证
     private TextView idCardHeadTv;//身份证头像
     private EditText nameEt;//姓名
@@ -79,6 +80,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private Spinner departmentSpinner;//部门
     private Spinner gradeSpinner;//年级
     private Spinner classesSpinner;//班级
+    private AutoCompleteTextView teacherNameAc;//教职工姓名
+    private AutoCompleteTextView studentNameAc;//教职工姓名
 
     public SignInFragment() {
     }
@@ -109,12 +112,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         return view;
     }
 
+
     private void initView(View view) {
-        typeTeacherLl = view.findViewById(R.id.type_teacher_ll);
-        typeStudentLl = view.findViewById(R.id.type_student_ll);
-        Button saveBtn = view.findViewById(R.id.save_btn);
-        Button printTapeBtn = view.findViewById(R.id.print_tape_btn);
-        Button cancelBtn = view.findViewById(R.id.cancel_btn);
+        view.findViewById(R.id.save_btn).setOnClickListener(this);
+        view.findViewById(R.id.print_tape_btn).setOnClickListener(this);
+        view.findViewById(R.id.cancel_btn).setOnClickListener(this);
+        typeTeacherLL = view.findViewById(R.id.type_teacher_ll);
+        typeStudentLL = view.findViewById(R.id.type_student_ll);
+
         idCardReadBtn = view.findViewById(R.id.id_card_read_btn);
         idCardHeadTv = view.findViewById(R.id.id_card_head_tv);
         nameEt = view.findViewById(R.id.name_et);
@@ -136,10 +141,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         departmentSpinner = view.findViewById(R.id.department_spinner);
         gradeSpinner = view.findViewById(R.id.grade_spinner);
         classesSpinner = view.findViewById(R.id.classes_spinner);
-
-        saveBtn.setOnClickListener(this);
-        printTapeBtn.setOnClickListener(this);
-        cancelBtn.setOnClickListener(this);
+        teacherNameAc = view.findViewById(R.id.teacher_name_ac);
+        studentNameAc = view.findViewById(R.id.student_name_ac);
         idCardReadBtn.setOnClickListener(this);
         typeTeacherRb.setOnCheckedChangeListener(this);
         typeStudentRb.setOnCheckedChangeListener(this);
@@ -160,6 +163,25 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         departmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         departmentSpinner.setAdapter(departmentAdapter);
         departmentSpinner.setOnItemSelectedListener(this);
+        //教职工姓名
+        teacherNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        teacherNameAc.setAdapter(teacherNameAdapter);
+        teacherNameAc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    AutoCompleteTextView view = (AutoCompleteTextView) v;
+                    view.showDropDown();
+                }
+            }
+        });
+        teacherNameAc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AutoCompleteTextView view = (AutoCompleteTextView) v;
+                view.showDropDown();
+            }
+        });
         //年级
         gradeAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item);
         gradeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -168,48 +190,80 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //班级
         classesAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item);
         classesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         classesSpinner.setAdapter(classesAdapter);
         classesSpinner.setOnItemSelectedListener(this);
+        //学生姓名
+        studentNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        studentNameAc.setAdapter(studentNameAdapter);
+        studentNameAc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    AutoCompleteTextView view = (AutoCompleteTextView) v;
+                    view.showDropDown();
+                }
+            }
+        });
     }
 
     /**
      * 获取部门列表
      */
     private void initDepartmentData() {
-        List<Department> departments = new ArrayList<>();
-        departments.add(new Department("0", "行政部"));
-        departments.add(new Department("1", "开发部"));
-        departments.add(new Department("2", "财务部"));
-        departments.add(new Department("3", "工程部"));
-        departmentAdapter.addAll(departments);
+        List<Department> data = new ArrayList<>();
+        data.add(new Department("0", "行政部"));
+        data.add(new Department("1", "开发部"));
+        data.add(new Department("2", "财务部"));
+        data.add(new Department("3", "工程部"));
+        departmentAdapter.addAll(data);
     }
 
     /**
      * 获取年级列表
      */
     private void initGradeData() {
-        List<Department> grade = new ArrayList<>();
-        grade.add(new Department("1", "1年级"));
-        grade.add(new Department("2", "2年级"));
-        grade.add(new Department("3", "3年级"));
-        grade.add(new Department("4", "4年级"));
-        grade.add(new Department("5", "5年级"));
-        grade.add(new Department("6", "6年级"));
-        gradeAdapter.addAll(grade);
+        List<Department> data = new ArrayList<>();
+        data.add(new Department("1", "1年级"));
+        data.add(new Department("2", "2年级"));
+        data.add(new Department("3", "3年级"));
+        data.add(new Department("4", "4年级"));
+        data.add(new Department("5", "5年级"));
+        data.add(new Department("6", "6年级"));
+        gradeAdapter.addAll(data);
     }
 
     /**
      * 获取班级列表
      */
     private void initClassesData() {
-        List<Department> classes = new ArrayList<>();
-        classes.add(new Department("1", "1班"));
-        classes.add(new Department("2", "2班"));
-        classes.add(new Department("3", "3班"));
-        classes.add(new Department("4", "4班"));
-        classes.add(new Department("5", "5班"));
-        classes.add(new Department("6", "6班"));
-        classesAdapter.addAll(classes);
+        List<Department> data = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            data.add(new Department(i + "", i + "班"));
+        }
+        classesAdapter.addAll(data);
+    }
+
+    /**
+     * 获取老师姓名列表
+     */
+    private void initTeacherNameData() {
+        List<Department> data = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            data.add(new Department(i + "", "教职工" + i));
+        }
+        teacherNameAdapter.addAll(data);
+    }
+
+    /**
+     * 获取学生姓名列表
+     */
+    private void initStudentNameData() {
+        List<Department> data = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            data.add(new Department(i + "", "学生" + i));
+        }
+        teacherNameAdapter.addAll(data);
     }
 
     @Override
@@ -267,13 +321,13 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (typeTeacherRb.isChecked()) {
             //显示教职工
-            typeTeacherLl.setVisibility(View.VISIBLE);
-            typeStudentLl.setVisibility(View.GONE);
+            typeTeacherLL.setVisibility(View.VISIBLE);
+            typeStudentLL.setVisibility(View.GONE);
         }
         if (typeStudentRb.isChecked()) {
             //显示学生
-            typeTeacherLl.setVisibility(View.GONE);
-            typeStudentLl.setVisibility(View.VISIBLE);
+            typeTeacherLL.setVisibility(View.GONE);
+            typeStudentLL.setVisibility(View.VISIBLE);
         }
     }
 
@@ -283,6 +337,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             case R.id.department_spinner:
                 Department dpart = (Department) parent.getSelectedItem();
                 Log.i(TAG, "------onItemSelected:部门---" + dpart.toString() + "------");
+                teacherNameAdapter.clear();
+                initTeacherNameData();
+                teacherNameAc.setText("");
                 break;
             case R.id.grade_spinner:
                 Department grade = (Department) parent.getSelectedItem();
@@ -294,6 +351,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             case R.id.classes_spinner:
                 Department classes = (Department) parent.getSelectedItem();
                 Log.i(TAG, "------onItemSelected:班级---" + classes.toString() + "------");
+                studentNameAdapter.clear();
+                initStudentNameData();
+                studentNameAc.setText("");
                 break;
             default:
                 break;
