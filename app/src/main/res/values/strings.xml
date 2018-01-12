@@ -87,4 +87,5 @@
     <string name="id_card_image">身份证照片</string>
     <string name="interviewee_info">被访人信息</string>
     <string name="department">部门：</string>
+    <string name="name_input_or_drop">输入或点击下拉选择</string>
 </resources>

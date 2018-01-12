@@ -15,9 +15,9 @@
                 android:top="5dp" />
         </shape>
     </item>
-    <item>
+    <item android:right="5dp">
         <bitmap
             android:gravity="end"
-            android:src="@drawable/ic_drop_down" />
+            android:src="@drawable/ic_info_drop_down" />
     </item>
 </layer-list>
