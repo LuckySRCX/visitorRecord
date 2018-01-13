@@ -21,6 +21,7 @@ import net.jiaobaowang.visitor.base.BaseFragment;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.entity.VisitRecordLab;
+import net.jiaobaowang.visitor.printer.PrinterActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -247,9 +248,13 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             switch (v.getId()) {
                 case R.id.icon_detail://详情按钮点击事件
                     //todo 传递record并跳转至访问详情
+
                     break;
                 case R.id.icon_print://打印按钮点击事件
-                    //todo 传递record并跳转至打印界面
+                    Intent intent = new Intent();
+                    intent.putExtra(PrinterActivity.EXTRA_VISIT_RECORD, record);
+                    intent.setClass(getActivity(), PrinterActivity.class);
+                    startActivity(intent);
                     break;
                 default:
                     break;

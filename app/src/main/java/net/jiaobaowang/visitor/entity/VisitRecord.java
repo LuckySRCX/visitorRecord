@@ -1,10 +1,12 @@
 package net.jiaobaowang.visitor.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by rocka on 2018/1/12.
  */
 
-public class VisitRecord {
+public class VisitRecord implements Serializable {
     private String visitor_goods;//:null,（随行物品)
     private String note;//:null,（备注）
     private String teacher_name;//:msyt,（老师姓名）
