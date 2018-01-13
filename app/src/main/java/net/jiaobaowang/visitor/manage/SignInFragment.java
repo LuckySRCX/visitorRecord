@@ -166,15 +166,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //教职工姓名
         teacherNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
         teacherNameAc.setAdapter(teacherNameAdapter);
-        teacherNameAc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    AutoCompleteTextView view = (AutoCompleteTextView) v;
-                    view.showDropDown();
-                }
-            }
-        });
         teacherNameAc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,13 +187,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //学生姓名
         studentNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
         studentNameAc.setAdapter(studentNameAdapter);
-        studentNameAc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        studentNameAc.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    AutoCompleteTextView view = (AutoCompleteTextView) v;
-                    view.showDropDown();
-                }
+            public void onClick(View v) {
+                AutoCompleteTextView view = (AutoCompleteTextView) v;
+                view.showDropDown();
             }
         });
     }
@@ -212,10 +201,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      */
     private void initDepartmentData() {
         List<Department> data = new ArrayList<>();
-        data.add(new Department("0", "行政部"));
-        data.add(new Department("1", "开发部"));
-        data.add(new Department("2", "财务部"));
-        data.add(new Department("3", "工程部"));
+        data.add(new Department("0", "全部"));
+        data.add(new Department("1", "行政部"));
+        data.add(new Department("2", "开发部"));
+        data.add(new Department("3", "财务部"));
+        data.add(new Department("4", "工程部"));
         departmentAdapter.addAll(data);
     }
 
@@ -224,6 +214,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      */
     private void initGradeData() {
         List<Department> data = new ArrayList<>();
+        data.add(new Department("0", "全部"));
         data.add(new Department("1", "1年级"));
         data.add(new Department("2", "2年级"));
         data.add(new Department("3", "3年级"));
@@ -238,7 +229,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      */
     private void initClassesData() {
         List<Department> data = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        data.add(new Department("0", "全部"));
+        for (int i = 1; i < 10; i++) {
             data.add(new Department(i + "", i + "班"));
         }
         classesAdapter.addAll(data);
@@ -249,7 +241,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      */
     private void initTeacherNameData() {
         List<Department> data = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 1; i < 10; i++) {
             data.add(new Department(i + "", "教职工" + i));
         }
         teacherNameAdapter.addAll(data);
