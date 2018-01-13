@@ -33,6 +33,7 @@ import net.jiaobaowang.visitor.utils.ToastUtils;
 
 public class PrinterActivity extends AppCompatActivity {
     private static final String TAG = "PrinterActivity";
+    public static final String EXTRA_VISIT_RECORD="net.jiaobaowang.visitor.printer.visit_record";
     //打印机
     private final int NOPAPER = 1;//打印机缺纸
     private final int LOWBATTERY = 2;//打印机低电量
