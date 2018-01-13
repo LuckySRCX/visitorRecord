@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/info_border"
+        android:orientation="vertical"
+        android:paddingBottom="25dp">
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/name" />
+
+            <EditText
+                android:id="@+id/registrant_name_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/registrant_time" />
+
+            <EditText
+                android:id="@+id/registrant_time_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/info_title"
+        android:text="@string/registrant_info" />
+
+</RelativeLayout>

@@ -1,0 +1,15 @@
+package net.jiaobaowang.visitor.printer;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import net.jiaobaowang.visitor.R;
+
+public class VisitorFormDetailsActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_visitor_form_details);
+    }
+}

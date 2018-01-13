@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/info_border"
+        android:orientation="vertical"
+        android:paddingBottom="25dp">
+
+        <LinearLayout
+            android:id="@+id/user_department_ll"
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/department" />
+
+            <EditText
+                android:id="@+id/user_department_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/user_grade_ll"
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/grade" />
+
+            <EditText
+                android:id="@+id/user_grade_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/user_classes_ll"
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/classes" />
+
+            <EditText
+                android:id="@+id/user_classes_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/name" />
+
+            <EditText
+                android:id="@+id/user_name_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/user_name_ll"
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/head_master" />
+
+            <EditText
+                android:id="@+id/user_head_teacher_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/user_type_tv"
+        style="@style/info_title"
+        android:text="@string/visitor_form_student_info" />
+
+</RelativeLayout>

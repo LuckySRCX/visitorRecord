@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/visitor_image"
+        android:layout_width="208dp"
+        android:layout_height="280dp"
+        android:layout_marginEnd="20dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout style="@style/visitor_edit_ll">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/name" />
+
+            <EditText
+                android:id="@+id/visitor_name_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/gender" />
+
+            <EditText
+                android:id="@+id/visitor_gender_et"
+                style="@style/visitor_details_edit_gender"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/date_of_birth" />
+
+            <EditText
+                android:id="@+id/visitor_born_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/credentials_type" />
+
+            <EditText
+                android:id="@+id/visitor_credentials_type_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/id_number" />
+
+            <EditText
+                android:id="@+id/visitor_id_number_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout style="@style/visitor_edit_ll">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/visitor_form_id" />
+
+            <EditText
+                android:id="@+id/visitor_form_id_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/visitor_reason" />
+
+            <EditText
+                android:id="@+id/visitor_reason_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/phone_number" />
+
+            <EditText
+                android:id="@+id/visitor_phone_number_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/visitor_form_visitor_number" />
+
+            <EditText
+                android:id="@+id/visitor_number_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/visitor_edit_ll"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="100dp"
+                android:text="@string/belongings" />
+
+            <EditText
+                android:id="@+id/visitor_belongings_et"
+                style="@style/visitor_edit_edit_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
