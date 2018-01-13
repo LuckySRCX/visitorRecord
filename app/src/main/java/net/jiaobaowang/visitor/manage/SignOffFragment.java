@@ -182,7 +182,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     class QueryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private LinearLayout mCellConatiner;
+        private LinearLayout mCellContainer;
         private TextView mVisitorName;
         private TextView mVisitorCounter;
         private TextView mVisitReason;
@@ -201,7 +201,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 
         public QueryViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.visit_record_item, parent, false));
-            mCellConatiner = itemView.findViewById(R.id.cell_container);
+            mCellContainer = itemView.findViewById(R.id.cell_container);
             mVisitorName = itemView.findViewById(R.id.visitor_name);
             mVisitorCounter = itemView.findViewById(R.id.visitor_counter);
             mVisitReason = itemView.findViewById(R.id.visit_reason);
@@ -234,9 +234,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 //            mInTime.setText(record.getIn_time());
 //            mLeaveTime.setText(record.getLeave_time());
             if (position % 2 == 1) {
-                mCellConatiner.setBackground(getResources().getDrawable(R.drawable.visit_record_item_dark));
+                mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item_dark));
             } else {
-                mCellConatiner.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
+                mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
             }
             mIconDetail.setTag(record);
             mIconDetail.setOnClickListener(this);
