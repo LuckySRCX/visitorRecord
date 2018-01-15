@@ -16,7 +16,7 @@ public class VisitRecordLab {
 
     public VisitRecordLab(Context context) {
         mContext = context.getApplicationContext();
-        mVisitRecords=new ArrayList<>();
+        mVisitRecords = new ArrayList<>();
     }
 
     public static VisitRecordLab get(Context context) {
@@ -27,10 +27,18 @@ public class VisitRecordLab {
     }
 
     public List<VisitRecord> getVisitRecords() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             addVisit(new VisitRecord());
         }
         return mVisitRecords;
+    }
+
+    public void addTenVisits() {
+        VisitRecord visitRecord = new VisitRecord();
+        visitRecord.setVisitor_name("新增访客");
+        for (int i = 0; i < 10; i++) {
+            mVisitRecords.add(visitRecord);
+        }
     }
 
     private void addVisit(VisitRecord record) {

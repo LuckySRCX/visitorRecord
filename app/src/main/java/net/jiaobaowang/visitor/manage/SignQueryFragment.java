@@ -3,7 +3,9 @@ package net.jiaobaowang.visitor.manage;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.text.AlphabeticIndex;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,13 +16,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import net.jiaobaowang.visitor.Listener.OnLoadMoreListener;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.BaseFragment;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.entity.VisitRecordLab;
+import net.jiaobaowang.visitor.login.LoginActivity;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 
 import java.text.SimpleDateFormat;
@@ -78,11 +83,41 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         return v;
     }
 
+
     private void updateUI() {
         VisitRecordLab recordLab = VisitRecordLab.get(getActivity());
         List<VisitRecord> records = recordLab.getVisitRecords();
-        mRecyclerAdapter = new QueryRecyclerAdapter(records);
+        mRecyclerAdapter = new QueryRecyclerAdapter(mRecyclerView, records);
         mRecyclerView.setAdapter(mRecyclerAdapter);
+        setListener(recordLab, records);
+    }
+
+    private void setListener(final VisitRecordLab lab, final List<VisitRecord> recordList) {
+        mRecyclerAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                final VisitRecordLab recordLab = lab;
+                final List<VisitRecord> records = recordList;
+                records.add(null);
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRecyclerAdapter.notifyItemInserted(records.size()-1);
+                    }
+                });
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        records.remove(records.size() - 1);
+                        recordLab.addTenVisits();
+                        mRecyclerAdapter.notifyDataSetChanged();
+                        mRecyclerAdapter.setLoaded();
+                    }
+                }, 500);
+
+            }
+        });
     }
 
     private void setTextView(TextView view, Date date) {
@@ -262,27 +297,88 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         }
     }
 
-    class QueryRecyclerAdapter extends RecyclerView.Adapter<QueryViewHolder> {
+    private boolean isLoading;
+    private int lastVisibleItem, totalItemCount;
+
+    class LoadingMoreHolder extends RecyclerView.ViewHolder {
+        ProgressBar mBar;
+
+        public LoadingMoreHolder(LayoutInflater inflater, ViewGroup parent) {
+            super(inflater.inflate(R.layout.item_loading, parent, false));
+            mBar = itemView.findViewById(R.id.progress_bar);
+        }
+
+        public void bind() {
+            mBar.setIndeterminate(true);
+        }
+    }
+
+    class QueryRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         List<VisitRecord> mVisitRecords;
+        private final int VIEW_TYPE_ITEM = 0;
+        private final int VIEW_TYPE_LOADING = 1;
+        private OnLoadMoreListener onLoadMoreListener;
 
-        public QueryRecyclerAdapter(List<VisitRecord> records) {
+        public void setOnLoadMoreListener(OnLoadMoreListener OnLoadMoreListener) {
+            this.onLoadMoreListener = OnLoadMoreListener;
+        }
+
+        public QueryRecyclerAdapter(RecyclerView recyclerView, List<VisitRecord> records) {
             mVisitRecords = records;
+            final LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    totalItemCount = manager.getItemCount();
+                    lastVisibleItem = manager.findLastVisibleItemPosition();
+                    if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
+                        if (onLoadMoreListener != null) {
+                            onLoadMoreListener.onLoadMore();
+                        }
+                        isLoading = true;
+                    }
+                }
+            });
         }
 
         @Override
-        public QueryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new QueryViewHolder(LayoutInflater.from(getActivity()), parent);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == VIEW_TYPE_ITEM) {
+                return new QueryViewHolder(LayoutInflater.from(getActivity()), parent);
+            } else if (viewType == VIEW_TYPE_LOADING) {
+                return new LoadingMoreHolder(LayoutInflater.from(getActivity()), parent);
+            }
+            return null;
         }
 
         @Override
-        public void onBindViewHolder(QueryViewHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             VisitRecord record = mVisitRecords.get(position);
-            holder.bind(record, position);
+            if (holder instanceof QueryViewHolder) {
+                ((QueryViewHolder) holder).bind(record, position);
+            } else if (holder instanceof LoadingMoreHolder) {
+                ((LoadingMoreHolder) holder).bind();
+            }
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return mVisitRecords.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
         }
 
         @Override
         public int getItemCount() {
             return mVisitRecords.size();
+        }
+
+        public void setLoaded() {
+            isLoading = false;
         }
     }
 }
