@@ -82,10 +82,23 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/department" />
 
-                                <Spinner
-                                    android:id="@+id/department_spinner"
-                                    style="@style/visitor_edit_spinner" />
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/department_ac"
+                                        style="@style/auto_complete_text_view" />
+
+                                    <TextView
+                                        android:id="@+id/department_tv"
+                                        style="@style/auto_complete_text_view_icon"
+                                        android:layout_alignEnd="@+id/department_ac" />
+
+                                </RelativeLayout>
+
                             </LinearLayout>
+
 
                             <LinearLayout
                                 style="@style/visitor_edit_ll"
@@ -97,13 +110,21 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/name" />
 
-                                <AutoCompleteTextView
-                                    android:id="@+id/teacher_name_ac"
-                                    style="@style/visitor_edit_spinner"
-                                    android:completionThreshold="1"
-                                    android:hint="@string/name_input_or_drop"
-                                    android:singleLine="true"
-                                    android:textSize="@dimen/edit_text_size" />
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/teacher_name_ac"
+                                        style="@style/auto_complete_text_view" />
+
+                                    <TextView
+                                        android:id="@+id/teacher_name_tv"
+                                        style="@style/auto_complete_text_view_icon"
+                                        android:layout_alignEnd="@+id/teacher_name_ac" />
+
+                                </RelativeLayout>
+
                             </LinearLayout>
 
                             <LinearLayout
@@ -129,9 +150,20 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/grade" />
 
-                                <Spinner
-                                    android:id="@+id/grade_spinner"
-                                    style="@style/visitor_edit_spinner" />
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/grade_ac"
+                                        style="@style/auto_complete_text_view" />
+
+                                    <TextView
+                                        android:id="@+id/grade_tv"
+                                        style="@style/auto_complete_text_view_icon"
+                                        android:layout_alignEnd="@+id/grade_ac" />
+
+                                </RelativeLayout>
                             </LinearLayout>
 
                             <LinearLayout
@@ -144,9 +176,21 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/classes" />
 
-                                <Spinner
-                                    android:id="@+id/classes_spinner"
-                                    style="@style/visitor_edit_spinner" />
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/classes_ac"
+                                        style="@style/auto_complete_text_view" />
+
+                                    <TextView
+                                        android:id="@+id/classes_tv"
+                                        style="@style/auto_complete_text_view_icon"
+                                        android:layout_alignEnd="@+id/classes_ac" />
+
+                                </RelativeLayout>
+
                             </LinearLayout>
 
                             <LinearLayout
@@ -158,15 +202,25 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/name" />
 
-                                <AutoCompleteTextView
-                                    android:id="@+id/student_name_ac"
-                                    style="@style/visitor_edit_spinner"
-                                    android:completionThreshold="1"
-                                    android:hint="@string/name_input_or_drop"
-                                    android:singleLine="true"
-                                    android:textSize="@dimen/edit_text_size" />
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/student_name_ac"
+                                        style="@style/auto_complete_text_view" />
+
+                                    <TextView
+                                        android:id="@+id/student_name_tv"
+                                        style="@style/auto_complete_text_view_icon"
+                                        android:layout_alignEnd="@+id/student_name_ac" />
+
+                                </RelativeLayout>
+
                             </LinearLayout>
+
                         </LinearLayout>
+
                     </LinearLayout>
 
                     <RadioGroup
