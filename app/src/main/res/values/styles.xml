@@ -118,6 +118,23 @@
         <item name="android:layout_height">36dp</item>
         <item name="android:background">@drawable/sign_in_spinner</item>
     </style>
+    <!--自动匹配输入框-->
+    <style name="auto_complete_text_view">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:background">@drawable/auto_complete_tv_sign_in</item>
+        <item name="android:completionThreshold">1</item>
+        <item name="android:hint">@string/name_input_or_drop</item>
+        <item name="android:singleLine">true</item>
+       <item name="android:textSize">@dimen/edit_text_size</item>
+    </style>
+    <style name="auto_complete_text_view_icon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:drawableEnd">@drawable/ic_info_drop_down</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+    </style>
     <!--来访登记访客信息-->
 
     <style name="HomePageStyle" parent="Theme.AppCompat.Light.DarkActionBar">

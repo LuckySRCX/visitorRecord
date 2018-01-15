@@ -32,7 +32,7 @@
     <string name="belongings">随身物品：</string>
     <string name="input_belongings">请输入随身物品</string>
     <string name="visitor_org">来访单位：</string>
-    <string name="input_organization">请输入单位名称</string>
+    <string name="input_organization">请输入来访单位</string>
     <string name="plate_number">车牌号：</string>
     <string name="input_plate_number">请输入车牌号</string>
     <string name="remarks">备注：</string>
