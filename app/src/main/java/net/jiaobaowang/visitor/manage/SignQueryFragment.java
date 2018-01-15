@@ -3,7 +3,6 @@ package net.jiaobaowang.visitor.manage;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.text.AlphabeticIndex;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -25,7 +24,6 @@ import net.jiaobaowang.visitor.base.BaseFragment;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.entity.VisitRecordLab;
-import net.jiaobaowang.visitor.login.LoginActivity;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 
 import java.text.SimpleDateFormat;
@@ -92,17 +90,15 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         setListener(recordLab, records);
     }
 
-    private void setListener(final VisitRecordLab lab, final List<VisitRecord> recordList) {
+    private void setListener(final VisitRecordLab recordLab, final List<VisitRecord> records) {
         mRecyclerAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                final VisitRecordLab recordLab = lab;
-                final List<VisitRecord> records = recordList;
                 records.add(null);
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        mRecyclerAdapter.notifyItemInserted(records.size()-1);
+                        mRecyclerAdapter.notifyItemInserted(records.size() - 1);
                     }
                 });
 
@@ -216,7 +212,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     }
 
     class QueryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private LinearLayout mCellConatiner;
+        private LinearLayout mCellContainer;
         private TextView mVisitorName;
         private TextView mVisitorCounter;
         private TextView mVisitReason;
@@ -235,7 +231,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
 
         public QueryViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.visit_record_item, parent, false));
-            mCellConatiner = itemView.findViewById(R.id.cell_container);
+            mCellContainer = itemView.findViewById(R.id.cell_container);
             mVisitorName = itemView.findViewById(R.id.visitor_name);
             mVisitorCounter = itemView.findViewById(R.id.visitor_counter);
             mVisitReason = itemView.findViewById(R.id.visit_reason);
@@ -266,9 +262,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
 //            mInTime.setText(record.getIn_time());
 //            mLeaveTime.setText(record.getLeave_time());
             if (position % 2 == 1) {
-                mCellConatiner.setBackground(getResources().getDrawable(R.drawable.visit_record_item_dark));
+                mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item_dark));
             } else {
-                mCellConatiner.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
+                mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
             }
             mIconDetail.setTag(record);
             mIconPrint.setTag(record);
