@@ -102,7 +102,7 @@
 
                             <LinearLayout
                                 style="@style/visitor_edit_ll"
-                                android:layout_marginEnd="40dp"
+                                android:layout_marginEnd="20dp"
                                 android:layout_weight="1">
 
                                 <TextView
@@ -142,7 +142,7 @@
 
                             <LinearLayout
                                 style="@style/visitor_edit_ll"
-                                android:layout_marginEnd="40dp"
+                                android:layout_marginEnd="20dp"
                                 android:layout_weight="1">
 
                                 <TextView
@@ -168,7 +168,7 @@
 
                             <LinearLayout
                                 style="@style/visitor_edit_ll"
-                                android:layout_marginEnd="40dp"
+                                android:layout_marginEnd="20dp"
                                 android:layout_weight="1">
 
                                 <TextView
@@ -195,6 +195,7 @@
 
                             <LinearLayout
                                 style="@style/visitor_edit_ll"
+                                android:layout_marginEnd="20dp"
                                 android:layout_weight="1">
 
                                 <TextView
@@ -214,6 +215,32 @@
                                         android:id="@+id/student_name_tv"
                                         style="@style/auto_complete_text_view_icon"
                                         android:layout_alignEnd="@+id/student_name_ac" />
+
+                                </RelativeLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                style="@style/visitor_edit_ll"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/head_master" />
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <AutoCompleteTextView
+                                        android:id="@+id/head_master_ac"
+                                        style="@style/auto_complete_text_view" />
+
+                                    <TextView
+                                        android:id="@+id/head_master_tv"
+                                        style="@style/auto_complete_text_view_icon"
+                                        android:layout_alignEnd="@+id/head_master_ac" />
 
                                 </RelativeLayout>
 
