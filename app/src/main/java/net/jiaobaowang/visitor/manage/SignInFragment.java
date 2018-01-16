@@ -24,22 +24,33 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.google.zxing.other.BeepManager;
 import com.telpo.tps550.api.TelpoException;
 import com.telpo.tps550.api.idcard.IdCard;
 import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.common.VisitorConfig;
+import net.jiaobaowang.visitor.entity.AddFormResult;
 import net.jiaobaowang.visitor.entity.Department;
 import net.jiaobaowang.visitor.entity.PrintForm;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 访客登记
@@ -47,12 +58,11 @@ import java.util.List;
 public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "SignInFragment";
 
-    //身份证
+    private boolean isNeedPrint = false;//是否需要打印
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
-    private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter;
-
+    private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
 
     private Context mContext;
     private LinearLayout typeTeacherLL;//教职工区域
@@ -80,6 +90,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private AutoCompleteTextView gradeAc;//年级
     private AutoCompleteTextView classesAc;//班级
     private AutoCompleteTextView studentNameAc;//学生姓名
+    private AutoCompleteTextView headMasterAc;//班主任姓名
+    private ProgressDialog submitDataDialog;
 
     public SignInFragment() {
     }
@@ -105,7 +117,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         mContext = getActivity();
         initView(view);
-        //initData();
+        initData();
         return view;
     }
 
@@ -121,6 +133,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         view.findViewById(R.id.credentials_type_tv).setOnClickListener(this);
         view.findViewById(R.id.reason_tv).setOnClickListener(this);
         view.findViewById(R.id.visitor_number_tv).setOnClickListener(this);
+        view.findViewById(R.id.head_master_tv).setOnClickListener(this);
         typeTeacherLL = view.findViewById(R.id.type_teacher_ll);
         typeStudentLL = view.findViewById(R.id.type_student_ll);
 
@@ -147,6 +160,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         classesAc = view.findViewById(R.id.classes_ac);
         teacherNameAc = view.findViewById(R.id.teacher_name_ac);
         studentNameAc = view.findViewById(R.id.student_name_ac);
+        headMasterAc = view.findViewById(R.id.head_master_ac);
         idCardReadBtn.setOnClickListener(this);
         typeTeacherRb.setOnCheckedChangeListener(this);
         typeStudentRb.setOnCheckedChangeListener(this);
@@ -180,14 +194,20 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //学生姓名
         studentNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
         studentNameAc.setAdapter(studentNameAdapter);
+        //班主任
+        headMasterAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        headMasterAc.setAdapter(headMasterAdapter);
     }
 
     private void initData() {
-        initDepartmentData();
-        initGradeData();
-        initClassesData();
-        initTeacherNameData();
-        initStudentNameData();
+//        initDepartmentData();
+//        initGradeData();
+//        initClassesData();
+//        initTeacherNameData();
+//        initStudentNameData();
+        nameEt.setText("张三");
+        idNumberEt.setText("1234567890");
+        teacherNameAc.setText("李四");
     }
 
     /**
@@ -282,20 +302,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.save_btn://保存
-                String visitor_name = nameEt.getText().toString().trim();
-                if ("".equals(visitor_name)) {
-                    DialogUtils.showAlert(mContext, "访客姓名不能为空");
-                    return;
-                }
-                String visitor_for = reasonAc.getText().toString().trim();
-                if ("".equals(visitor_for)) {
-                    DialogUtils.showAlert(mContext, "访问事由不能为空");
-                    return;
-                }
-
+                isNeedPrint = false;
+                checkSaveData();
                 break;
             case R.id.print_tape_btn://保存并打印
-                showPrintTape();
+                isNeedPrint = true;
+                checkSaveData();
                 break;
             case R.id.cancel_btn:
                 getActivity().finish();
@@ -327,6 +339,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 break;
             case R.id.visitor_number_tv:
                 visitorNumberAc.showDropDown();
+                break;
+            case R.id.head_master_tv:
+                headMasterAc.showDropDown();
                 break;
         }
     }
@@ -496,5 +511,154 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         Intent intent = new Intent(mContext, PrinterActivity.class);
         intent.putExtra("printForm", printForm);
         startActivity(intent);
+    }
+
+    /**
+     * 验证访客信息
+     */
+    private void checkSaveData() {
+        String visitor_name = nameEt.getText().toString().trim();
+        if ("".equals(visitor_name)) {
+            DialogUtils.showAlert(mContext, "请输入访客姓名");
+            return;
+        }
+        String certificate_type = credentialsTypeAc.getText().toString().trim();
+        if ("".equals(certificate_type)) {
+            DialogUtils.showAlert(mContext, "请输入证件类型");
+            return;
+        }
+        String certificate_Int = idNumberEt.getText().toString().trim();
+        if ("".equals(certificate_Int)) {
+            DialogUtils.showAlert(mContext, "请输入证件号码");
+            return;
+        }
+        String visitor_for = reasonAc.getText().toString().trim();
+        if ("".equals(visitor_for)) {
+            DialogUtils.showAlert(mContext, "请输入访问事由");
+            return;
+        }
+        String visitor_counter = visitorNumberAc.getText().toString().trim();
+        if ("".equals(visitor_counter)) {
+            DialogUtils.showAlert(mContext, "请输入随行人数");
+            return;
+        }
+        String teacher_name = "";
+        String student_name = "";
+        String head_teacher_name = "";
+        String interviewee_type;
+        if (typeTeacherRb.isChecked()) {
+            //教职工
+            teacher_name = teacherNameAc.getText().toString().trim();
+            if ("".equals(teacher_name)) {
+                DialogUtils.showAlert(mContext, "请输入教职工姓名");
+                return;
+            }
+            interviewee_type = "0";
+        } else {
+            student_name = studentNameAc.getText().toString().trim();
+            if ("".equals(student_name)) {
+                DialogUtils.showAlert(mContext, "请输入学生姓名");
+                return;
+            }
+            head_teacher_name = headMasterAc.getText().toString().trim();
+            if ("".equals(head_teacher_name)) {
+                DialogUtils.showAlert(mContext, "请输入班主任姓名");
+                return;
+            }
+            interviewee_type = "1";
+        }
+        //验证完必填项
+        String visitor_sex;
+        if (maleRb.isChecked()) {
+            visitor_sex = "0";
+        } else {
+            visitor_sex = "1";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date curDate = new Date(System.currentTimeMillis());
+        String in_time = sdf.format(curDate);
+        //必填的数据
+        FormBody.Builder params = new FormBody.Builder();
+        params.add("token", "4485fb371c1747cc91375bbb9439a04d");
+        params.add("visitor_name", visitor_name);//访客姓名
+        params.add("visitor_for", visitor_for);//访问事由
+        params.add("visitor_sex", visitor_sex);//访客性别
+        params.add("in_time", in_time);//进入数据
+        params.add("interviewee_type", interviewee_type);//被访人类型
+        if (typeTeacherRb.isChecked()) {
+            //教职工
+            params.add("teacher_name", teacher_name);//教职工姓名
+        } else {
+            params.add("student_name", student_name);//学生姓名
+            params.add("head_teacher_name", head_teacher_name);//班主任姓名
+        }
+        params.add("visitor_counter", visitor_counter);//随行人数
+        params.add("certificate_type", certificate_type);//证件类型
+        params.add("certificate_Int", certificate_Int);//证件号码
+        //非必填数据
+        String visitor_birthday = dateOfBirthEt.getText().toString().trim();
+        if (!"".equals(visitor_birthday)) {
+            params.add("visitor_birthday", visitor_birthday);//出生日期
+        }
+        String visitor_goods = belongingsEt.getText().toString().trim();
+        if (!"".equals(visitor_goods)) {
+            params.add("visitor_goods", visitor_goods);//随身物品
+        }
+        String unit_name = organizationEt.getText().toString().trim();
+        if (!"".equals(unit_name)) {
+            params.add("unit_name", unit_name);//单位名称
+        }
+        String address = addressEt.getText().toString().trim();
+        if (!"".equals(address)) {
+            params.add("address", address);//地址
+        }
+        String plate_Int = plateNumberEt.getText().toString().trim();
+        if (!"".equals(plate_Int)) {
+            params.add("plate_Int", plate_Int);//车牌号
+        }
+        String note = remarksEt.getText().toString().trim();
+        if (!"".equals(note)) {
+            params.add("note", note);//备注
+        }
+        submitData(params);
+    }
+
+    /**
+     * 提交数据
+     *
+     * @param params
+     */
+    private void submitData(FormBody.Builder params) {
+//        submitDataDialog = new ProgressDialog(mContext);
+//        submitDataDialog.setMessage("正在提交数据，请等待...");
+//        submitDataDialog.setCancelable(false);
+//        submitDataDialog.show();
+        Request request = new Request.Builder()
+                .url(VisitorConfig.VISITOR_API_ADD)
+                .post(params.build())
+                .build();
+        OkHttpClient mOkHttpClient = new OkHttpClient();
+        mOkHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+//                submitDataDialog.dismiss();
+                Log.i(TAG, "onFailure:" + e.toString());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+//                submitDataDialog.dismiss();
+                String resultStr = response.body().string();
+                Log.i(TAG, "onResponse:" + resultStr);
+                Gson gson = new Gson();
+                AddFormResult result = gson.fromJson(resultStr, AddFormResult.class);
+                if (result.getCode().equals("0000")) {
+                    ToastUtils.showMessage(mContext, "保存成功");
+                } else {
+                    ToastUtils.showMessage(mContext, "保存失败：" + result.getMsg());
+                }
+            }
+        });
     }
 }
