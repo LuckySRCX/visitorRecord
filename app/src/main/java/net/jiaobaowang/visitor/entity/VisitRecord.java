@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class VisitRecord implements Serializable {
+
     private String visitor_goods;//:null,（随行物品)
     private String note;//:null,（备注）
     private String teacher_name;//:msyt,（老师姓名）
@@ -35,6 +36,7 @@ public class VisitRecord implements Serializable {
     private String visitor_name;//:msy2,（访客姓名）
     private String unit_name;//:null,（单位名称）
     private String in_time;//:2018-04-09 15;//:11,（进入时间）
+    private String img_url;
     private String visitor_birthday;//:null,（访客生日）
     private String head_teacher_name;//:null,（班主任名称）
     private int certificate_type_id;//:0,（证件类型）
@@ -264,6 +266,14 @@ public class VisitRecord implements Serializable {
 
     public void setIn_time(String in_time) {
         this.in_time = in_time;
+    }
+
+    public String getImg_url() {
+        return img_url;
+    }
+
+    public void setImg_url(String img_url) {
+        this.img_url = img_url;
     }
 
     public String getVisitor_birthday() {
