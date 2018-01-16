@@ -65,7 +65,8 @@
                     <EditText
                         android:id="@+id/name_et"
                         style="@style/visitor_edit_edit_text"
-                        android:hint="@string/input_visitor_name" />
+                        android:hint="@string/input_visitor_name"
+                        android:maxLength="8" />
                 </LinearLayout>
 
                 <LinearLayout style="@style/visitor_edit_ll">
@@ -112,7 +113,8 @@
                     <EditText
                         android:id="@+id/date_of_birth_et"
                         style="@style/visitor_edit_edit_text"
-                        android:hint="@string/input_visitor_date_of_birth" />
+                        android:hint="@string/input_visitor_date_of_birth"
+                        android:maxLength="12" />
                 </LinearLayout>
 
                 <LinearLayout style="@style/visitor_edit_ll">
@@ -129,7 +131,8 @@
 
                         <AutoCompleteTextView
                             android:id="@+id/credentials_type_ac"
-                            style="@style/auto_complete_text_view" />
+                            style="@style/auto_complete_text_view"
+                            android:maxLength="8" />
 
                         <TextView
                             android:id="@+id/credentials_type_tv"
@@ -151,7 +154,8 @@
                     <EditText
                         android:id="@+id/id_number_et"
                         style="@style/visitor_edit_edit_text"
-                        android:hint="@string/input_id_number" />
+                        android:hint="@string/input_id_number"
+                        android:maxLength="20" />
                 </LinearLayout>
 
                 <LinearLayout style="@style/visitor_edit_ll">
@@ -165,7 +169,8 @@
                     <EditText
                         android:id="@+id/address_et"
                         style="@style/visitor_edit_edit_text"
-                        android:hint="@string/input_address" />
+                        android:hint="@string/input_address"
+                        android:maxLength="30" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -189,7 +194,8 @@
 
                         <AutoCompleteTextView
                             android:id="@+id/reason_ac"
-                            style="@style/auto_complete_text_view" />
+                            style="@style/auto_complete_text_view"
+                            android:maxLength="12" />
 
                         <TextView
                             android:id="@+id/reason_tv"
@@ -206,13 +212,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minWidth="110dp"
-                        android:text="@string/phone_number" />
+                        android:text="@string/phone" />
 
                     <EditText
                         android:id="@+id/phone_number_et"
                         style="@style/visitor_edit_edit_text"
                         android:hint="@string/input_phone_number"
-                        android:inputType="number" />
+                        android:inputType="number"
+                        android:maxLength="11" />
                 </LinearLayout>
 
                 <LinearLayout style="@style/visitor_edit_ll">
@@ -221,7 +228,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minWidth="110dp"
-                        android:text="@string/visitor_number" />
+                        android:text="@string/visitor_form_visitor_number" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -229,7 +236,8 @@
 
                         <AutoCompleteTextView
                             android:id="@+id/visitor_number_ac"
-                            style="@style/auto_complete_text_view" />
+                            style="@style/auto_complete_text_view"
+                            android:maxLength="4" />
 
                         <TextView
                             android:id="@+id/visitor_number_tv"
@@ -251,7 +259,8 @@
                     <EditText
                         android:id="@+id/belongings_et"
                         style="@style/visitor_edit_edit_text"
-                        android:hint="@string/input_belongings" />
+                        android:hint="@string/input_belongings"
+                        android:maxLength="12" />
 
                 </LinearLayout>
 
@@ -266,7 +275,8 @@
                     <EditText
                         android:id="@+id/organization_et"
                         style="@style/visitor_edit_edit_text"
-                        android:hint="@string/input_organization" />
+                        android:hint="@string/input_organization"
+                        android:maxLength="20" />
 
                 </LinearLayout>
 
@@ -281,7 +291,8 @@
                     <EditText
                         android:id="@+id/plate_number_et"
                         style="@style/visitor_edit_edit_text"
-                        android:hint="@string/input_plate_number" />
+                        android:hint="@string/input_plate_number"
+                        android:maxLength="8" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -298,7 +309,8 @@
             <EditText
                 android:id="@+id/remarks_et"
                 style="@style/visitor_edit_edit_text"
-                android:hint="@string/input_remarks" />
+                android:hint="@string/input_remarks"
+                android:maxLength="30" />
 
         </LinearLayout>
     </LinearLayout>

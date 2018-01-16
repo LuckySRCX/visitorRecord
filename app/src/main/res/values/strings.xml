@@ -26,6 +26,7 @@
     <string name="input_address">请输入地址</string>
     <string name="visitor_reason">访问事由：</string>
     <string name="phone_number">手机号码：</string>
+    <string name="phone">手机：</string>
     <string name="input_phone_number">请输入手机号</string>
     <string name="visitor_number">访客人数：</string>
     <string name="input_visitor_number">请输入访客人数</string>
