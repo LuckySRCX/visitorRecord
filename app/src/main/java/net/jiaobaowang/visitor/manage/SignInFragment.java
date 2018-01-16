@@ -4,9 +4,11 @@ package net.jiaobaowang.visitor.manage;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -41,9 +43,7 @@ import net.jiaobaowang.visitor.utils.ToastUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -51,6 +51,8 @@ import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * 访客登记
@@ -63,6 +65,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
     private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
+    private PrintForm printForm;//打印访客单
 
     private Context mContext;
     private LinearLayout typeTeacherLL;//教职工区域
@@ -200,70 +203,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void initData() {
-//        initDepartmentData();
-//        initGradeData();
-//        initClassesData();
-//        initTeacherNameData();
-//        initStudentNameData();
         nameEt.setText("张三");
         idNumberEt.setText("1234567890");
         teacherNameAc.setText("李四");
+        studentNameAc.setText("小明");
+        headMasterAc.setText("李雷");
+        printForm = new PrintForm();
     }
 
-    /**
-     * 获取部门列表
-     */
-    private void initDepartmentData() {
-        List<Department> data = new ArrayList<>();
-        for (int i = 1; i < 7; i++) {
-            data.add(new Department(i + "", "部门" + i));
-        }
-        departmentAdapter.addAll(data);
-    }
-
-    /**
-     * 获取年级列表
-     */
-    private void initGradeData() {
-        List<Department> data = new ArrayList<>();
-        for (int i = 1; i < 7; i++) {
-            data.add(new Department(i + "", i + "年级"));
-        }
-        gradeAdapter.addAll(data);
-    }
-
-    /**
-     * 获取班级列表
-     */
-    private void initClassesData() {
-        List<Department> data = new ArrayList<>();
-        for (int i = 1; i < 10; i++) {
-            data.add(new Department(i + "", i + "班"));
-        }
-        classesAdapter.addAll(data);
-    }
-
-    /**
-     * 获取老师姓名列表
-     */
-    private void initTeacherNameData() {
-        List<Department> data = new ArrayList<>();
-        for (int i = 1; i < 10; i++) {
-            data.add(new Department(i + "", "教职工" + i));
-        }
-        teacherNameAdapter.addAll(data);
-    }
-
-    /**
-     * 获取学生姓名列表
-     */
-    private void initStudentNameData() {
-        List<Department> data = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            data.add(new Department(i + "", "学生" + i));
-        }
-        studentNameAdapter.addAll(data);
-    }
 
     @Override
     public void onResume() {
@@ -480,40 +427,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     /**
-     * 显示打印凭条dialog
-     */
-    private void showPrintTape() {
-        //访客单
-        PrintForm printForm = new PrintForm();
-        printForm.setFormId("2017321466841265");
-
-        printForm.setVisName(nameEt.getText().toString());
-        if (maleRb.isChecked()) {
-            printForm.setVisGender(0);
-        } else {
-            printForm.setVisGender(1);
-        }
-        printForm.setVisOrg(organizationEt.getText().toString());
-        printForm.setVisReason(reasonAc.getText().toString());
-
-        printForm.setUserType(1);
-        printForm.setUserName("张三");
-        printForm.setUserGradeName("一年级");
-        printForm.setUserClassName("1303班");
-        printForm.setUserHeadMaster("王浩");
-
-        printForm.setRegisterName("刘室温");
-        printForm.setRemarks(remarksEt.getText().toString());
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-        Date curDate = new Date(System.currentTimeMillis());
-        printForm.setEntryTime(sdf.format(curDate));
-        Intent intent = new Intent(mContext, PrinterActivity.class);
-        intent.putExtra("printForm", printForm);
-        startActivity(intent);
-    }
-
-    /**
      * 验证访客信息
      */
     private void checkSaveData() {
@@ -522,6 +435,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             DialogUtils.showAlert(mContext, "请输入访客姓名");
             return;
         }
+        printForm.setVisName(visitor_name);
         String certificate_type = credentialsTypeAc.getText().toString().trim();
         if ("".equals(certificate_type)) {
             DialogUtils.showAlert(mContext, "请输入证件类型");
@@ -537,6 +451,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             DialogUtils.showAlert(mContext, "请输入访问事由");
             return;
         }
+        printForm.setVisReason(visitor_for);
         String visitor_counter = visitorNumberAc.getText().toString().trim();
         if ("".equals(visitor_counter)) {
             DialogUtils.showAlert(mContext, "请输入随行人数");
@@ -571,54 +486,94 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         String visitor_sex;
         if (maleRb.isChecked()) {
             visitor_sex = "0";
+            printForm.setVisGender(0);
         } else {
             visitor_sex = "1";
+            printForm.setVisGender(1);
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date curDate = new Date(System.currentTimeMillis());
         String in_time = sdf.format(curDate);
+        printForm.setEntryTime(in_time);
         //必填的数据
+        SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
+        String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+        printForm.setRegisterName("jsy");
         FormBody.Builder params = new FormBody.Builder();
-        params.add("token", "4485fb371c1747cc91375bbb9439a04d");
+        params.add("token", token);
         params.add("visitor_name", visitor_name);//访客姓名
         params.add("visitor_for", visitor_for);//访问事由
         params.add("visitor_sex", visitor_sex);//访客性别
-        params.add("in_time", in_time);//进入数据
+        params.add("in_time", in_time);//进入时间
         params.add("interviewee_type", interviewee_type);//被访人类型
         if (typeTeacherRb.isChecked()) {
             //教职工
-            params.add("teacher_name", teacher_name);//教职工姓名
+            //姓名
+            params.add("teacher_name", teacher_name);
+            printForm.setUserName(student_name);
+            //部门
+            String department_name = departmentAc.getText().toString().trim();
+            if (!"".equals(department_name)) {
+                params.add("department_name", department_name);
+                printForm.setUserDepartment(department_name);
+            }
+            printForm.setUserType(0);
         } else {
-            params.add("student_name", student_name);//学生姓名
+            //年级
+            String grade_name = gradeAc.getText().toString().trim();
+            if (!"".equals(grade_name)) {
+                params.add("grade_name", grade_name);
+                printForm.setUserGradeName(grade_name);
+            }
+            //班级
+            String class_name = classesAc.getText().toString().trim();
+            if (!"".equals(class_name)) {
+                params.add("class_name", class_name);
+                printForm.setUserClassName(class_name);
+            }
+            //姓名
+            params.add("student_name", student_name);
+            printForm.setUserName(student_name);
+
+            //printForm.setUserClassName("1303班");
+            printForm.setUserHeadMaster(head_teacher_name);
             params.add("head_teacher_name", head_teacher_name);//班主任姓名
+            printForm.setUserType(1);
         }
         params.add("visitor_counter", visitor_counter);//随行人数
         params.add("certificate_type", certificate_type);//证件类型
         params.add("certificate_Int", certificate_Int);//证件号码
-        //非必填数据
+        //出生日期
         String visitor_birthday = dateOfBirthEt.getText().toString().trim();
         if (!"".equals(visitor_birthday)) {
-            params.add("visitor_birthday", visitor_birthday);//出生日期
+            params.add("visitor_birthday", visitor_birthday);
         }
+        //随身物品
         String visitor_goods = belongingsEt.getText().toString().trim();
         if (!"".equals(visitor_goods)) {
-            params.add("visitor_goods", visitor_goods);//随身物品
+            params.add("visitor_goods", visitor_goods);
         }
+        //单位名称
         String unit_name = organizationEt.getText().toString().trim();
         if (!"".equals(unit_name)) {
-            params.add("unit_name", unit_name);//单位名称
+            params.add("unit_name", unit_name);
+            printForm.setVisOrg(unit_name);
         }
+        //地址
         String address = addressEt.getText().toString().trim();
         if (!"".equals(address)) {
-            params.add("address", address);//地址
+            params.add("address", address);
         }
+        //车牌号
         String plate_Int = plateNumberEt.getText().toString().trim();
         if (!"".equals(plate_Int)) {
-            params.add("plate_Int", plate_Int);//车牌号
+            params.add("plate_Int", plate_Int);
         }
+        //备注
         String note = remarksEt.getText().toString().trim();
         if (!"".equals(note)) {
-            params.add("note", note);//备注
+            params.add("note", note);
+            printForm.setRemarks(note);
         }
         submitData(params);
     }
@@ -629,36 +584,49 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      * @param params
      */
     private void submitData(FormBody.Builder params) {
-//        submitDataDialog = new ProgressDialog(mContext);
-//        submitDataDialog.setMessage("正在提交数据，请等待...");
-//        submitDataDialog.setCancelable(false);
-//        submitDataDialog.show();
-        Request request = new Request.Builder()
-                .url(VisitorConfig.VISITOR_API_ADD)
-                .post(params.build())
-                .build();
-        OkHttpClient mOkHttpClient = new OkHttpClient();
-        mOkHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-//                submitDataDialog.dismiss();
-                Log.i(TAG, "onFailure:" + e.toString());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-//                submitDataDialog.dismiss();
-                String resultStr = response.body().string();
-                Log.i(TAG, "onResponse:" + resultStr);
-                Gson gson = new Gson();
-                AddFormResult result = gson.fromJson(resultStr, AddFormResult.class);
-                if (result.getCode().equals("0000")) {
-                    ToastUtils.showMessage(mContext, "保存成功");
-                } else {
-                    ToastUtils.showMessage(mContext, "保存失败：" + result.getMsg());
+        submitDataDialog = new ProgressDialog(mContext);
+        submitDataDialog.setMessage("正在提交数据，请等待...");
+        submitDataDialog.setCancelable(false);
+        submitDataDialog.show();
+        try {
+            Request request = new Request.Builder()
+                    .url(VisitorConfig.VISITOR_API_ADD)
+                    .post(params.build())
+                    .build();
+            OkHttpClient mOkHttpClient = new OkHttpClient();
+            mOkHttpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                    submitDataDialog.dismiss();
+                    Log.i(TAG, "onFailure:" + e.toString());
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    submitDataDialog.dismiss();
+                    Looper.prepare();
+                    String resultStr = response.body().string();
+                    Log.i(TAG, "onResponse:" + resultStr);
+                    Gson gson = new Gson();
+                    AddFormResult result = gson.fromJson(resultStr, AddFormResult.class);
+                    if (result.getCode().equals("0000")) {
+                        printForm.setFormId(result.getVisit_Int());
+                        if (isNeedPrint) {
+                            Intent intent = new Intent(mContext, PrinterActivity.class);
+                            intent.putExtra("printForm", printForm);
+                            startActivity(intent);
+                        }
+//                        ToastUtils.showMessage(mContext, "保存访客记录成功");
+                    } else {
+//                        ToastUtils.showMessage(mContext, "保存访客记录失败：" + result.getMsg());
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            submitDataDialog.dismiss();
+            Log.e(TAG, "保存访客记录失败", e);
+        }
     }
 }

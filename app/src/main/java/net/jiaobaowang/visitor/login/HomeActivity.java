@@ -46,13 +46,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int selectId = 0;
         switch (v.getId()) {
             case R.id.visit_record:
-                selectId = 0;
-                break;
-            case R.id.visit_query:
                 selectId = 1;
                 break;
-            case R.id.visit_leave:
+            case R.id.visit_query:
                 selectId = 2;
+                break;
+            case R.id.visit_leave:
+                selectId = 3;
                 break;
             default:
                 break;

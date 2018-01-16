@@ -23,7 +23,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".login.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Login_style"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
@@ -36,11 +40,11 @@
             android:name=".printer.PrinterActivity"
             android:launchMode="singleTask"
             android:theme="@style/Theme.ActivityDialogStyle" />
-        <activity
-            android:name=".login.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:theme="@style/Login_style"
-            android:windowSoftInputMode="adjustResize" />
+        <!--<activity-->
+        <!--android:name=".login.LoginActivity"-->
+        <!--android:label="@string/title_activity_login"-->
+        <!--android:theme="@style/Login_style"-->
+        <!--android:windowSoftInputMode="adjustResize" />-->
         <activity
             android:name=".login.HomeActivity"
             android:label="智慧校园管理系统"
