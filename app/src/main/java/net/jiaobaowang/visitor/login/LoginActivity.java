@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
         if (result1.getCode().equals("0000")) {
             SharedPreferences preferences = getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(VisitorConfig.VISIT_LOCAL_TOCKEN, result1.getToken());
+            editor.putString(VisitorConfig.VISIT_LOCAL_TOKEN, result1.getToken());
             editor.apply();
             Intent intent = new Intent();
             intent.setClass(this, HomeActivity.class);

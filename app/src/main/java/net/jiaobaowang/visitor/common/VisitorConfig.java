@@ -27,5 +27,5 @@ public class VisitorConfig {
     public static final String VISITOR_API_LIST = VISITOR_MAIN_URL + "/api/list";
     public static final String VISIT_LOCAL_STORAGE = "net.jiaobaowang.visitor.localStorage";//存储到本地的key
     public static final String VISIT_LOCAL_SCHOOL_ID = "net.jiaobangwang.visitor.school_id";//学校id
-    public static final String VISIT_LOCAL_TOCKEN = "net.jiaobaowang.visitor.token";//token
+    public static final String VISIT_LOCAL_TOKEN = "net.jiaobaowang.visitor.token";//token
 }
