@@ -97,4 +97,5 @@
     <string name="registrant_info">登记人信息</string>
     <string name="visitor_form_student_info">被访学生信息</string>
     <string name="visitor_form_teacher_info">被访教职工信息</string>
+
 </resources>

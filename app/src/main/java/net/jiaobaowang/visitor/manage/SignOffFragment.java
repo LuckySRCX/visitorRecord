@@ -46,6 +46,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private final int REQUEST_SIBFGIN_CODE = 0;
     private final int REQUEST_SIOFF_CODE = 1;
     private static final String DIALOG_DATE = "DialogDate";
+    private static final String DIALOG_VISIT = "DialogVisit";
     private RecyclerView mRecyclerView;
     private OffRecyclerAdapter mRecyclerAdapter;
 
@@ -163,9 +164,14 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
      */
     private void showDialog(int requestCode, Date selectDate, Date beginDate) {
         FragmentManager fragmentManager = getFragmentManager();
-        DatePickerFragment dialog = DatePickerFragment.newInstance(selectDate, beginDate);
+        DatePickerFragment dialog = DatePickerFragment.newInstance(0,selectDate, beginDate);
         dialog.setTargetFragment(SignOffFragment.this, requestCode);
         dialog.show(fragmentManager, DIALOG_DATE);
+    }
+    private void showDetail(VisitRecord record) {
+        FragmentManager fragmentManager = getFragmentManager();
+        OffDetailFragment offDetailFragment = OffDetailFragment.newInstance(record);
+        offDetailFragment.show(fragmentManager, DIALOG_VISIT);
     }
 
     @Override
@@ -278,6 +284,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             switch (v.getId()) {
                 case R.id.icon_detail://签离按钮点击事件
                     //todo 传递record并跳转至不知道啥界面
+                    showDetail(record);
                     break;
                 default:
                     break;

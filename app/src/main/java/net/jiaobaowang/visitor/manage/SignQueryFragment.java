@@ -46,6 +46,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     private final int REQUEST_SIBFGIN_CODE = 0;
     private final int REQUEST_SIOFF_CODE = 1;
     private static final String DIALOG_DATE = "DialogDate";
+
     private RecyclerView mRecyclerView;
     private QueryRecyclerAdapter mRecyclerAdapter;
 
@@ -164,10 +165,12 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
      */
     private void showDialog(int requestCode, Date selectDate, Date beginDate) {
         FragmentManager fragmentManager = getFragmentManager();
-        DatePickerFragment dialog = DatePickerFragment.newInstance(selectDate, beginDate);
+        DatePickerFragment dialog = DatePickerFragment.newInstance(0,selectDate, beginDate);
         dialog.setTargetFragment(SignQueryFragment.this, requestCode);
         dialog.show(fragmentManager, DIALOG_DATE);
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
