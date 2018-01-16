@@ -22,7 +22,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.zxing.other.BeepManager;
@@ -73,10 +72,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private RadioButton femaleRb;//女
     private RadioButton typeTeacherRb;//教职工类型
     private RadioButton typeStudentRb;//学生类型
-    private Spinner credentialsSpinner;//证件类型
-    private Spinner reasonSpinner;//事由类型
-    private Spinner visitorNumberSpinner;//访客人数
-
+    private AutoCompleteTextView credentialsTypeAc;//证件类型
+    private AutoCompleteTextView reasonAc;//访问事由
+    private AutoCompleteTextView visitorNumberAc;//访客人数
     private AutoCompleteTextView departmentAc;//教职工部门
     private AutoCompleteTextView teacherNameAc;//教职工姓名
     private AutoCompleteTextView gradeAc;//年级
@@ -107,7 +105,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         mContext = getActivity();
         initView(view);
-        initData();
+        //initData();
         return view;
     }
 
@@ -120,7 +118,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         view.findViewById(R.id.grade_tv).setOnClickListener(this);
         view.findViewById(R.id.classes_tv).setOnClickListener(this);
         view.findViewById(R.id.student_name_tv).setOnClickListener(this);
-
+        view.findViewById(R.id.credentials_type_tv).setOnClickListener(this);
+        view.findViewById(R.id.reason_tv).setOnClickListener(this);
+        view.findViewById(R.id.visitor_number_tv).setOnClickListener(this);
         typeTeacherLL = view.findViewById(R.id.type_teacher_ll);
         typeStudentLL = view.findViewById(R.id.type_student_ll);
 
@@ -139,9 +139,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         femaleRb = view.findViewById(R.id.female_rb);
         typeTeacherRb = view.findViewById(R.id.type_teacher_rb);
         typeStudentRb = view.findViewById(R.id.type_student_rb);
-        credentialsSpinner = view.findViewById(R.id.credentials_spinner);
-        reasonSpinner = view.findViewById(R.id.reason_spinner);
-        visitorNumberSpinner = view.findViewById(R.id.visitor_number_spinner);
+        visitorNumberAc = view.findViewById(R.id.visitor_number_ac);
+        credentialsTypeAc = view.findViewById(R.id.credentials_type_ac);
+        reasonAc = view.findViewById(R.id.reason_ac);
         departmentAc = view.findViewById(R.id.department_ac);
         gradeAc = view.findViewById(R.id.grade_ac);
         classesAc = view.findViewById(R.id.classes_ac);
@@ -151,17 +151,20 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         typeTeacherRb.setOnCheckedChangeListener(this);
         typeStudentRb.setOnCheckedChangeListener(this);
         //证件类型
-        ArrayAdapter<String> credentialAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.credentials_type));
-        credentialAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        credentialsSpinner.setAdapter(credentialAdapter);
+        String[] credentialsType = getResources().getStringArray(R.array.credentials_type);
+        ArrayAdapter<String> credentialAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, credentialsType);
+        credentialsTypeAc.setAdapter(credentialAdapter);
+        credentialsTypeAc.setText(credentialsType[0]);
         //访问事由类型
-        ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.reason_type));
-        reasonAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        reasonSpinner.setAdapter(reasonAdapter);
+        String[] reason = getResources().getStringArray(R.array.reason_type);
+        ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, reason);
+        reasonAc.setAdapter(reasonAdapter);
+        reasonAc.setText(reason[0]);
         //随行人数类型
-        ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, R.layout.visitor_spinner_item, getResources().getStringArray(R.array.visitor_number));
-        visitorNumberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        visitorNumberSpinner.setAdapter(visitorNumberAdapter);
+        String[] visitorNumber = getResources().getStringArray(R.array.visitor_number);
+        ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, visitorNumber);
+        visitorNumberAc.setAdapter(visitorNumberAdapter);
+        visitorNumberAc.setText(visitorNumber[0]);
         //部门
         departmentAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
         departmentAc.setAdapter(departmentAdapter);
@@ -179,7 +182,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         studentNameAc.setAdapter(studentNameAdapter);
     }
 
-    private void initData(){
+    private void initData() {
         initDepartmentData();
         initGradeData();
         initClassesData();
@@ -279,6 +282,17 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.save_btn://保存
+                String visitor_name = nameEt.getText().toString().trim();
+                if ("".equals(visitor_name)) {
+                    DialogUtils.showAlert(mContext, "访客姓名不能为空");
+                    return;
+                }
+                String visitor_for = reasonAc.getText().toString().trim();
+                if ("".equals(visitor_for)) {
+                    DialogUtils.showAlert(mContext, "访问事由不能为空");
+                    return;
+                }
+
                 break;
             case R.id.print_tape_btn://保存并打印
                 showPrintTape();
@@ -304,6 +318,15 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 break;
             case R.id.student_name_tv:
                 studentNameAc.showDropDown();
+                break;
+            case R.id.credentials_type_tv:
+                credentialsTypeAc.showDropDown();
+                break;
+            case R.id.reason_tv:
+                reasonAc.showDropDown();
+                break;
+            case R.id.visitor_number_tv:
+                visitorNumberAc.showDropDown();
                 break;
         }
     }
@@ -409,7 +432,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         if (beepManager != null) {
             beepManager.playBeepSoundAndVibrate();
         }
-        credentialsSpinner.setSelection(0, true);
+        credentialsTypeAc.setText("身份证");
         ImageSpan imgSpan = new ImageSpan(mContext, headImage);
         SpannableString spanString = new SpannableString("icon");
         spanString.setSpan(imgSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -456,7 +479,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             printForm.setVisGender(1);
         }
         printForm.setVisOrg(organizationEt.getText().toString());
-        printForm.setVisReason(reasonSpinner.getSelectedItem().toString());
+        printForm.setVisReason(reasonAc.getText().toString());
 
         printForm.setUserType(1);
         printForm.setUserName("张三");

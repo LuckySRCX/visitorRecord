@@ -21,9 +21,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textSize="@dimen/edit_text_size"
                 android:text="@string/id_card_image"
-                android:textColor="@color/button_no" />
+                android:textColor="@color/button_no"
+                android:textSize="@dimen/edit_text_size" />
         </LinearLayout>
 
         <Button
@@ -123,9 +123,20 @@
                         android:minWidth="110dp"
                         android:text="@string/credentials_type" />
 
-                    <Spinner
-                        android:id="@+id/credentials_spinner"
-                        style="@style/visitor_edit_spinner" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/credentials_type_ac"
+                            style="@style/auto_complete_text_view" />
+
+                        <TextView
+                            android:id="@+id/credentials_type_tv"
+                            style="@style/auto_complete_text_view_icon"
+                            android:layout_alignEnd="@+id/credentials_type_ac" />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -172,9 +183,20 @@
                         android:minWidth="110dp"
                         android:text="@string/visitor_reason" />
 
-                    <Spinner
-                        android:id="@+id/reason_spinner"
-                        style="@style/visitor_edit_spinner" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/reason_ac"
+                            style="@style/auto_complete_text_view" />
+
+                        <TextView
+                            android:id="@+id/reason_tv"
+                            style="@style/auto_complete_text_view_icon"
+                            android:layout_alignEnd="@+id/reason_ac" />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -201,9 +223,20 @@
                         android:minWidth="110dp"
                         android:text="@string/visitor_number" />
 
-                    <Spinner
-                        android:id="@+id/visitor_number_spinner"
-                        style="@style/visitor_edit_spinner" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/visitor_number_ac"
+                            style="@style/auto_complete_text_view" />
+
+                        <TextView
+                            android:id="@+id/visitor_number_tv"
+                            style="@style/auto_complete_text_view_icon"
+                            android:layout_alignEnd="@+id/visitor_number_ac" />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 

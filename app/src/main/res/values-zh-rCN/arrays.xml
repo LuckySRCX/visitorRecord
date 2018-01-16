@@ -14,9 +14,9 @@
     </string-array>
     <!--随行人数-->
     <string-array name="visitor_number">
-        <item>1人</item>
-        <item>2–5人</item>
-        <item>5人以上</item>
+        <item>1–2人</item>
+        <item>3–4人</item>
+        <item>4–5人</item>
     </string-array>
     <!--签到状态-->
     <string-array name="is_leave_option">
