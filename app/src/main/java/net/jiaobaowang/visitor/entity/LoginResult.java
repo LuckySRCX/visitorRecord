@@ -8,6 +8,8 @@ public class LoginResult {
     private String code;
     private String state;
     private String token;
+    private int id;
+    private int school_id;
 
     public String getCode() {
         return code;
@@ -31,5 +33,21 @@ public class LoginResult {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getSchool_id() {
+        return school_id;
+    }
+
+    public void setSchool_id(int school_id) {
+        this.school_id = school_id;
     }
 }

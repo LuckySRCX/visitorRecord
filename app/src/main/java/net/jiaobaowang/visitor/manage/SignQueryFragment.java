@@ -13,23 +13,37 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import net.jiaobaowang.visitor.Listener.OnLoadMoreListener;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.BaseFragment;
+import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
+import net.jiaobaowang.visitor.entity.ListResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.entity.VisitRecordLab;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * 访客查询界面
@@ -43,12 +57,21 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
     private TextView mSelectText;
+    private EditText mText_keywords;
+    private Spinner mSpinner_visitorState;
+    private Spinner mSpinner_identity;
     private final int REQUEST_SIBFGIN_CODE = 0;
     private final int REQUEST_SIOFF_CODE = 1;
     private static final String DIALOG_DATE = "DialogDate";
 
     private RecyclerView mRecyclerView;
     private QueryRecyclerAdapter mRecyclerAdapter;
+
+    private String mToken;
+    private int pageIndex = 1;
+    private int pageSize = 20;
+    OkHttpClient okHttpClient = new OkHttpClient();
+
 
     public SignQueryFragment() {
         // Required empty public constructor
@@ -67,6 +90,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
     }
 
     @Override
@@ -76,6 +100,11 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         setTextView((TextView) v.findViewById(R.id.sign_in_begin), mDateSIBegin);
         setTextView((TextView) v.findViewById(R.id.sign_in_end), mDateSIEnd);
         v.findViewById(R.id.back_up).setOnClickListener(this);
+        v.findViewById(R.id.btn_query).setOnClickListener(this);
+        v.findViewById(R.id.btn_output_excel).setOnClickListener(this);
+        mText_keywords = v.findViewById(R.id.edit_keywords);
+        mSpinner_identity = v.findViewById(R.id.spinner_identity);
+        mSpinner_visitorState = v.findViewById(R.id.spinner_visitorState);
         mRecyclerView = v.findViewById(R.id.recycler_query);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         updateUI();
@@ -152,10 +181,58 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             case R.id.back_up:
                 getActivity().onBackPressed();
                 break;
+            case R.id.btn_query:
+                queryRecords();
+                break;
+            case R.id.btn_output_excel:
+                break;
             default:
                 break;
         }
 
+    }
+
+    private void queryRecords() {
+        final String keywords = mText_keywords.getText().toString().trim();
+        final int leaveFlag = mSpinner_visitorState.getSelectedItemPosition() - 1;
+        final int identityType = mSpinner_identity.getSelectedItemPosition() - 1;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    RequestBody body = new FormBody.Builder()
+                            .add("token", mToken)
+                            .add("pageInt", pageIndex + "")
+                            .add("pageSize", pageSize + "")
+                            .add("keyword", keywords)
+                            .add("leave_flag", leaveFlag + "")
+                            .add("interviewee_type", identityType + "")
+                            .add("in_start_time", formatDate(mDateSIBegin) == null ? "" : formatDate(mDateSIBegin))
+                            .add("in_end_time", formatDate(mDateSIEnd) == null ? "" : formatDate(mDateSIEnd)).build();
+                    Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
+                    Response response = okHttpClient.newCall(request).execute();
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Exception" + response);
+                    } else {
+                        resultDealt(response.body().string());
+                    }
+                } catch (Exception e) {
+                    Log.d("ERROR", "请求数据错误", e);
+                }
+            }
+        }).start();
+    }
+
+    private void resultDealt(String string) {
+        Log.d(TAG, string);
+        Gson gson = new Gson();
+        ListResult listResult = gson.fromJson(string, ListResult.class);
+        if (listResult.getCode().equals("0000")) {
+            VisitRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
+            pageIndex++;
+        } else {
+            Toast.makeText(getActivity(), "无请求数据", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -165,11 +242,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
      */
     private void showDialog(int requestCode, Date selectDate, Date beginDate) {
         FragmentManager fragmentManager = getFragmentManager();
-        DatePickerFragment dialog = DatePickerFragment.newInstance(0,selectDate, beginDate);
+        DatePickerFragment dialog = DatePickerFragment.newInstance(0, selectDate, beginDate);
         dialog.setTargetFragment(SignQueryFragment.this, requestCode);
         dialog.show(fragmentManager, DIALOG_DATE);
     }
-
 
 
     @Override
@@ -199,6 +275,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
      * @return 返回 yyyy-MM-dd 格式的时间字符串
      */
     private String formatDate(Date date) {
+        if (date == null) {
+            return null;
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return dateFormat.format(date);
     }
