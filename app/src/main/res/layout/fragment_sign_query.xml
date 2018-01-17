@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:padding="@dimen/default_padding"
     tools:context="net.jiaobaowang.visitor.manage.SignQueryFragment">
@@ -39,7 +41,6 @@
             android:layout_height="wrap_content"
             android:hint="@string/keywords_hint"
             android:inputType="text"
-            android:minWidth="300dp"
             android:singleLine="false" />
 
         <TextView
@@ -75,14 +76,6 @@
             android:textSize="12sp">
 
         </Spinner>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:paddingBottom="8dp">
 
         <TextView
             style="@style/inputHintStyle"
@@ -92,15 +85,16 @@
             android:text="@string/sign_in_date_" />
 
         <LinearLayout
+            android:id="@+id/sign_in_beginContainer"
             style="@style/query_edit_text"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="32dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/sign_in_begin"
-
+                style="@style/query_options_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -127,14 +121,16 @@
             android:text="@string/to" />
 
         <LinearLayout
+            android:id="@+id/sign_in_endContainer"
             style="@style/query_edit_text"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="32dp"
             android:gravity="center_vertical">
 
 
             <TextView
                 android:id="@+id/sign_in_end"
+                style="@style/query_options_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -152,6 +148,12 @@
                 android:src="@mipmap/ic_date" />
         </LinearLayout>
 
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/btn_query"
             android:layout_width="75dp"
@@ -160,20 +162,6 @@
             android:background="@drawable/query_btn"
             android:text="@string/query"
             android:textColor="@drawable/query_btn_text" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <Button
-            android:id="@+id/btn_output_excel"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:layout_gravity="end"
-            android:background="@drawable/output_excel"
-            android:text="@string/output_excel"
-            android:textColor="@drawable/ouput_excel_text" />
     </LinearLayout>
 
     <include

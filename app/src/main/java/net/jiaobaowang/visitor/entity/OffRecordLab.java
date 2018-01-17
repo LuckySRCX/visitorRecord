@@ -6,24 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by rocka on 2018/1/12.
+ * Created by rocka on 2018/1/17.
  */
 
-public class VisitRecordLab {
+public class OffRecordLab {
     private List<VisitRecord> mVisitRecords;
-    private static VisitRecordLab mVisitRecordLab;
+    private static OffRecordLab mOffRecordLab;
     private Context mContext;
 
-    public VisitRecordLab(Context context) {
+    public OffRecordLab(Context context) {
         mContext = context.getApplicationContext();
         mVisitRecords = new ArrayList<>();
     }
 
-    public static VisitRecordLab get(Context context) {
-        if (mVisitRecordLab == null) {
-            mVisitRecordLab = new VisitRecordLab(context);
+    public static OffRecordLab get(Context context) {
+        if (mOffRecordLab == null) {
+            mOffRecordLab = new OffRecordLab(context);
         }
-        return mVisitRecordLab;
+        return mOffRecordLab;
     }
 
     public List<VisitRecord> getVisitRecords() {
