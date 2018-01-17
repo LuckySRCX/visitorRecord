@@ -33,6 +33,7 @@ import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.common.VisitorConfig;
+import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.AddFormResult;
 import net.jiaobaowang.visitor.entity.Department;
 import net.jiaobaowang.visitor.entity.PrintForm;
@@ -649,7 +650,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     clearUserInfo();
                     if (isNeedPrint) {
                         Intent intent = new Intent(mContext, PrinterActivity.class);
-                        intent.putExtra("printForm", result.getVisitor());
+                        intent.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, result.getVisitor());
                         startActivity(intent);
                     }
                 } else {
