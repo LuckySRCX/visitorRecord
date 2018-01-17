@@ -101,7 +101,7 @@
 
             <TextView
                 android:id="@+id/sign_in_begin"
-
+                style="@style/query_options_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -137,6 +137,7 @@
 
             <TextView
                 android:id="@+id/sign_in_end"
+                style="@style/query_options_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"

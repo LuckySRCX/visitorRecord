@@ -41,6 +41,7 @@
                     android:id="@+id/off_detail_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/off_detail_text"
                     android:text="Jack Json"/>
             </LinearLayout>
 
@@ -57,6 +58,7 @@
                     android:id="@+id/off_detail_sex"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/off_detail_text"
                     android:text="男"/>
             </LinearLayout>
 
@@ -74,6 +76,7 @@
                     android:id="@+id/off_detail_cardType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/off_detail_text"
                     android:text="身份证"/>
             </LinearLayout>
 
@@ -92,6 +95,7 @@
                     android:id="@+id/off_detail_cardNo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/off_detail_text"
                     android:text="370000198605127896"/>
             </LinearLayout>
         </LinearLayout>
@@ -113,6 +117,7 @@
             android:id="@+id/off_detail_signIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/off_detail_text"
             android:text="2018-01-12 18:50"/>
     </LinearLayout>
 
@@ -141,7 +146,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:minWidth="150dp" />
+                android:minWidth="150dp"
+                style="@style/off_detail_text"/>
 
             <TextView
                 android:layout_width="1dp"
@@ -172,6 +178,7 @@
             android:id="@+id/off_detail_checkTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/off_detail_text"
             android:text="2018-01-15 19:20"/>
     </LinearLayout>
 

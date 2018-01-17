@@ -55,8 +55,8 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
 
     private void initialView(View v) {
         ((TextView) v.findViewById(R.id.off_detail_name)).setText(mVisitRecord.getVisitor_name());
-        ((TextView) v.findViewById(R.id.off_detail_sex)).setText(mVisitRecord.getVisitor_sex() == 0 ? "女" : "男");
-        ((TextView) v.findViewById(R.id.off_detail_cardType)).setText(mVisitRecord.getCertificate_type_id() == 0 ? "身份证" : "其他证件");
+        ((TextView) v.findViewById(R.id.off_detail_sex)).setText(mVisitRecord.getVisitor_sex() == 0 ? "男" : "女");
+        ((TextView) v.findViewById(R.id.off_detail_cardType)).setText(mVisitRecord.getCertificate_type());
         ((TextView) v.findViewById(R.id.off_detail_cardNo)).setText(mVisitRecord.getCertificate_number());
         ((TextView) v.findViewById(R.id.off_detail_signIn)).setText(mVisitRecord.getIn_time());
         mOffTimeText = v.findViewById(R.id.off_detail_offTime);
@@ -95,7 +95,6 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         if (dialog != null) {
             dialog.getWindow().setLayout(950, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
-
     }
 
     @Override
