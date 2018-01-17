@@ -44,8 +44,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -65,6 +63,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private BeepManager beepManager;//bee声音
     private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
     private PrintForm printForm;//打印访客单
+    private FormBody.Builder params;//保存的数据
+    private OkHttpClient mOkHttpClient = new OkHttpClient();
 
     private Context mContext;
     private LinearLayout typeTeacherLL;//教职工区域
@@ -93,7 +93,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private AutoCompleteTextView classesAc;//班级
     private AutoCompleteTextView studentNameAc;//学生姓名
     private AutoCompleteTextView headMasterAc;//班主任姓名
-    private ProgressDialog submitDataDialog;
+
 
     public SignInFragment() {
     }
@@ -383,14 +383,31 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         headImage = null;
         idCardHeadTv.setText(getResources().getString(R.string.id_card_image));
         nameEt.setText("");
+        maleRb.setChecked(true);
+        femaleRb.setChecked(false);
         dateOfBirthEt.setText("");
+        credentialsTypeAc.setText(getResources().getStringArray(R.array.credentials_type)[0]);
         idNumberEt.setText("");
         addressEt.setText("");
+        reasonAc.setText(getResources().getStringArray(R.array.reason_type)[0]);
         phoneNumberEt.setText("");
+        visitorNumberAc.setText(getResources().getStringArray(R.array.visitor_number)[0]);
         belongingsEt.setText("");
         organizationEt.setText("");
         plateNumberEt.setText("");
         remarksEt.setText("");
+    }
+
+    /**
+     * 清除教职工和学生信息
+     */
+    private void clearUserInfo(){
+        departmentAc.setText("");
+        teacherNameAc.setText("");
+        gradeAc.setText("");
+        classesAc.setText("");
+        studentNameAc.setText("");
+        headMasterAc.setText("");
     }
 
     /**
@@ -507,7 +524,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
         String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
         printForm.setRegisterName("jsy");
-        FormBody.Builder params = new FormBody.Builder();
+        params = new FormBody.Builder();
         params.add("token", token);
         params.add("visitor_name", visitor_name);//访客姓名
         params.add("visitor_for", visitor_for);//访问事由
@@ -582,60 +599,65 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             params.add("note", note);
             printForm.setRemarks(note);
         }
-        submitData(params);
-
+        new SubmitDataTask().execute();
     }
 
+    private class SubmitDataTask extends AsyncTask<Void, Void, String[]> {
+        ProgressDialog submitDataDialog;
 
-    /**
-     * 提交数据
-     *
-     * @param params
-     */
-    private void submitData(FormBody.Builder params) {
-        submitDataDialog = new ProgressDialog(mContext);
-        submitDataDialog.setMessage("正在提交数据，请等待...");
-        submitDataDialog.setCancelable(false);
-        submitDataDialog.show();
-        try {
-            Request request = new Request.Builder()
-                    .url(VisitorConfig.VISITOR_API_ADD)
-                    .post(params.build())
-                    .build();
-            OkHttpClient mOkHttpClient = new OkHttpClient();
-            mOkHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                    submitDataDialog.dismiss();
-                    Log.i(TAG, "onFailure:" + e.toString());
-                }
+        @Override
+        protected void onPreExecute() {
+            submitDataDialog = new ProgressDialog(mContext);
+            submitDataDialog.setMessage("正在提交数据，请等待...");
+            submitDataDialog.setCancelable(false);
+            submitDataDialog.show();
+        }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    submitDataDialog.dismiss();
-                    //Looper.prepare();
-                    String resultStr = response.body().string();
-                    Log.i(TAG, "onResponse:" + resultStr);
-                    Gson gson = new Gson();
-                    AddFormResult result = gson.fromJson(resultStr, AddFormResult.class);
-                    if (result.getCode().equals("0000")) {
-                        printForm.setFormId(result.getVisit_Int());
-                        if (isNeedPrint) {
-                            Intent intent = new Intent(mContext, PrinterActivity.class);
-                            intent.putExtra("printForm", printForm);
-                            startActivity(intent);
-                        }
-                        //ToastUtils.showMessage(mContext, "保存访客记录成功");
-                    } else {
-                        //ToastUtils.showMessage(mContext, "保存访客记录失败：" + result.getMsg());
-                    }
+        @Override
+        protected String[] doInBackground(Void... Void) {
+            String result[] = new String[2];
+            try {
+                Request request = new Request.Builder()
+                        .url(VisitorConfig.VISITOR_API_ADD)
+                        .post(params.build())
+                        .build();
+                Response response = mOkHttpClient.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    result[0] = "1";
+                    result[1] = response.body().string();
+                    return result;
+                } else {
+                    throw new IOException("Unexpected code " + response);
                 }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+                result[0] = "0";
+                result[1] = e.toString();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String resultStr[]) {
             submitDataDialog.dismiss();
-            Log.e(TAG, "保存访客记录失败", e);
+            if (resultStr[0].equals("1")) {
+                Gson gson = new Gson();
+                AddFormResult result = gson.fromJson(resultStr[1], AddFormResult.class);
+                if (result.getCode().equals("0000")) {
+                    ToastUtils.showMessage(mContext, "保存访客记录成功");
+                    clearVisitorInfo();
+                    clearUserInfo();
+                    if (isNeedPrint) {
+                        Intent intent = new Intent(mContext, PrinterActivity.class);
+                        intent.putExtra("printForm", result.getVisitor());
+                        startActivity(intent);
+                    }
+                } else {
+                    DialogUtils.showAlert(mContext, "保存访客记录失败：" + result.getMsg());
+                }
+            } else {
+                DialogUtils.showAlert(mContext, "保存访客记录失败：" + resultStr[1]);
+            }
         }
     }
 }
