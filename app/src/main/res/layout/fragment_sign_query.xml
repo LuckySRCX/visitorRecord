@@ -37,7 +37,7 @@
         <EditText
             android:id="@+id/edit_keywords"
             style="@style/query_edit_text"
-            android:layout_width="wrap_content"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:hint="@string/keywords_hint"
             android:inputType="text"
@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/is_leave_option"
-            android:minWidth="120dp"
+            android:minWidth="90dp"
             android:textSize="12sp">
 
         </Spinner>
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/person_identity"
-            android:minWidth="120dp"
+            android:minWidth="90dp"
             android:textSize="12sp">
 
         </Spinner>

@@ -35,8 +35,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".manage.ManageActivity"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".manage.ManageActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".printer.PrinterActivity"
             android:launchMode="singleTask"

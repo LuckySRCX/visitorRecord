@@ -89,7 +89,7 @@
     <string name="interviewee_info">被访人信息</string>
     <string name="department">部门：</string>
     <string name="name_input_or_drop">输入或点击下拉选择</string>
-    <string name="registrant_time">登记时间:</string>
+    <string name="registrant_time">登记时间：</string>
     <string name="visitor_form_id">访客单号：</string>
     <string name="visitor_form_visitor_number">随行人数：</string>
     <string name="visitor_form_org_name">单位名称：</string>
