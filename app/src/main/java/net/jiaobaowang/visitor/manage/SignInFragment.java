@@ -203,9 +203,15 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void initData() {
+        //访客
         nameEt.setText("张三");
         idNumberEt.setText("1234567890");
+        //教职工
+        departmentAc.setText("行政部");
         teacherNameAc.setText("李四");
+        //学生
+        gradeAc.setText("一年级");
+        classesAc.setText("1801班");
         studentNameAc.setText("小明");
         headMasterAc.setText("李雷");
         printForm = new PrintForm();
@@ -510,7 +516,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             //教职工
             //姓名
             params.add("teacher_name", teacher_name);
-            printForm.setUserName(student_name);
+            printForm.setUserName(teacher_name);
             //部门
             String department_name = departmentAc.getText().toString().trim();
             if (!"".equals(department_name)) {
@@ -534,7 +540,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             //姓名
             params.add("student_name", student_name);
             printForm.setUserName(student_name);
-
             //printForm.setUserClassName("1303班");
             printForm.setUserHeadMaster(head_teacher_name);
             params.add("head_teacher_name", head_teacher_name);//班主任姓名
