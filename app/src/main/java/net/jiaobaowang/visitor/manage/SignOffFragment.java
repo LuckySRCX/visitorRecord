@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,22 +14,40 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import net.jiaobaowang.visitor.Listener.OnLoadMoreListener;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.BaseFragment;
+import net.jiaobaowang.visitor.common.VisitorConfig;
+import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
+import net.jiaobaowang.visitor.entity.ListResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
-import net.jiaobaowang.visitor.entity.VisitRecordLab;
+import net.jiaobaowang.visitor.entity.OffRecordLab;
+import net.jiaobaowang.visitor.entity.OffRecordLab;
+import net.jiaobaowang.visitor.printer.VisitorFormDetailsActivity;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * 访客签离界面
@@ -43,12 +62,22 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
     private TextView mSelectText;
+    private TextView mSignInBegin;
+    private TextView mSignInEnd;
     private final int REQUEST_SIBFGIN_CODE = 0;
     private final int REQUEST_SIOFF_CODE = 1;
     private static final String DIALOG_DATE = "DialogDate";
     private static final String DIALOG_VISIT = "DialogVisit";
     private RecyclerView mRecyclerView;
     private OffRecyclerAdapter mRecyclerAdapter;
+    private EditText mText_keywords;
+    private Spinner mSpinner_identity;
+    private String mToken;
+    private int pageIndex = 1;
+    private int pageSize = 20;
+    private boolean isLastPage;
+    private MyHandler mMyHandler;
+    private OkHttpClient okHttpClient = new OkHttpClient();
 
     public SignOffFragment() {
         // Required empty public constructor
@@ -67,31 +96,47 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mMyHandler = new MyHandler(SignOffFragment.this.getActivity());
+        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_off, container, false);
-        setTextView((TextView) v.findViewById(R.id.sign_in_begin), mDateSIBegin);
-        setTextView((TextView) v.findViewById(R.id.sign_in_end), mDateSIEnd);
+
+        mSignInBegin = v.findViewById(R.id.sign_in_begin);
+        mSignInEnd = v.findViewById(R.id.sign_in_end);
+        setTextView(mSignInBegin, mDateSIBegin);
+        setTextView(mSignInEnd, mDateSIEnd);
+        v.findViewById(R.id.sign_in_beginContainer).setOnClickListener(this);
+        v.findViewById(R.id.sign_in_endContainer).setOnClickListener(this);
         v.findViewById(R.id.back_up).setOnClickListener(this);
+        v.findViewById(R.id.btn_query).setOnClickListener(this);
         mRecyclerView = v.findViewById(R.id.recycler_query);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         v.findViewById(R.id.leave_time).setVisibility(View.GONE);
-        updateUI();
+        mText_keywords = v.findViewById(R.id.edit_keywords);
+        mSpinner_identity = v.findViewById(R.id.spinner_identity);
+        setSpinner(mSpinner_identity, R.array.person_identity);
         return v;
     }
 
+    private void setSpinner(Spinner spinner, int resId) {
+        String[] options = getResources().getStringArray(resId);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.visit_spinner_item, options);
+        adapter.setDropDownViewResource(R.layout.visit_drop_down_item);
+        spinner.setAdapter(adapter);
+    }
+
     private void updateUI() {
-        VisitRecordLab recordLab = VisitRecordLab.get(getActivity());
+        OffRecordLab recordLab = OffRecordLab.get(getActivity());
         List<VisitRecord> records = recordLab.getVisitRecords();
         mRecyclerAdapter = new OffRecyclerAdapter(mRecyclerView, records);
         mRecyclerView.setAdapter(mRecyclerAdapter);
         setListener(recordLab, records);
     }
 
-    private void setListener(final VisitRecordLab lab, final List<VisitRecord> records) {
+    private void setListener(final OffRecordLab lab, final List<VisitRecord> records) {
         mRecyclerAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
@@ -107,9 +152,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void run() {
                         records.remove(records.size() - 1);
-                        lab.addTenVisits();
-                        mRecyclerAdapter.notifyDataSetChanged();
-                        mRecyclerAdapter.setLoaded();
+                        queryRecords();
                     }
                 }, 1000);
             }
@@ -135,14 +178,16 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         int code = 0;
 
         switch (v.getId()) {
+            case R.id.sign_in_beginContainer:
             case R.id.sign_in_begin://签到开始时间
-                mSelectText = (TextView) v;
+                mSelectText = mSignInBegin;
                 selectDate = mDateSIBegin;
                 code = REQUEST_SIBFGIN_CODE;
                 showDialog(code, selectDate, minDate);
                 break;
+            case R.id.sign_in_endContainer:
             case R.id.sign_in_end://签到结束时间
-                mSelectText = (TextView) v;
+                mSelectText = mSignInEnd;
                 selectDate = mDateSIEnd;
                 code = REQUEST_SIOFF_CODE;
                 minDate = mDateSIBegin;
@@ -151,10 +196,94 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             case R.id.back_up:
                 getActivity().onBackPressed();
                 break;
+            case R.id.btn_query:
+                pageIndex = 1;
+                queryRecords();
+                break;
             default:
                 break;
         }
 
+    }
+
+    private void queryRecords() {
+        final String keywords = mText_keywords.getText().toString().trim();
+        final int identityType = mSpinner_identity.getSelectedItemPosition() - 1;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    RequestBody body = new FormBody.Builder()
+                            .add("token", mToken)
+                            .add("pageNumber", pageIndex + "")
+                            .add("pageSize", pageSize + "")
+                            .add("keyword", keywords)
+                            .add("leave_flag", 0 + "")
+                            .add("interviewee_type", identityType + "")
+                            .add("in_start_time", formatDate(mDateSIBegin) == null ? "" : formatDate(mDateSIBegin))
+                            .add("in_end_time", formatDate(mDateSIEnd) == null ? "" : formatDate(mDateSIEnd)).build();
+                    Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
+                    Response response = okHttpClient.newCall(request).execute();
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Exception" + response);
+                    } else {
+                        resultDealt(response.body().string());
+                    }
+                } catch (Exception e) {
+                    Log.d("ERROR", "请求数据错误", e);
+                }
+            }
+        }).start();
+    }
+
+    private void resultDealt(String string) {
+        Log.d(TAG, string);
+        Gson gson = new Gson();
+        ListResult listResult = gson.fromJson(string, ListResult.class);
+        if (listResult.getCode().equals("0000")) {
+            isLastPage = listResult.getData().isLastPage();
+            if (pageIndex == 1) {
+                OffRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
+                mMyHandler.sendEmptyMessage(0);
+            } else {
+                OffRecordLab.get(getActivity()).addVisitRecords(listResult.getData().getList());
+                mMyHandler.sendEmptyMessage(1);
+            }
+            if (!isLastPage) {
+                pageIndex++;
+            }
+        } else {
+            Toast.makeText(getActivity(), "无请求数据", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * MyHandler
+     */
+    private class MyHandler extends Handler {
+        private Activity mContext;
+
+        MyHandler(Activity context) {
+            mContext = context;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            Log.d(TAG, "获取的信息为：" + String.valueOf(msg.what));
+            switch (msg.what) {
+                case 0:
+                    Log.d(TAG, OffRecordLab.get(mContext).getVisitRecords().toString());
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    updateUI();
+                    break;
+                case 1:
+                    mRecyclerAdapter.notifyDataSetChanged();
+                    mRecyclerAdapter.setLoaded();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     /**
@@ -164,10 +293,11 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
      */
     private void showDialog(int requestCode, Date selectDate, Date beginDate) {
         FragmentManager fragmentManager = getFragmentManager();
-        DatePickerFragment dialog = DatePickerFragment.newInstance(0,selectDate, beginDate);
+        DatePickerFragment dialog = DatePickerFragment.newInstance(0, selectDate, beginDate);
         dialog.setTargetFragment(SignOffFragment.this, requestCode);
         dialog.show(fragmentManager, DIALOG_DATE);
     }
+
     private void showDetail(VisitRecord record) {
         FragmentManager fragmentManager = getFragmentManager();
         OffDetailFragment offDetailFragment = OffDetailFragment.newInstance(record);
@@ -201,6 +331,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
      * @return 返回 yyyy-MM-dd 格式的时间字符串
      */
     private String formatDate(Date date) {
+        if (date == null) {
+            return null;
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return dateFormat.format(date);
     }
@@ -258,22 +391,24 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 
         public void bind(VisitRecord record, int position) {
             mVisitorName.setText(record.getVisitor_name());
-//            mVisitorCounter.setText(record.getVisitor_counter());
-//            mVisitReason.setText(record.getNote());
-//            mDepartName.setText(record.getDepartment_name());
-//            mTeaName.setText(record.getTeacher_name());
-//            mGradeName.setText(record.getGrade_name());
-//            mClassName.setText(record.getClass_name());
-//            mStuName.setText(record.getStudent_name());
-//            mHeadTeaName.setText(record.getHead_teacher_name());
-//            mInTime.setText(record.getIn_time());
-//            mLeaveTime.setText(record.getLeave_time());
+            mVisitorCounter.setText(record.getVisitor_counter());
+            mVisitReason.setText(record.getNote());
+            mDepartName.setText(record.getDepartment_name());
+            mTeaName.setText(record.getTeacher_name());
+            mGradeName.setText(record.getGrade_name());
+            mClassName.setText(record.getClass_name());
+            mStuName.setText(record.getStudent_name());
+            mHeadTeaName.setText(record.getHead_teacher_name());
+            mInTime.setText(record.getIn_time());
+            mLeaveTime.setText(record.getLeave_time());
             if (position % 2 == 1) {
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item_dark));
             } else {
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
             }
+            mCellContainer.setTag(record);
             mIconDetail.setTag(record);
+            mCellContainer.setOnClickListener(this);
             mIconDetail.setOnClickListener(this);
         }
 
@@ -282,6 +417,12 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             //访问记录
             VisitRecord record = (VisitRecord) v.getTag();
             switch (v.getId()) {
+                case R.id.cell_container:
+                    Intent intent = new Intent();
+                    intent.setClass(getActivity(), VisitorFormDetailsActivity.class);
+                    intent.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, record);
+                    startActivity(intent);
+                    break;
                 case R.id.icon_detail://签离按钮点击事件
                     //todo 传递record并跳转至不知道啥界面
                     showDetail(record);
@@ -328,6 +469,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     totalItemCount = manager.getItemCount();
                     lastVisibleItem = manager.findLastVisibleItemPosition();
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
+                        if (isLastPage) {
+                            return;
+                        }
                         if (mLoadMoreListener != null) {
                             mLoadMoreListener.onLoadMore();
                         }

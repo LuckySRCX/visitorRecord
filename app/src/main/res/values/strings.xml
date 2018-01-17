@@ -7,7 +7,7 @@
     <string name="visitor_signOff">visitor sign off</string>
     <!--SignInFragment-->
     <string name="sign_query_head">visitor/visitor query</string>
-    <string name="keywords_hint">visitor name,phone number,ID</string>
+    <string name="keywords_hint">visitor name</string>
     <string name="visitor_info">访客信息</string>
     <string name="visitor_form">访客单</string>
     <string name="id_card_read">读卡器读取身份证</string>

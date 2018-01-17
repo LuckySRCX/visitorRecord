@@ -15,12 +15,13 @@ public class VisitRecord implements Serializable {
     private boolean leave_flag;//:true,（是否已经签离）
     private int visitor_sex;//:0,（访客性别）
     private int teacher_id;//:null,（老师id）
-    private int visitor_counter;//:0,（随行人数）
+    private String visitor_counter;//:0,（随行人数）
     private int class_id;//:null,（班级id）
     private String certificate_number;//:null,（证件号码）
     private String student_name;//:null,（学生姓名）
     private String update_time;//:2018-01-05 10;//:06,（更新时间）
-    private int grade_id;//:null,（年级id）
+    private int school_id;
+    private String grade_code;//:null,（年级id）
     private int id;//:2018000003,（访客记录id）
     private String visitor_phone;//:null,（访问者电话）
     private String class_name;//:null,（班级名称）
@@ -39,7 +40,7 @@ public class VisitRecord implements Serializable {
     private String img_url;
     private String visitor_birthday;//:null,（访客生日）
     private String head_teacher_name;//:null,（班主任名称）
-    private int certificate_type_id;//:0,（证件类型）
+    private String certificate_type;//:0,（证件类型）
     private String plate_number;//:京A8888,（车牌号）
     private String grade_name;//:null,（年级名称）
     private int head_teacher_id;//:null（班主任id）
@@ -100,11 +101,11 @@ public class VisitRecord implements Serializable {
         this.teacher_id = teacher_id;
     }
 
-    public int getVisitor_counter() {
+    public String getVisitor_counter() {
         return visitor_counter;
     }
 
-    public void setVisitor_counter(int visitor_counter) {
+    public void setVisitor_counter(String visitor_counter) {
         this.visitor_counter = visitor_counter;
     }
 
@@ -140,12 +141,20 @@ public class VisitRecord implements Serializable {
         this.update_time = update_time;
     }
 
-    public int getGrade_id() {
-        return grade_id;
+    public int getSchool_id() {
+        return school_id;
     }
 
-    public void setGrade_id(int grade_id) {
-        this.grade_id = grade_id;
+    public void setSchool_id(int school_id) {
+        this.school_id = school_id;
+    }
+
+    public String getGrade_code() {
+        return grade_code;
+    }
+
+    public void setGrade_code(String grade_code) {
+        this.grade_code = grade_code;
     }
 
     public int getId() {
@@ -292,12 +301,12 @@ public class VisitRecord implements Serializable {
         this.head_teacher_name = head_teacher_name;
     }
 
-    public int getCertificate_type_id() {
-        return certificate_type_id;
+    public String getCertificate_type() {
+        return certificate_type;
     }
 
-    public void setCertificate_type_id(int certificate_type_id) {
-        this.certificate_type_id = certificate_type_id;
+    public void setCertificate_type(String certificate_type) {
+        this.certificate_type = certificate_type;
     }
 
     public String getPlate_number() {

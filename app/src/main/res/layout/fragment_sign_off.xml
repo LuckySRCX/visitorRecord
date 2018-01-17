@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:padding="@dimen/default_padding"
     tools:context="net.jiaobaowang.visitor.manage.SignQueryFragment">
@@ -33,6 +35,7 @@
             android:background="@drawable/query_btn"
             android:text="@string/scan_code"
             android:textColor="@drawable/query_btn_text" />
+
         <Button
             android:layout_width="75dp"
             android:layout_height="40dp"
@@ -48,6 +51,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center_vertical"
         android:paddingBottom="8dp">
+
         <TextView
             style="@style/inputHintStyle"
             android:layout_width="wrap_content"
@@ -55,18 +59,22 @@
             android:text="@string/keywords_" />
 
         <EditText
+            android:id="@+id/edit_keywords"
             style="@style/query_edit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/keywords_hint"
             android:inputType="text"
             android:singleLine="false" />
+
         <TextView
             style="@style/inputHintStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="被访人:" />
+
         <Spinner
+            android:id="@+id/spinner_identity"
             style="@style/visitor_edit_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,9 +92,10 @@
             android:text="@string/sign_in_date_" />
 
         <LinearLayout
+            android:id="@id/sign_in_beginContainer"
             style="@style/query_edit_text"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="32dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -119,9 +128,10 @@
             android:text="@string/to" />
 
         <LinearLayout
+            android:id="@+id/sign_in_endContainer"
             style="@style/query_edit_text"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="32dp"
             android:gravity="center_vertical">
 
 
@@ -145,12 +155,13 @@
         </LinearLayout>
 
 
-
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
+
         <Button
+            android:id="@+id/btn_query"
             android:layout_width="75dp"
             android:layout_height="40dp"
             android:layout_marginStart="16dp"
@@ -168,7 +179,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_query"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 
 </LinearLayout>

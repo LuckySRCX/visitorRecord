@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,11 +29,13 @@ import net.jiaobaowang.visitor.Listener.OnLoadMoreListener;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.BaseFragment;
 import net.jiaobaowang.visitor.common.VisitorConfig;
+import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.ListResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.entity.VisitRecordLab;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
+import net.jiaobaowang.visitor.printer.VisitorFormDetailsActivity;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -56,6 +60,8 @@ import okhttp3.Response;
 public class SignQueryFragment extends BaseFragment implements View.OnClickListener {
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
+    private TextView mSignInBegin;
+    private TextView mSignInEnd;
     private TextView mSelectText;
     private EditText mText_keywords;
     private Spinner mSpinner_visitorState;
@@ -70,8 +76,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     private String mToken;
     private int pageIndex = 1;
     private int pageSize = 20;
+    private boolean isLastPage;
     OkHttpClient okHttpClient = new OkHttpClient();
-
+    MyHandler mMyHandler;
 
     public SignQueryFragment() {
         // Required empty public constructor
@@ -90,6 +97,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mMyHandler = new MyHandler(SignQueryFragment.this.getActivity());
         mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
     }
 
@@ -97,18 +105,28 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_query, container, false);
-        setTextView((TextView) v.findViewById(R.id.sign_in_begin), mDateSIBegin);
-        setTextView((TextView) v.findViewById(R.id.sign_in_end), mDateSIEnd);
+        mSignInBegin = v.findViewById(R.id.sign_in_begin);
+        mSignInEnd = v.findViewById(R.id.sign_in_end);
+        setTextView(mSignInBegin, mDateSIBegin);
+        setTextView(mSignInEnd, mDateSIEnd);
+        v.findViewById(R.id.sign_in_beginContainer).setOnClickListener(this);
+        v.findViewById(R.id.sign_in_endContainer).setOnClickListener(this);
         v.findViewById(R.id.back_up).setOnClickListener(this);
         v.findViewById(R.id.btn_query).setOnClickListener(this);
-        v.findViewById(R.id.btn_output_excel).setOnClickListener(this);
         mText_keywords = v.findViewById(R.id.edit_keywords);
         mSpinner_identity = v.findViewById(R.id.spinner_identity);
         mSpinner_visitorState = v.findViewById(R.id.spinner_visitorState);
+        setSpinner(mSpinner_identity, R.array.person_identity);
+        setSpinner(mSpinner_visitorState, R.array.is_leave_option);
         mRecyclerView = v.findViewById(R.id.recycler_query);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        updateUI();
         return v;
+    }
+
+    private void setSpinner(Spinner spinner, int resId) {
+        String[] options=getResources().getStringArray(resId);
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(),R.layout.visit_spinner_item,options);
+        adapter.setDropDownViewResource(R.layout.visit_drop_down_item);
+        spinner.setAdapter(adapter);
     }
 
 
@@ -136,9 +154,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     @Override
                     public void run() {
                         records.remove(records.size() - 1);
-                        recordLab.addTenVisits();
-                        mRecyclerAdapter.notifyDataSetChanged();
-                        mRecyclerAdapter.setLoaded();
+                        queryRecords();
                     }
                 }, 500);
 
@@ -165,14 +181,16 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         int code = 0;
 
         switch (v.getId()) {
+            case R.id.sign_in_beginContainer:
             case R.id.sign_in_begin://签到开始时间
-                mSelectText = (TextView) v;
+                mSelectText = mSignInBegin;
                 selectDate = mDateSIBegin;
                 code = REQUEST_SIBFGIN_CODE;
                 showDialog(code, selectDate, minDate);
                 break;
+            case R.id.sign_in_endContainer:
             case R.id.sign_in_end://签到结束时间
-                mSelectText = (TextView) v;
+                mSelectText = mSignInEnd;
                 selectDate = mDateSIEnd;
                 code = REQUEST_SIOFF_CODE;
                 minDate = mDateSIBegin;
@@ -182,9 +200,8 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 getActivity().onBackPressed();
                 break;
             case R.id.btn_query:
+                pageIndex = 1;
                 queryRecords();
-                break;
-            case R.id.btn_output_excel:
                 break;
             default:
                 break;
@@ -202,7 +219,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 try {
                     RequestBody body = new FormBody.Builder()
                             .add("token", mToken)
-                            .add("pageInt", pageIndex + "")
+                            .add("pageNumber", pageIndex + "")
                             .add("pageSize", pageSize + "")
                             .add("keyword", keywords)
                             .add("leave_flag", leaveFlag + "")
@@ -228,10 +245,48 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         Gson gson = new Gson();
         ListResult listResult = gson.fromJson(string, ListResult.class);
         if (listResult.getCode().equals("0000")) {
-            VisitRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
-            pageIndex++;
+            isLastPage = listResult.getData().isLastPage();
+            if (pageIndex == 1) {
+                VisitRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
+                mMyHandler.sendEmptyMessage(0);
+            } else {
+                VisitRecordLab.get(getActivity()).addVisitRecords(listResult.getData().getList());
+                mMyHandler.sendEmptyMessage(1);
+            }
+            if (!isLastPage) {
+                pageIndex++;
+            }
         } else {
             Toast.makeText(getActivity(), "无请求数据", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * MyHandler
+     */
+    private class MyHandler extends Handler {
+        private Activity mContext;
+
+        MyHandler(Activity context) {
+            mContext = context;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            Log.d(TAG, "获取的信息为：" + String.valueOf(msg.what));
+            switch (msg.what) {
+                case 0:
+                    Log.d(TAG, VisitRecordLab.get(mContext).getVisitRecords().toString());
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    updateUI();
+                    break;
+                case 1:
+                    mRecyclerAdapter.notifyDataSetChanged();
+                    mRecyclerAdapter.setLoaded();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -328,30 +383,30 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             mLeaveTime = itemView.findViewById(R.id.leave_time);
             mIconDetail = itemView.findViewById(R.id.icon_detail);
             mIconPrint = itemView.findViewById(R.id.icon_print);
-
+            mIconDetail.setVisibility(View.GONE);
         }
 
         public void bind(VisitRecord record, int position) {
             mVisitorName.setText(record.getVisitor_name());
-//            mVisitorCounter.setText(record.getVisitor_counter());
-//            mVisitReason.setText(record.getNote());
-//            mDepartName.setText(record.getDepartment_name());
-//            mTeaName.setText(record.getTeacher_name());
-//            mGradeName.setText(record.getGrade_name());
-//            mClassName.setText(record.getClass_name());
-//            mStuName.setText(record.getStudent_name());
-//            mHeadTeaName.setText(record.getHead_teacher_name());
-//            mInTime.setText(record.getIn_time());
-//            mLeaveTime.setText(record.getLeave_time());
+            mVisitorCounter.setText(record.getVisitor_counter());
+            mVisitReason.setText(record.getNote());
+            mDepartName.setText(record.getDepartment_name());
+            mTeaName.setText(record.getTeacher_name());
+            mGradeName.setText(record.getGrade_name());
+            mClassName.setText(record.getClass_name());
+            mStuName.setText(record.getStudent_name());
+            mHeadTeaName.setText(record.getHead_teacher_name());
+            mInTime.setText(record.getIn_time());
+            mLeaveTime.setText(record.getLeave_time());
             if (position % 2 == 1) {
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item_dark));
             } else {
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
             }
-            mIconDetail.setTag(record);
+            mCellContainer.setTag(record);
             mIconPrint.setTag(record);
-            mIconDetail.setOnClickListener(this);
             mIconPrint.setOnClickListener(this);
+            mCellContainer.setOnClickListener(this);
         }
 
         @Override
@@ -359,15 +414,17 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             //访问记录
             VisitRecord record = (VisitRecord) v.getTag();
             switch (v.getId()) {
-                case R.id.icon_detail://详情按钮点击事件
-                    //todo 传递record并跳转至访问详情
-
+                case R.id.cell_container://详情按钮点击事件
+                    Intent intent = new Intent();
+                    intent.setClass(getActivity(), VisitorFormDetailsActivity.class);
+                    intent.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, record);
+                    startActivity(intent);
                     break;
                 case R.id.icon_print://打印按钮点击事件
-                    Intent intent = new Intent();
-                    intent.putExtra(PrinterActivity.EXTRA_VISIT_RECORD, record);
-                    intent.setClass(getActivity(), PrinterActivity.class);
-                    startActivity(intent);
+                    Intent intent1 = new Intent();
+                    intent1.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, record);
+                    intent1.setClass(getActivity(), PrinterActivity.class);
+                    startActivity(intent1);
                     break;
                 default:
                     break;
@@ -416,6 +473,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     totalItemCount = manager.getItemCount();
                     lastVisibleItem = manager.findLastVisibleItemPosition();
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
+                        if (isLastPage) {
+                            return;
+                        }
                         if (onLoadMoreListener != null) {
                             onLoadMoreListener.onLoadMore();
                         }
