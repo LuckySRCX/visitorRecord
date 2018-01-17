@@ -22,7 +22,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/name" />
 
             <EditText
@@ -39,7 +39,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/gender" />
 
             <EditText
@@ -56,7 +56,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/date_of_birth" />
 
             <EditText
@@ -73,7 +73,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/credentials_type" />
 
             <EditText
@@ -90,7 +90,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/id_number" />
 
             <EditText
@@ -113,7 +113,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/visitor_form_id" />
 
             <EditText
@@ -130,7 +130,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/visitor_reason" />
 
             <EditText
@@ -147,7 +147,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/phone" />
 
             <EditText
@@ -164,7 +164,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/visitor_form_visitor_number" />
 
             <EditText
@@ -181,7 +181,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/belongings" />
 
             <EditText

@@ -17,6 +17,12 @@ public class VisitorFormDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         VisitRecord visitRecord = (VisitRecord) getIntent().getSerializableExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA);
         setContentView(R.layout.activity_visitor_form_details);
+        findViewById(R.id.cancel_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         //访客姓名
         ((EditText) findViewById(R.id.visitor_name_et)).setText(visitRecord.getVisitor_name());
         //访客性别
@@ -28,13 +34,13 @@ public class VisitorFormDetailsActivity extends AppCompatActivity {
         //访客出生日期
         ((EditText) findViewById(R.id.visitor_born_et)).setText(visitRecord.getVisitor_birthday());
         //证件类型
-//        if (visitRecord.getCertificate_type() != null) {
-//            ((EditText) findViewById(R.id.visitor_credentials_type_et)).setText(visitRecord.getCertificate_type());
-//        }
+        if (visitRecord.getCertificate_type() != null) {
+            ((EditText) findViewById(R.id.visitor_credentials_type_et)).setText(visitRecord.getCertificate_type());
+        }
         //证件号码
         ((EditText) findViewById(R.id.visitor_credentials_type_et)).setText(visitRecord.getCertificate_number());
         //访客单号
-        ((EditText) findViewById(R.id.visitor_form_id_et)).setText(visitRecord.getId());
+        ((EditText) findViewById(R.id.visitor_form_id_et)).setText(String.valueOf(visitRecord.getId()));
         //访问事由
         ((EditText) findViewById(R.id.visitor_reason_et)).setText(visitRecord.getVisitor_for());
         //手机
@@ -53,9 +59,9 @@ public class VisitorFormDetailsActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.visitor_entry_time_et)).setText(visitRecord.getIn_time());
         //是否离开
         if (visitRecord.isLeave_flag()) {
-            ((EditText) findViewById(R.id.visitor_is_leave_et)).setText("已签离");
+            ((EditText) findViewById(R.id.visitor_is_leave_et)).setText("已离开");
         } else {
-            ((EditText) findViewById(R.id.visitor_is_leave_et)).setText("未签离");
+            ((EditText) findViewById(R.id.visitor_is_leave_et)).setText("未离开");
         }
         //离开时间
         ((EditText) findViewById(R.id.visitor_leave_time_et)).setText(visitRecord.getLeave_time());
@@ -65,9 +71,9 @@ public class VisitorFormDetailsActivity extends AppCompatActivity {
         if (visitRecord.getInterviewee_type() == 0) {
             ((TextView) findViewById(R.id.user_type_tv)).setText("被访教职工信息");
             findViewById(R.id.user_department_ll).setVisibility(View.VISIBLE);
-            findViewById(R.id.user_grade_et).setVisibility(View.GONE);
-            findViewById(R.id.user_classes_et).setVisibility(View.GONE);
-            findViewById(R.id.user_head_teacher_et).setVisibility(View.GONE);
+            findViewById(R.id.user_grade_ll).setVisibility(View.GONE);
+            findViewById(R.id.user_classes_ll).setVisibility(View.GONE);
+            findViewById(R.id.user_head_teacher_ll).setVisibility(View.GONE);
             //被访教职工 部门
             ((EditText) findViewById(R.id.user_department_et)).setText(visitRecord.getDepartment_name());
             //被访教职工 姓名

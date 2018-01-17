@@ -9,7 +9,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minWidth="100dp"
+            android:minWidth="80dp"
             android:text="@string/visitor_org" />
 
         <EditText
@@ -33,7 +33,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/address" />
 
             <EditText
@@ -48,7 +48,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/plate_number" />
 
             <EditText
@@ -80,7 +80,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minWidth="100dp"
+                    android:minWidth="80dp"
                     android:text="@string/entry_time" />
 
                 <EditText
@@ -98,7 +98,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minWidth="100dp"
+                    android:minWidth="80dp"
                     android:text="@string/visitor_form_is_leave" />
 
                 <EditText
@@ -115,7 +115,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp"
+                android:minWidth="80dp"
                 android:text="@string/visitor_form_leave_time" />
 
             <EditText
@@ -133,7 +133,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:minWidth="100dp"
+            android:minWidth="80dp"
             android:text="@string/remarks" />
 
         <EditText
