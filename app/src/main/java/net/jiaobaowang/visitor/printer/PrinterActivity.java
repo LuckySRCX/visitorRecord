@@ -26,14 +26,15 @@ import com.telpo.tps550.api.util.StringUtil;
 import com.telpo.tps550.api.util.SystemUtil;
 
 import net.jiaobaowang.visitor.R;
-import net.jiaobaowang.visitor.entity.PrintForm;
+import net.jiaobaowang.visitor.common.VisitorConstant;
+import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.PrinterCodeUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 
 public class PrinterActivity extends AppCompatActivity {
     private static final String TAG = "PrinterActivity";
-    public static final String EXTRA_VISIT_RECORD="net.jiaobaowang.visitor.printer.visit_record";
+    public static final String EXTRA_VISIT_RECORD = "net.jiaobaowang.visitor.printer.visit_record";
     //打印机
     private final int NOPAPER = 1;//打印机缺纸
     private final int LOWBATTERY = 2;//打印机低电量
@@ -49,7 +50,7 @@ public class PrinterActivity extends AppCompatActivity {
     private Boolean mNoPaper = false;//缺纸
     private UsbThermalPrinter mUsbThermalPrinter;
     private MyHandler handler;
-    private PrintForm printForm;
+    private VisitRecord printForm;
 
     private Context mContext;
     private ImageView barCodeIv;
@@ -57,7 +58,7 @@ public class PrinterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        printForm = (PrintForm) getIntent().getSerializableExtra("printForm");
+        printForm = (VisitRecord) getIntent().getSerializableExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA);
         setContentView(R.layout.activity_prenter);
         mContext = this;
         initView();
@@ -113,12 +114,12 @@ public class PrinterActivity extends AppCompatActivity {
             }
         });
         //姓名
-        String visName = getResources().getString(R.string.name) + printForm.getVisName();
+        String visName = getResources().getString(R.string.name) + printForm.getVisitor_name();
         visNameTv.setText(visName);
         printContent = visName + "\n";
         //性别
         String gender = getResources().getString(R.string.gender);
-        if (printForm.getVisGender() == 0) {
+        if (printForm.getVisitor_sex() == 0) {
             gender = gender + "男";
         } else {
             gender = gender + "女";
@@ -127,33 +128,34 @@ public class PrinterActivity extends AppCompatActivity {
         printContent = printContent + gender + "\n";
         //来访单位
         String visOrg = getResources().getString(R.string.visitor_org);
-        if (printForm.getVisOrg() != null) {
-            visOrg = visOrg + printForm.getVisOrg();
+        if (printForm.getUnit_name() != null) {
+            visOrg = visOrg + printForm.getUnit_name();
         }
         visOrgTv.setText(visOrg);
         printContent = printContent + visOrg + "\n";
         //访问事由
         String visReason = getResources().getString(R.string.visitor_reason);
-        if (printForm.getVisReason() != null) {
-            visReason = visReason + printForm.getVisReason();
+        if (printForm.getVisitor_for() != null) {
+            visReason = visReason + printForm.getVisitor_for();
         }
         visReasonTv.setText(visReason);
         printContent = printContent + visReason + "\n";
         //被访人
         String interviewee = getResources().getString(R.string.interviewee);
-        if (printForm.getUserName() != null) {
-            interviewee = interviewee + printForm.getUserName();
-        }
-        userNameTv.setText(interviewee);
-        printContent = printContent + interviewee + "\n";
+
         //访客类型
-        if (printForm.getUserType() == 0) {
+        if (printForm.getInterviewee_type() == 0) {
             //教职工
             tapeTypeTv.setText(getResources().getString(R.string.teacher));
+            if (printForm.getTeacher_name() != null) {
+                interviewee = interviewee + printForm.getTeacher_name();
+            }
+            userNameTv.setText(interviewee);
+            printContent = printContent + interviewee + "\n";
             //被访人的部门
             String userDepartment = getResources().getString(R.string.interviewee_department);
-            if (printForm.getUserDepartment() != null) {
-                userDepartment = userDepartment + printForm.getUserDepartment();
+            if (printForm.getDepartment_name() != null) {
+                userDepartment = userDepartment + printForm.getDepartment_name();
             }
             userDepartmentTv.setText(userDepartment);
             printContent = printContent + userDepartment + "\n";
@@ -162,58 +164,62 @@ public class PrinterActivity extends AppCompatActivity {
             tapeTypeTv.setText(getResources().getString(R.string.student));
             userDepartmentTv.setVisibility(View.GONE);
             studentLL.setVisibility(View.VISIBLE);
+            if (printForm.getStudent_name() != null) {
+                interviewee = interviewee + printForm.getStudent_name();
+            }
+            userNameTv.setText(interviewee);
+            printContent = printContent + interviewee + "\n";
             //年级
             String gradeName = getResources().getString(R.string.grade);
-            if (printForm.getUserGradeName() != null) {
-                gradeName = gradeName + printForm.getUserGradeName();
+            if (printForm.getGrade_name() != null) {
+                gradeName = gradeName + printForm.getGrade_name();
             }
             gradeNameTv.setText(gradeName);
             printContent = printContent + gradeName + "\n";
             //班级
             String className = getResources().getString(R.string.classes);
-            if (printForm.getUserClassName() != null) {
-                className = className + printForm.getUserClassName();
+            if (printForm.getClass_name() != null) {
+                className = className + printForm.getClass_name();
             }
             classNameTv.setText(className);
             printContent = printContent + className + "\n";
             //班主任
             String headMaster = getResources().getString(R.string.head_master);
-            if (printForm.getUserHeadMaster() != null) {
-                headMaster = headMaster + printForm.getUserHeadMaster();
+            if (printForm.getHead_teacher_name() != null) {
+                headMaster = headMaster + printForm.getHead_teacher_name();
             }
             headmasterNameTv.setText(headMaster);
             printContent = printContent + headMaster + "\n";
         }
         //进入时间
         String entryTime = getResources().getString(R.string.entry_time);
-        if (printForm.getEntryTime() != null) {
-            entryTime = entryTime + printForm.getEntryTime();
+        if (printForm.getIn_time() != null) {
+            entryTime = entryTime + printForm.getIn_time();
         }
         entryTimeTv.setText(entryTime);
         printContent = printContent + entryTime + "\n";
         //登记人
         String registrantName = getResources().getString(R.string.registrant);
-        if (printForm.getRegisterName() != null) {
-            registrantName = registrantName + printForm.getRegisterName();
+        if (printForm.getCreate_user_name() != null) {
+            registrantName = registrantName + printForm.getCreate_user_name();
         }
         registrantTv.setText(registrantName);
         printContent = printContent + registrantName + "\n";
         //条码
         //条码数字
-        if (printForm.getFormId() != null) {
-            String barCode = printForm.getFormId();
-            try {
-                barCodeBm = PrinterCodeUtils.CreateCode(barCode, BarcodeFormat.CODE_128, 300, 50);
-            } catch (WriterException e) {
-                e.printStackTrace();
-                DialogUtils.showAlert(mContext, "条码生成失败：" + e.toString());
-            }
-            barCodeIv.setImageBitmap(barCodeBm);
-            barCodeTv.setText(barCode);
+        String barCode = String.valueOf(printForm.getId());
+        try {
+            barCodeBm = PrinterCodeUtils.CreateCode(barCode, BarcodeFormat.CODE_128, 300, 50);
+        } catch (WriterException e) {
+            e.printStackTrace();
+            DialogUtils.showAlert(mContext, "条码生成失败：" + e.toString());
         }
+        barCodeIv.setImageBitmap(barCodeBm);
+        barCodeTv.setText(barCode);
+
         //备注
-        if (printForm.getRemarks() != null) {
-            String remarks = "注：" + printForm.getRemarks();
+        if (printForm.getNote() != null) {
+            String remarks = "注：" + printForm.getNote();
             remarksTv.setText(remarks);
         }
     }
@@ -355,7 +361,7 @@ public class PrinterActivity extends AppCompatActivity {
                 mUsbThermalPrinter.printString();
                 //访客单类型
                 mUsbThermalPrinter.setTextSize(24);
-                if (printForm.getUserType() == 0) {
+                if (printForm.getInterviewee_type() == 0) {
                     mUsbThermalPrinter.addString(getResources().getString(R.string.teacher));
                 } else {
                     mUsbThermalPrinter.addString(getResources().getString(R.string.student));
@@ -365,22 +371,19 @@ public class PrinterActivity extends AppCompatActivity {
                 mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_LEFT);
                 mUsbThermalPrinter.addString(printContent);
                 mUsbThermalPrinter.printString();
-
                 mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
                 //打印条码
                 if (barCodeBm != null) {
                     mUsbThermalPrinter.printLogo(barCodeBm, true);
                     mUsbThermalPrinter.printString();
                 }
-                if (printForm.getFormId() != null) {
-                    //打印条码数字信息
-                    mUsbThermalPrinter.setTextSize(16);
-                    mUsbThermalPrinter.addString(printForm.getFormId());
-                    mUsbThermalPrinter.printString();
-                }
-                if (printForm.getRemarks() != null) {
+                //打印条码数字信息
+                mUsbThermalPrinter.setTextSize(16);
+                mUsbThermalPrinter.addString(String.valueOf(printForm.getId()));
+                mUsbThermalPrinter.printString();
+                if (printForm.getNote() != null) {
                     //打印备注
-                    String remarks = "注：" + printForm.getRemarks();
+                    String remarks = "注：" + printForm.getNote();
                     mUsbThermalPrinter.setTextSize(20);
                     mUsbThermalPrinter.addString(remarks);
                     mUsbThermalPrinter.printString();

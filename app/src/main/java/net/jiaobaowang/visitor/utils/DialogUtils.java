@@ -13,6 +13,7 @@ public class DialogUtils {
                 .setTitle("提示")
                 .setMessage(message)
                 .setNegativeButton("确定", null)
+                .setCancelable(false)
                 .show();
     }
 
@@ -21,6 +22,7 @@ public class DialogUtils {
                 .setTitle("提示")
                 .setMessage(context.getResources().getString(id))
                 .setNegativeButton("确定", null)
+                .setCancelable(false)
                 .show();
     }
 }

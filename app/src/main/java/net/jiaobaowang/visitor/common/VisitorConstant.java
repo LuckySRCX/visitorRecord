@@ -10,4 +10,6 @@ public class VisitorConstant {
      */
     final public static int ARC_SIGN_IN_REQ = 1;//来访登记识别身份证正面
     final public static int ARC_SIGN_IN_CAMERA = 2;//来访登记摄像头
+
+    final public static String INTENT_PUT_EXTRA_DATA = "data";
 }
