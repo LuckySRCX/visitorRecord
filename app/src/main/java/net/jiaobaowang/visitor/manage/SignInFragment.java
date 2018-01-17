@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -206,6 +205,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //访客
         nameEt.setText("张三");
         idNumberEt.setText("1234567890");
+        plateNumberEt.setText("鲁A110A110");
         //教职工
         departmentAc.setText("行政部");
         teacherNameAc.setText("李四");
@@ -442,16 +442,16 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             return;
         }
         printForm.setVisName(visitor_name);
-        String certificate_type = credentialsTypeAc.getText().toString().trim();
-        if ("".equals(certificate_type)) {
-            DialogUtils.showAlert(mContext, "请输入证件类型");
-            return;
-        }
-        String certificate_Int = idNumberEt.getText().toString().trim();
-        if ("".equals(certificate_Int)) {
-            DialogUtils.showAlert(mContext, "请输入证件号码");
-            return;
-        }
+//        String certificate_type = credentialsTypeAc.getText().toString().trim();
+//        if ("".equals(certificate_type)) {
+//            DialogUtils.showAlert(mContext, "请输入证件类型");
+//            return;
+//        }
+//        String certificate_Int = idNumberEt.getText().toString().trim();
+//        if ("".equals(certificate_Int)) {
+//            DialogUtils.showAlert(mContext, "请输入证件号码");
+//            return;
+//        }
         String visitor_for = reasonAc.getText().toString().trim();
         if ("".equals(visitor_for)) {
             DialogUtils.showAlert(mContext, "请输入访问事由");
@@ -467,6 +467,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         String student_name = "";
         String head_teacher_name = "";
         String interviewee_type;
+        String certificate_type = credentialsTypeAc.getText().toString().trim();
+        String certificate_Int = idNumberEt.getText().toString().trim();
         if (typeTeacherRb.isChecked()) {
             //教职工
             teacher_name = teacherNameAc.getText().toString().trim();
@@ -581,7 +583,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             printForm.setRemarks(note);
         }
         submitData(params);
+
     }
+
 
     /**
      * 提交数据
@@ -610,7 +614,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     submitDataDialog.dismiss();
-                    Looper.prepare();
+                    //Looper.prepare();
                     String resultStr = response.body().string();
                     Log.i(TAG, "onResponse:" + resultStr);
                     Gson gson = new Gson();
@@ -622,9 +626,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                             intent.putExtra("printForm", printForm);
                             startActivity(intent);
                         }
-//                        ToastUtils.showMessage(mContext, "保存访客记录成功");
+                        //ToastUtils.showMessage(mContext, "保存访客记录成功");
                     } else {
-//                        ToastUtils.showMessage(mContext, "保存访客记录失败：" + result.getMsg());
+                        //ToastUtils.showMessage(mContext, "保存访客记录失败：" + result.getMsg());
                     }
                 }
             });

@@ -237,7 +237,8 @@
                         <AutoCompleteTextView
                             android:id="@+id/visitor_number_ac"
                             style="@style/auto_complete_text_view"
-                            android:maxLength="4" />
+                            android:maxLength="4"
+                            android:inputType="number"/>
 
                         <TextView
                             android:id="@+id/visitor_number_tv"
