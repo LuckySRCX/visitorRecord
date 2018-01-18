@@ -171,17 +171,17 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         String[] credentialsType = getResources().getStringArray(R.array.credentials_type);
         ArrayAdapter<String> credentialAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, credentialsType);
         credentialsTypeAc.setAdapter(credentialAdapter);
-        credentialsTypeAc.setText(credentialsType[0]);
+        //credentialsTypeAc.setText(credentialsType[0]);
         //访问事由类型
         String[] reason = getResources().getStringArray(R.array.reason_type);
         ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, reason);
         reasonAc.setAdapter(reasonAdapter);
-        reasonAc.setText(reason[0]);
+        //reasonAc.setText(reason[0]);
         //随行人数类型
         String[] visitorNumber = getResources().getStringArray(R.array.visitor_number);
         ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, visitorNumber);
         visitorNumberAc.setAdapter(visitorNumberAdapter);
-        visitorNumberAc.setText(visitorNumber[0]);
+        //visitorNumberAc.setText(visitorNumber[0]);
         //部门
         departmentAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
         departmentAc.setAdapter(departmentAdapter);
@@ -203,18 +203,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void initData() {
-//        //访客
-//        nameEt.setText("张三");
-//        idNumberEt.setText("1234567890");
-//        plateNumberEt.setText("鲁A110A110");
-//        //教职工
-//        departmentAc.setText("行政部");
-//        teacherNameAc.setText("李四");
-//        //学生
-//        gradeAc.setText("一年级");
-//        classesAc.setText("1801班");
-//        studentNameAc.setText("小明");
-//        headMasterAc.setText("李雷");
         printForm = new PrintForm();
     }
 
@@ -387,12 +375,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         maleRb.setChecked(true);
         femaleRb.setChecked(false);
         dateOfBirthEt.setText("");
-        credentialsTypeAc.setText(getResources().getStringArray(R.array.credentials_type)[0]);
+        credentialsTypeAc.setText("");
         idNumberEt.setText("");
         addressEt.setText("");
-        reasonAc.setText(getResources().getStringArray(R.array.reason_type)[0]);
+        reasonAc.setText("");
         phoneNumberEt.setText("");
-        visitorNumberAc.setText(getResources().getStringArray(R.array.visitor_number)[0]);
+        visitorNumberAc.setText("");
         belongingsEt.setText("");
         organizationEt.setText("");
         plateNumberEt.setText("");
@@ -402,7 +390,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     /**
      * 清除教职工和学生信息
      */
-    private void clearUserInfo(){
+    private void clearUserInfo() {
         departmentAc.setText("");
         teacherNameAc.setText("");
         gradeAc.setText("");
@@ -632,6 +620,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+
                 result[0] = "0";
                 result[1] = e.toString();
             }
@@ -641,6 +630,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         @Override
         protected void onPostExecute(String resultStr[]) {
             submitDataDialog.dismiss();
+            Log.i(TAG, resultStr[0] + " " + resultStr[1]);
             if (resultStr[0].equals("1")) {
                 Gson gson = new Gson();
                 AddFormResult result = gson.fromJson(resultStr[1], AddFormResult.class);
