@@ -427,128 +427,132 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     /**
-     * 验证访客信息
+     * 验证需要保存的信息
      */
     private void checkSaveData() {
-        String visitor_name = nameEt.getText().toString().trim();
-        if ("".equals(visitor_name)) {
+        if ("".equals(nameEt.getText().toString().trim())) {
             DialogUtils.showAlert(mContext, "请输入访客姓名");
             return;
         }
-        String visitor_for = reasonAc.getText().toString().trim();
-        if ("".equals(visitor_for)) {
+        if ("".equals(reasonAc.getText().toString().trim())) {
             DialogUtils.showAlert(mContext, "请输入访问事由");
             return;
         }
-        String visitor_counter = visitorNumberAc.getText().toString().trim();
-        if ("".equals(visitor_counter)) {
+        if ("".equals(visitorNumberAc.getText().toString().trim())) {
             DialogUtils.showAlert(mContext, "请输入随行人数");
             return;
         }
-        String teacher_name = "";
-        String student_name = "";
-        String head_teacher_name = "";
-        String interviewee_type;
-        String certificate_type = credentialsTypeAc.getText().toString().trim();
-        String certificate_Int = idNumberEt.getText().toString().trim();
         if (typeTeacherRb.isChecked()) {
             //教职工
-            teacher_name = teacherNameAc.getText().toString().trim();
-            if ("".equals(teacher_name)) {
+            if ("".equals(teacherNameAc.getText().toString().trim())) {
                 DialogUtils.showAlert(mContext, "请输入教职工姓名");
                 return;
             }
-            interviewee_type = "0";
         } else {
-            student_name = studentNameAc.getText().toString().trim();
-            if ("".equals(student_name)) {
+            if ("".equals(studentNameAc.getText().toString().trim())) {
                 DialogUtils.showAlert(mContext, "请输入学生姓名");
                 return;
             }
-            head_teacher_name = headMasterAc.getText().toString().trim();
-            if ("".equals(head_teacher_name)) {
+            if ("".equals(headMasterAc.getText().toString().trim())) {
                 DialogUtils.showAlert(mContext, "请输入班主任姓名");
                 return;
             }
-            interviewee_type = "1";
         }
-        //验证完必填项
-        String visitor_sex;
-        if (maleRb.isChecked()) {
-            visitor_sex = "0";
-        } else {
-            visitor_sex = "1";
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date curDate = new Date(System.currentTimeMillis());
-        String in_time = sdf.format(curDate);
-        //必填的数据
+        setSubmitData();
+    }
+
+    /**
+     * 设置需要保存的数据
+     */
+    private void setSubmitData(){
+        params = new FormBody.Builder();
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
         String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
-        params = new FormBody.Builder();
         params.add("token", token);
-        params.add("visitor_name", visitor_name);//访客姓名
-        params.add("visitor_for", visitor_for);//访问事由
-        params.add("visitor_sex", visitor_sex);//访客性别
-        params.add("in_time", in_time);//进入时间
-        params.add("interviewee_type", interviewee_type);//被访人类型
+        //访客姓名
+        params.add("visitor_name", nameEt.getText().toString().trim());
+        //访客性别
+        String visitor_sex="0";
+        if (femaleRb.isChecked()) {
+            visitor_sex = "1";
+        }
+        params.add("visitor_sex", visitor_sex);
+        //访问事由
+        params.add("visitor_for", reasonAc.getText().toString().trim());
+        //随行人数
+        params.add("visitor_counter", visitorNumberAc.getText().toString().trim());
         if (typeTeacherRb.isChecked()) {
             //教职工
-            //姓名
-            params.add("teacher_name", teacher_name);
-            //部门
+            params.add("interviewee_type", "0");
+            params.add("teacher_name", teacherNameAc.getText().toString().trim());
+
             String department_name = departmentAc.getText().toString().trim();
             if (!"".equals(department_name)) {
                 params.add("department_name", department_name);
             }
         } else {
-            //年级
+            params.add("interviewee_type", "1");
+            params.add("student_name", studentNameAc.getText().toString().trim());
+            params.add("head_teacher_name", headMasterAc.getText().toString().trim());
             String grade_name = gradeAc.getText().toString().trim();
             if (!"".equals(grade_name)) {
                 params.add("grade_name", grade_name);
             }
-            //班级
             String class_name = classesAc.getText().toString().trim();
             if (!"".equals(class_name)) {
                 params.add("class_name", class_name);
             }
-            //姓名
-            params.add("student_name", student_name);
-            params.add("head_teacher_name", head_teacher_name);//班主任姓名
         }
-        params.add("visitor_counter", visitor_counter);//随行人数
-        params.add("certificate_type", certificate_type);//证件类型
-        params.add("certificate_Int", certificate_Int);//证件号码
         //出生日期
         String visitor_birthday = dateOfBirthEt.getText().toString().trim();
         if (!"".equals(visitor_birthday)) {
             params.add("visitor_birthday", visitor_birthday);
         }
-        //随身物品
-        String visitor_goods = belongingsEt.getText().toString().trim();
-        if (!"".equals(visitor_goods)) {
-            params.add("visitor_goods", visitor_goods);
+        //证件类型
+        String certificate_type = credentialsTypeAc.getText().toString().trim();
+        if (!"".equals(certificate_type)) {
+            params.add("certificate_type", certificate_type);
         }
-        //单位名称
-        String unit_name = organizationEt.getText().toString().trim();
-        if (!"".equals(unit_name)) {
-            params.add("unit_name", unit_name);
+        //证件号码
+        String certificate_Int = idNumberEt.getText().toString().trim();
+        if (!"".equals(certificate_Int)) {
+            params.add("certificate_Int", certificate_Int);
         }
         //地址
         String address = addressEt.getText().toString().trim();
         if (!"".equals(address)) {
             params.add("address", address);
         }
-        //车牌号
-        String plate_Int = plateNumberEt.getText().toString().trim();
-        if (!"".equals(plate_Int)) {
-            params.add("plate_Int", plate_Int);
-        }
         //备注
         String note = remarksEt.getText().toString().trim();
         if (!"".equals(note)) {
             params.add("note", note);
         }
+        //手机
+        String visitor_phone=phoneNumberEt.getText().toString().trim();
+        if (!"".equals(visitor_phone)) {
+            params.add("visitor_phone", visitor_phone);
+        }
+        //随身物品
+        String visitor_goods = belongingsEt.getText().toString().trim();
+        if (!"".equals(visitor_goods)) {
+            params.add("visitor_goods", visitor_goods);
+        }
+        //来访单位
+        String unit_name = organizationEt.getText().toString().trim();
+        if (!"".equals(unit_name)) {
+            params.add("unit_name", unit_name);
+        }
+        //车牌号
+        String plate_Int = plateNumberEt.getText().toString().trim();
+        if (!"".equals(plate_Int)) {
+            params.add("plate_Int", plate_Int);
+        }
+        //进入时间
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date curDate = new Date(System.currentTimeMillis());
+        String in_time = sdf.format(curDate);
+        params.add("in_time", in_time);
         new SubmitDataTask().execute();
     }
 
