@@ -356,7 +356,7 @@ public class PrinterActivity extends AppCompatActivity {
                 mUsbThermalPrinter.setGray(0);
 
                 mUsbThermalPrinter.setAlgin(UsbThermalPrinter.ALGIN_MIDDLE);
-                mUsbThermalPrinter.setTextSize(56);
+                mUsbThermalPrinter.setTextSize(48);
                 mUsbThermalPrinter.addString("访客单");
                 mUsbThermalPrinter.printString();
                 //访客单类型
