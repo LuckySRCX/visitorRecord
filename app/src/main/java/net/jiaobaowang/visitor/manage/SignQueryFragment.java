@@ -119,6 +119,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         setSpinner(mSpinner_identity, R.array.person_identity);
         setSpinner(mSpinner_visitorState, R.array.is_leave_option);
         mRecyclerView = v.findViewById(R.id.recycler_query);
+        queryRecords();
         return v;
     }
 
@@ -156,7 +157,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                         records.remove(records.size() - 1);
                         queryRecords();
                     }
-                }, 500);
+                }, 1000);
 
             }
         });
@@ -400,6 +401,13 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             mHeadTeaName.setText(record.getHead_teacher_name());
             mInTime.setText(record.getIn_time());
             mLeaveTime.setText(record.getLeave_time());
+            if(record.isLeave_flag()){
+                mIsLeft.setText("是");
+                mIsLeft.setTextColor(getResources().getColor(R.color.is_leave));
+            }else{
+                mIsLeft.setText("否");
+                mIsLeft.setTextColor(getResources().getColor(R.color.is_not_leave));
+            }
             if (position % 2 == 1) {
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item_dark));
             } else {
@@ -479,9 +487,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                             return;
                         }
                         if (onLoadMoreListener != null) {
+                            isLoading = true;
                             onLoadMoreListener.onLoadMore();
                         }
-                        isLoading = true;
                     }
                 }
             });

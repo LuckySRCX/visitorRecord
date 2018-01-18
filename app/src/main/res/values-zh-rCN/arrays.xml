@@ -28,8 +28,8 @@
     <!--签到状态-->
     <string-array name="is_leave_option">
         <item>全部</item>
-        <item>已签离</item>
-        <item>未签离</item>
+        <item>未离开</item>
+        <item>已离开</item>
     </string-array>
     <string-array name="person_identity">
         <item>全部</item>
