@@ -203,18 +203,18 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void initData() {
-        //访客
-        nameEt.setText("张三");
-        idNumberEt.setText("1234567890");
-        plateNumberEt.setText("鲁A110A110");
-        //教职工
-        departmentAc.setText("行政部");
-        teacherNameAc.setText("李四");
-        //学生
-        gradeAc.setText("一年级");
-        classesAc.setText("1801班");
-        studentNameAc.setText("小明");
-        headMasterAc.setText("李雷");
+//        //访客
+//        nameEt.setText("张三");
+//        idNumberEt.setText("1234567890");
+//        plateNumberEt.setText("鲁A110A110");
+//        //教职工
+//        departmentAc.setText("行政部");
+//        teacherNameAc.setText("李四");
+//        //学生
+//        gradeAc.setText("一年级");
+//        classesAc.setText("1801班");
+//        studentNameAc.setText("小明");
+//        headMasterAc.setText("李雷");
         printForm = new PrintForm();
     }
 
