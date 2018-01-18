@@ -123,8 +123,8 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void setSpinner(Spinner spinner, int resId) {
-        String[] options=getResources().getStringArray(resId);
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(getActivity(),R.layout.visit_spinner_item,options);
+        String[] options = getResources().getStringArray(resId);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.visit_spinner_item, options);
         adapter.setDropDownViewResource(R.layout.visit_drop_down_item);
         spinner.setAdapter(adapter);
     }
@@ -362,6 +362,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         private TextView mInTime;
         private TextView mIsLeft;
         private TextView mLeaveTime;
+        private LinearLayout mManager;
         private ImageView mIconDetail;
         private ImageView mIconPrint;
 
@@ -381,6 +382,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             mInTime = itemView.findViewById(R.id.in_time);
             mIsLeft = itemView.findViewById(R.id.is_left);
             mLeaveTime = itemView.findViewById(R.id.leave_time);
+            mManager = itemView.findViewById(R.id.manage);
             mIconDetail = itemView.findViewById(R.id.icon_detail);
             mIconPrint = itemView.findViewById(R.id.icon_print);
             mIconDetail.setVisibility(View.GONE);
@@ -404,8 +406,8 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
             }
             mCellContainer.setTag(record);
-            mIconPrint.setTag(record);
-            mIconPrint.setOnClickListener(this);
+            mManager.setTag(record);
+            mManager.setOnClickListener(this);
             mCellContainer.setOnClickListener(this);
         }
 
@@ -420,7 +422,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     intent.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, record);
                     startActivity(intent);
                     break;
-                case R.id.icon_print://打印按钮点击事件
+                case R.id.manage://打印按钮点击事件
                     Intent intent1 = new Intent();
                     intent1.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, record);
                     intent1.setClass(getActivity(), PrinterActivity.class);

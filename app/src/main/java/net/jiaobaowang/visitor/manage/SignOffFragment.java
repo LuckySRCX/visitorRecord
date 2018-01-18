@@ -407,9 +407,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
             }
             mCellContainer.setTag(record);
-            mIconDetail.setTag(record);
+//            mIconDetail.setTag(record);
             mCellContainer.setOnClickListener(this);
-            mIconDetail.setOnClickListener(this);
+//            mIconDetail.setOnClickListener(this);
         }
 
         @Override
@@ -418,13 +418,6 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             VisitRecord record = (VisitRecord) v.getTag();
             switch (v.getId()) {
                 case R.id.cell_container:
-                    Intent intent = new Intent();
-                    intent.setClass(getActivity(), VisitorFormDetailsActivity.class);
-                    intent.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, record);
-                    startActivity(intent);
-                    break;
-                case R.id.icon_detail://签离按钮点击事件
-                    //todo 传递record并跳转至不知道啥界面
                     showDetail(record);
                     break;
                 default:
