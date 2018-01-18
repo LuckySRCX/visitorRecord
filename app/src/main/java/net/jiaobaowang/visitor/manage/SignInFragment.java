@@ -35,8 +35,6 @@ import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.AddFormResult;
-import net.jiaobaowang.visitor.entity.Department;
-import net.jiaobaowang.visitor.entity.PrintForm;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
@@ -62,8 +60,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
-    private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
-    private PrintForm printForm;//打印访客单
+    private ArrayAdapter<String> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
     private FormBody.Builder params;//保存的数据
     private OkHttpClient mOkHttpClient = new OkHttpClient();
 
@@ -120,7 +117,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         mContext = getActivity();
         initView(view);
-        initData();
         return view;
     }
 
@@ -169,55 +165,35 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         typeStudentRb.setOnCheckedChangeListener(this);
         //证件类型
         String[] credentialsType = getResources().getStringArray(R.array.credentials_type);
-        ArrayAdapter<String> credentialAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, credentialsType);
+        ArrayAdapter<String> credentialAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item, credentialsType);
         credentialsTypeAc.setAdapter(credentialAdapter);
-        credentialsTypeAc.setText(credentialsType[0]);
         //访问事由类型
         String[] reason = getResources().getStringArray(R.array.reason_type);
-        ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, reason);
+        ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item, reason);
         reasonAc.setAdapter(reasonAdapter);
-        reasonAc.setText(reason[0]);
         //随行人数类型
         String[] visitorNumber = getResources().getStringArray(R.array.visitor_number);
-        ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, visitorNumber);
+        ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item, visitorNumber);
         visitorNumberAc.setAdapter(visitorNumberAdapter);
-        visitorNumberAc.setText(visitorNumber[0]);
         //部门
-        departmentAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        departmentAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         departmentAc.setAdapter(departmentAdapter);
         //教职工姓名
-        teacherNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        teacherNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         teacherNameAc.setAdapter(teacherNameAdapter);
         //年级
-        gradeAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        gradeAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         gradeAc.setAdapter(gradeAdapter);
         //班级
-        classesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        classesAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         classesAc.setAdapter(classesAdapter);
         //学生姓名
-        studentNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        studentNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         studentNameAc.setAdapter(studentNameAdapter);
         //班主任
-        headMasterAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         headMasterAc.setAdapter(headMasterAdapter);
     }
-
-    private void initData() {
-//        //访客
-//        nameEt.setText("张三");
-//        idNumberEt.setText("1234567890");
-//        plateNumberEt.setText("鲁A110A110");
-//        //教职工
-//        departmentAc.setText("行政部");
-//        teacherNameAc.setText("李四");
-//        //学生
-//        gradeAc.setText("一年级");
-//        classesAc.setText("1801班");
-//        studentNameAc.setText("小明");
-//        headMasterAc.setText("李雷");
-        printForm = new PrintForm();
-    }
-
 
     @Override
     public void onResume() {
@@ -387,12 +363,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         maleRb.setChecked(true);
         femaleRb.setChecked(false);
         dateOfBirthEt.setText("");
-        credentialsTypeAc.setText(getResources().getStringArray(R.array.credentials_type)[0]);
+        credentialsTypeAc.setText("");
         idNumberEt.setText("");
         addressEt.setText("");
-        reasonAc.setText(getResources().getStringArray(R.array.reason_type)[0]);
+        reasonAc.setText("");
         phoneNumberEt.setText("");
-        visitorNumberAc.setText(getResources().getStringArray(R.array.visitor_number)[0]);
+        visitorNumberAc.setText("");
         belongingsEt.setText("");
         organizationEt.setText("");
         plateNumberEt.setText("");
@@ -402,7 +378,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     /**
      * 清除教职工和学生信息
      */
-    private void clearUserInfo(){
+    private void clearUserInfo() {
         departmentAc.setText("");
         teacherNameAc.setText("");
         gradeAc.setText("");
@@ -451,155 +427,132 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     /**
-     * 验证访客信息
+     * 验证需要保存的信息
      */
     private void checkSaveData() {
-        String visitor_name = nameEt.getText().toString().trim();
-        if ("".equals(visitor_name)) {
+        if ("".equals(nameEt.getText().toString().trim())) {
             DialogUtils.showAlert(mContext, "请输入访客姓名");
             return;
         }
-        printForm.setVisName(visitor_name);
-//        String certificate_type = credentialsTypeAc.getText().toString().trim();
-//        if ("".equals(certificate_type)) {
-//            DialogUtils.showAlert(mContext, "请输入证件类型");
-//            return;
-//        }
-//        String certificate_Int = idNumberEt.getText().toString().trim();
-//        if ("".equals(certificate_Int)) {
-//            DialogUtils.showAlert(mContext, "请输入证件号码");
-//            return;
-//        }
-        String visitor_for = reasonAc.getText().toString().trim();
-        if ("".equals(visitor_for)) {
+        if ("".equals(reasonAc.getText().toString().trim())) {
             DialogUtils.showAlert(mContext, "请输入访问事由");
             return;
         }
-        printForm.setVisReason(visitor_for);
-        String visitor_counter = visitorNumberAc.getText().toString().trim();
-        if ("".equals(visitor_counter)) {
+        if ("".equals(visitorNumberAc.getText().toString().trim())) {
             DialogUtils.showAlert(mContext, "请输入随行人数");
             return;
         }
-        String teacher_name = "";
-        String student_name = "";
-        String head_teacher_name = "";
-        String interviewee_type;
-        String certificate_type = credentialsTypeAc.getText().toString().trim();
-        String certificate_Int = idNumberEt.getText().toString().trim();
         if (typeTeacherRb.isChecked()) {
             //教职工
-            teacher_name = teacherNameAc.getText().toString().trim();
-            if ("".equals(teacher_name)) {
+            if ("".equals(teacherNameAc.getText().toString().trim())) {
                 DialogUtils.showAlert(mContext, "请输入教职工姓名");
                 return;
             }
-            interviewee_type = "0";
         } else {
-            student_name = studentNameAc.getText().toString().trim();
-            if ("".equals(student_name)) {
+            if ("".equals(studentNameAc.getText().toString().trim())) {
                 DialogUtils.showAlert(mContext, "请输入学生姓名");
                 return;
             }
-            head_teacher_name = headMasterAc.getText().toString().trim();
-            if ("".equals(head_teacher_name)) {
+            if ("".equals(headMasterAc.getText().toString().trim())) {
                 DialogUtils.showAlert(mContext, "请输入班主任姓名");
                 return;
             }
-            interviewee_type = "1";
         }
-        //验证完必填项
-        String visitor_sex;
-        if (maleRb.isChecked()) {
-            visitor_sex = "0";
-            printForm.setVisGender(0);
-        } else {
-            visitor_sex = "1";
-            printForm.setVisGender(1);
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date curDate = new Date(System.currentTimeMillis());
-        String in_time = sdf.format(curDate);
-        printForm.setEntryTime(in_time);
-        //必填的数据
+        setSubmitData();
+    }
+
+    /**
+     * 设置需要保存的数据
+     */
+    private void setSubmitData(){
+        params = new FormBody.Builder();
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
         String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
-        printForm.setRegisterName("jsy");
-        params = new FormBody.Builder();
         params.add("token", token);
-        params.add("visitor_name", visitor_name);//访客姓名
-        params.add("visitor_for", visitor_for);//访问事由
-        params.add("visitor_sex", visitor_sex);//访客性别
-        params.add("in_time", in_time);//进入时间
-        params.add("interviewee_type", interviewee_type);//被访人类型
+        //访客姓名
+        params.add("visitor_name", nameEt.getText().toString().trim());
+        //访客性别
+        String visitor_sex="0";
+        if (femaleRb.isChecked()) {
+            visitor_sex = "1";
+        }
+        params.add("visitor_sex", visitor_sex);
+        //访问事由
+        params.add("visitor_for", reasonAc.getText().toString().trim());
+        //随行人数
+        params.add("visitor_counter", visitorNumberAc.getText().toString().trim());
         if (typeTeacherRb.isChecked()) {
             //教职工
-            //姓名
-            params.add("teacher_name", teacher_name);
-            printForm.setUserName(teacher_name);
-            //部门
+            params.add("interviewee_type", "0");
+            params.add("teacher_name", teacherNameAc.getText().toString().trim());
+
             String department_name = departmentAc.getText().toString().trim();
             if (!"".equals(department_name)) {
                 params.add("department_name", department_name);
-                printForm.setUserDepartment(department_name);
             }
-            printForm.setUserType(0);
         } else {
-            //年级
+            params.add("interviewee_type", "1");
+            params.add("student_name", studentNameAc.getText().toString().trim());
+            params.add("head_teacher_name", headMasterAc.getText().toString().trim());
             String grade_name = gradeAc.getText().toString().trim();
             if (!"".equals(grade_name)) {
                 params.add("grade_name", grade_name);
-                printForm.setUserGradeName(grade_name);
             }
-            //班级
             String class_name = classesAc.getText().toString().trim();
             if (!"".equals(class_name)) {
                 params.add("class_name", class_name);
-                printForm.setUserClassName(class_name);
             }
-            //姓名
-            params.add("student_name", student_name);
-            printForm.setUserName(student_name);
-            //printForm.setUserClassName("1303班");
-            printForm.setUserHeadMaster(head_teacher_name);
-            params.add("head_teacher_name", head_teacher_name);//班主任姓名
-            printForm.setUserType(1);
         }
-        params.add("visitor_counter", visitor_counter);//随行人数
-        params.add("certificate_type", certificate_type);//证件类型
-        params.add("certificate_Int", certificate_Int);//证件号码
         //出生日期
         String visitor_birthday = dateOfBirthEt.getText().toString().trim();
         if (!"".equals(visitor_birthday)) {
             params.add("visitor_birthday", visitor_birthday);
         }
-        //随身物品
-        String visitor_goods = belongingsEt.getText().toString().trim();
-        if (!"".equals(visitor_goods)) {
-            params.add("visitor_goods", visitor_goods);
+        //证件类型
+        String certificate_type = credentialsTypeAc.getText().toString().trim();
+        if (!"".equals(certificate_type)) {
+            params.add("certificate_type", certificate_type);
         }
-        //单位名称
-        String unit_name = organizationEt.getText().toString().trim();
-        if (!"".equals(unit_name)) {
-            params.add("unit_name", unit_name);
-            printForm.setVisOrg(unit_name);
+        //证件号码
+        String certificate_Int = idNumberEt.getText().toString().trim();
+        if (!"".equals(certificate_Int)) {
+            params.add("certificate_Int", certificate_Int);
         }
         //地址
         String address = addressEt.getText().toString().trim();
         if (!"".equals(address)) {
             params.add("address", address);
         }
+        //备注
+        String note = remarksEt.getText().toString().trim();
+        if (!"".equals(note)) {
+            params.add("note", note);
+        }
+        //手机
+        String visitor_phone=phoneNumberEt.getText().toString().trim();
+        if (!"".equals(visitor_phone)) {
+            params.add("visitor_phone", visitor_phone);
+        }
+        //随身物品
+        String visitor_goods = belongingsEt.getText().toString().trim();
+        if (!"".equals(visitor_goods)) {
+            params.add("visitor_goods", visitor_goods);
+        }
+        //来访单位
+        String unit_name = organizationEt.getText().toString().trim();
+        if (!"".equals(unit_name)) {
+            params.add("unit_name", unit_name);
+        }
         //车牌号
         String plate_Int = plateNumberEt.getText().toString().trim();
         if (!"".equals(plate_Int)) {
             params.add("plate_Int", plate_Int);
         }
-        //备注
-        String note = remarksEt.getText().toString().trim();
-        if (!"".equals(note)) {
-            params.add("note", note);
-            printForm.setRemarks(note);
-        }
+        //进入时间
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date curDate = new Date(System.currentTimeMillis());
+        String in_time = sdf.format(curDate);
+        params.add("in_time", in_time);
         new SubmitDataTask().execute();
     }
 
@@ -632,6 +585,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+
                 result[0] = "0";
                 result[1] = e.toString();
             }
@@ -641,6 +595,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         @Override
         protected void onPostExecute(String resultStr[]) {
             submitDataDialog.dismiss();
+            Log.i(TAG, resultStr[0] + " " + resultStr[1]);
             if (resultStr[0].equals("1")) {
                 Gson gson = new Gson();
                 AddFormResult result = gson.fromJson(resultStr[1], AddFormResult.class);
