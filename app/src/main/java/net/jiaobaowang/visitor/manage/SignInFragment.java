@@ -35,7 +35,6 @@ import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.AddFormResult;
-import net.jiaobaowang.visitor.entity.Department;
 import net.jiaobaowang.visitor.entity.PrintForm;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
@@ -62,7 +61,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
-    private ArrayAdapter<Department> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
+    private ArrayAdapter<String> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
     private PrintForm printForm;//打印访客单
     private FormBody.Builder params;//保存的数据
     private OkHttpClient mOkHttpClient = new OkHttpClient();
@@ -169,36 +168,33 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         typeStudentRb.setOnCheckedChangeListener(this);
         //证件类型
         String[] credentialsType = getResources().getStringArray(R.array.credentials_type);
-        ArrayAdapter<String> credentialAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, credentialsType);
+        ArrayAdapter<String> credentialAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item, credentialsType);
         credentialsTypeAc.setAdapter(credentialAdapter);
-        //credentialsTypeAc.setText(credentialsType[0]);
         //访问事由类型
         String[] reason = getResources().getStringArray(R.array.reason_type);
-        ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, reason);
+        ArrayAdapter<String> reasonAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item, reason);
         reasonAc.setAdapter(reasonAdapter);
-        //reasonAc.setText(reason[0]);
         //随行人数类型
         String[] visitorNumber = getResources().getStringArray(R.array.visitor_number);
-        ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item, visitorNumber);
+        ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item, visitorNumber);
         visitorNumberAc.setAdapter(visitorNumberAdapter);
-        //visitorNumberAc.setText(visitorNumber[0]);
         //部门
-        departmentAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        departmentAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         departmentAc.setAdapter(departmentAdapter);
         //教职工姓名
-        teacherNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        teacherNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         teacherNameAc.setAdapter(teacherNameAdapter);
         //年级
-        gradeAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        gradeAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         gradeAc.setAdapter(gradeAdapter);
         //班级
-        classesAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        classesAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         classesAc.setAdapter(classesAdapter);
         //学生姓名
-        studentNameAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        studentNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         studentNameAc.setAdapter(studentNameAdapter);
         //班主任
-        headMasterAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
+        headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         headMasterAc.setAdapter(headMasterAdapter);
     }
 
