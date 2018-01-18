@@ -29,13 +29,10 @@ import net.jiaobaowang.visitor.Listener.OnLoadMoreListener;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.BaseFragment;
 import net.jiaobaowang.visitor.common.VisitorConfig;
-import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.ListResult;
+import net.jiaobaowang.visitor.entity.OffRecordLab;
 import net.jiaobaowang.visitor.entity.VisitRecord;
-import net.jiaobaowang.visitor.entity.OffRecordLab;
-import net.jiaobaowang.visitor.entity.OffRecordLab;
-import net.jiaobaowang.visitor.printer.VisitorFormDetailsActivity;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -118,6 +115,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         mText_keywords = v.findViewById(R.id.edit_keywords);
         mSpinner_identity = v.findViewById(R.id.spinner_identity);
         setSpinner(mSpinner_identity, R.array.person_identity);
+        queryRecords();
         return v;
     }
 
@@ -401,6 +399,13 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             mHeadTeaName.setText(record.getHead_teacher_name());
             mInTime.setText(record.getIn_time());
             mLeaveTime.setText(record.getLeave_time());
+            if (record.isLeave_flag()) {
+                mIsLeft.setText("是");
+                mIsLeft.setTextColor(getResources().getColor(R.color.is_leave));
+            } else {
+                mIsLeft.setText("否");
+                mIsLeft.setTextColor(getResources().getColor(R.color.is_not_leave));
+            }
             if (position % 2 == 1) {
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item_dark));
             } else {
@@ -466,9 +471,10 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                             return;
                         }
                         if (mLoadMoreListener != null) {
+                            isLoading = true;
                             mLoadMoreListener.onLoadMore();
                         }
-                        isLoading = true;
+
                     }
 
                 }

@@ -15,7 +15,7 @@
     <TextView
         android:id="@+id/visitor_counter"
         style="@style/visit_record_header"
-        android:layout_weight="0.5"
+        android:layout_width="60dp"
         android:text="随行人数" />
 
     <TextView
@@ -105,19 +105,19 @@
     <TextView
         android:id="@+id/in_time"
         style="@style/visit_record_header"
-        android:layout_weight="1"
+        android:layout_weight="1.5"
         android:text="进入时间"/>
 
     <TextView
         android:id="@+id/is_left"
         style="@style/visit_record_header"
-        android:layout_weight="0.5"
+        android:layout_width="60dp"
         android:text="是否离开"/>
 
     <TextView
         android:id="@+id/leave_time"
         style="@style/visit_record_header"
-        android:layout_weight="1"
+        android:layout_weight="1.5"
         android:text="离开时间"/>
 
     <TextView

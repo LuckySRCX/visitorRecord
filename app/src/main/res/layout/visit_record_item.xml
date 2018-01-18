@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cell_container"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="wrap_content"
     android:background="@drawable/visit_record_item"
     android:orientation="horizontal">
 
@@ -16,7 +16,7 @@
     <TextView
         android:id="@+id/visitor_counter"
         style="@style/visit_record_item_cell"
-        android:layout_weight="0.5" />
+        android:layout_width="60dp" />
 
     <TextView
         android:id="@+id/visit_reason"
@@ -56,17 +56,17 @@
     <TextView
         android:id="@+id/in_time"
         style="@style/visit_record_item_cell"
-        android:layout_weight="1" />
+        android:layout_weight="1.5" />
 
     <TextView
         android:id="@+id/is_left"
         style="@style/visit_record_item_cell"
-        android:layout_weight="0.5" />
+        android:layout_width="60dp" />
 
     <TextView
         android:id="@+id/leave_time"
         style="@style/visit_record_item_cell"
-        android:layout_weight="1" />
+        android:layout_weight="1.5" />
 
     <LinearLayout
         android:id="@+id/manage"

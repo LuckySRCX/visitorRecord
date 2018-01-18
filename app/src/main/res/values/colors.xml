@@ -18,5 +18,10 @@
     <color name="user_type_border">#d7d7d7</color>
     <color name="home_title_bg">#199edb</color>
     <color name="visit_record_dark_bg">#f2f2f2</color>
+    <color name="visit_record_darker_bg">#b7b7b7</color>
+    <color name="visit_record_pressed_bg">#c9c9c9</color>
     <color name="edit_text_enable">#666666</color>
+    <!---->
+    <color name="is_leave">@android:color/holo_green_dark</color>
+    <color name="is_not_leave">@android:color/holo_red_dark</color>
 </resources>
