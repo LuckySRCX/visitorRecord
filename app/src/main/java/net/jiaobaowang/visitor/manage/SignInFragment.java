@@ -35,7 +35,6 @@ import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.AddFormResult;
-import net.jiaobaowang.visitor.entity.PrintForm;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
@@ -62,7 +61,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private Bitmap headImage;//身份证头像
     private BeepManager beepManager;//bee声音
     private ArrayAdapter<String> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
-    private PrintForm printForm;//打印访客单
     private FormBody.Builder params;//保存的数据
     private OkHttpClient mOkHttpClient = new OkHttpClient();
 
@@ -119,7 +117,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         mContext = getActivity();
         initView(view);
-        initData();
         return view;
     }
 
@@ -197,11 +194,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         headMasterAc.setAdapter(headMasterAdapter);
     }
-
-    private void initData() {
-        printForm = new PrintForm();
-    }
-
 
     @Override
     public void onResume() {
@@ -443,23 +435,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             DialogUtils.showAlert(mContext, "请输入访客姓名");
             return;
         }
-        printForm.setVisName(visitor_name);
-//        String certificate_type = credentialsTypeAc.getText().toString().trim();
-//        if ("".equals(certificate_type)) {
-//            DialogUtils.showAlert(mContext, "请输入证件类型");
-//            return;
-//        }
-//        String certificate_Int = idNumberEt.getText().toString().trim();
-//        if ("".equals(certificate_Int)) {
-//            DialogUtils.showAlert(mContext, "请输入证件号码");
-//            return;
-//        }
         String visitor_for = reasonAc.getText().toString().trim();
         if ("".equals(visitor_for)) {
             DialogUtils.showAlert(mContext, "请输入访问事由");
             return;
         }
-        printForm.setVisReason(visitor_for);
         String visitor_counter = visitorNumberAc.getText().toString().trim();
         if ("".equals(visitor_counter)) {
             DialogUtils.showAlert(mContext, "请输入随行人数");
@@ -496,19 +476,15 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         String visitor_sex;
         if (maleRb.isChecked()) {
             visitor_sex = "0";
-            printForm.setVisGender(0);
         } else {
             visitor_sex = "1";
-            printForm.setVisGender(1);
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date curDate = new Date(System.currentTimeMillis());
         String in_time = sdf.format(curDate);
-        printForm.setEntryTime(in_time);
         //必填的数据
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
         String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
-        printForm.setRegisterName("jsy");
         params = new FormBody.Builder();
         params.add("token", token);
         params.add("visitor_name", visitor_name);//访客姓名
@@ -520,34 +496,25 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             //教职工
             //姓名
             params.add("teacher_name", teacher_name);
-            printForm.setUserName(teacher_name);
             //部门
             String department_name = departmentAc.getText().toString().trim();
             if (!"".equals(department_name)) {
                 params.add("department_name", department_name);
-                printForm.setUserDepartment(department_name);
             }
-            printForm.setUserType(0);
         } else {
             //年级
             String grade_name = gradeAc.getText().toString().trim();
             if (!"".equals(grade_name)) {
                 params.add("grade_name", grade_name);
-                printForm.setUserGradeName(grade_name);
             }
             //班级
             String class_name = classesAc.getText().toString().trim();
             if (!"".equals(class_name)) {
                 params.add("class_name", class_name);
-                printForm.setUserClassName(class_name);
             }
             //姓名
             params.add("student_name", student_name);
-            printForm.setUserName(student_name);
-            //printForm.setUserClassName("1303班");
-            printForm.setUserHeadMaster(head_teacher_name);
             params.add("head_teacher_name", head_teacher_name);//班主任姓名
-            printForm.setUserType(1);
         }
         params.add("visitor_counter", visitor_counter);//随行人数
         params.add("certificate_type", certificate_type);//证件类型
@@ -566,7 +533,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         String unit_name = organizationEt.getText().toString().trim();
         if (!"".equals(unit_name)) {
             params.add("unit_name", unit_name);
-            printForm.setVisOrg(unit_name);
         }
         //地址
         String address = addressEt.getText().toString().trim();
@@ -582,7 +548,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         String note = remarksEt.getText().toString().trim();
         if (!"".equals(note)) {
             params.add("note", note);
-            printForm.setRemarks(note);
         }
         new SubmitDataTask().execute();
     }
