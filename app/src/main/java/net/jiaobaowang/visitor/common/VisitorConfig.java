@@ -1,5 +1,7 @@
 package net.jiaobaowang.visitor.common;
 
+import okhttp3.MediaType;
+
 /**
  * Created by ShangLinMo on 2018/1/5.
  */
@@ -38,18 +40,27 @@ public class VisitorConfig {
      */
     public static final String QINIU_DELETE_FILE = "https://jbyc.jiaobaowang.net:8445/Api/QiNiu/Delete";
     /**
+     * 七牛公开空间
+     */
+    public static final String QINIU_PUBLIC_SPACE = "pb";
+    /**
+     * 七牛私有空间
+     */
+    public static final String QINIU_PRIVATE_SPACE = "pv";
+    /**
      * 访客系统 七牛项目id
      */
     public static final String QINIU_VISITOR_SYSTEM_APP_ID = "10";
     /**
      * 访客系统 七牛密钥
      */
-    public static final String QINIU_VISITOR_SYSTEM_SECRET_KEY = "jsy0117@";
+    public static final String QINIU_VISITOR_SYSTEM_SECRET_KEY = "jsy01170";
     /**
      * 访客系统 七牛第一前缀名
      */
     public static final String QINIU_VISITOR_SYSTEM_FILE_FIRST_NAME = "fangkesys/";
 
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final String VISIT_LOCAL_STORAGE = "net.jiaobaowang.visitor.localStorage";//存储到本地的key
     public static final String VISIT_LOCAL_SCHOOL_ID = "net.jiaobangwang.visitor.school_id";//学校id
     public static final String VISIT_LOCAL_TOKEN = "net.jiaobaowang.visitor.token";//token

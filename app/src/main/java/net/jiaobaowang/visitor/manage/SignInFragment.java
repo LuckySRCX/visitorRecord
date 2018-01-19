@@ -35,17 +35,23 @@ import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.AddFormResult;
+import net.jiaobaowang.visitor.entity.QiNiuCommand;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
+import net.jiaobaowang.visitor.utils.EncryptUtil;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -234,6 +240,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             case R.id.save_btn://保存
                 isNeedPrint = false;
                 checkSaveData();
+                //new GetQiNiuTokenTask().execute();
                 break;
             case R.id.print_tape_btn://保存并打印
                 isNeedPrint = true;
@@ -464,7 +471,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     /**
      * 设置需要保存的数据
      */
-    private void setSubmitData(){
+    private void setSubmitData() {
         params = new FormBody.Builder();
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
         String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
@@ -472,7 +479,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //访客姓名
         params.add("visitor_name", nameEt.getText().toString().trim());
         //访客性别
-        String visitor_sex="0";
+        String visitor_sex = "0";
         if (femaleRb.isChecked()) {
             visitor_sex = "1";
         }
@@ -529,7 +536,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             params.add("note", note);
         }
         //手机
-        String visitor_phone=phoneNumberEt.getText().toString().trim();
+        String visitor_phone = phoneNumberEt.getText().toString().trim();
         if (!"".equals(visitor_phone)) {
             params.add("visitor_phone", visitor_phone);
         }
@@ -614,6 +621,54 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             } else {
                 DialogUtils.showAlert(mContext, "保存访客记录失败：" + resultStr[1]);
             }
+        }
+    }
+
+    private class GetQiNiuTokenTask extends AsyncTask<Void, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(Void... Void) {
+            Log.i(TAG, "doInBackground");
+            String result[] = new String[2];
+            String Key = System.currentTimeMillis() + new Random().nextInt(1000) + 1 + ".jpg";
+            Log.i(TAG, "Key:" + Key);
+            QiNiuCommand command = new QiNiuCommand(VisitorConfig.QINIU_PUBLIC_SPACE, Key, "", "");
+
+            List<QiNiuCommand> commands = new ArrayList<>();
+            commands.add(command);
+
+            Gson gson = new Gson();
+            String commandJson = gson.toJson(command);
+            try {
+                String Param = EncryptUtil.desEncrypt(commandJson, VisitorConfig.QINIU_VISITOR_SYSTEM_SECRET_KEY);
+                String AppIdStr = "\"AppID\":\"" + VisitorConfig.QINIU_VISITOR_SYSTEM_APP_ID + "\"";
+                String ParamStr = ",\"Param\":\"" + Param + "\"";
+                String json = "{" + AppIdStr + ParamStr + "}";
+                RequestBody body = RequestBody.create(VisitorConfig.JSON, json);
+                Request request = new Request.Builder()
+                        .url(VisitorConfig.QINIU_GET_UPLOAD_TOKEN)
+                        .addHeader("Content-Type", "application/json")
+                        .post(body)
+                        .build();
+                Response response = mOkHttpClient.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    result[0] = "1";
+                    result[1] = response.body().string();
+                    return result;
+                } else {
+                    throw new IOException("Unexpected code " + response);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result[0] = "0";
+                result[1] = e.toString();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String resultStr[]) {
+            Log.i(TAG, "onPostExecute:" + resultStr[0] + " " + resultStr[1]);
         }
     }
 }
