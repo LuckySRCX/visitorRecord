@@ -32,6 +32,7 @@ import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.ListResult;
 import net.jiaobaowang.visitor.entity.OffRecordLab;
+import net.jiaobaowang.visitor.entity.SignOffResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 
 import java.io.IOException;
@@ -63,6 +64,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private TextView mSignInEnd;
     private final int REQUEST_SIBFGIN_CODE = 0;
     private final int REQUEST_SIOFF_CODE = 1;
+    private final int REQUEST_SIGN_OFF_CODE = 3;
     private static final String DIALOG_DATE = "DialogDate";
     private static final String DIALOG_VISIT = "DialogVisit";
     private RecyclerView mRecyclerView;
@@ -75,6 +77,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private boolean isLastPage;
     private MyHandler mMyHandler;
     private OkHttpClient okHttpClient = new OkHttpClient();
+    private VisitRecord mVisitRecord;
 
     public SignOffFragment() {
         // Required empty public constructor
@@ -299,6 +302,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private void showDetail(VisitRecord record) {
         FragmentManager fragmentManager = getFragmentManager();
         OffDetailFragment offDetailFragment = OffDetailFragment.newInstance(record);
+        offDetailFragment.setTargetFragment(SignOffFragment.this, REQUEST_SIGN_OFF_CODE);
         offDetailFragment.show(fragmentManager, DIALOG_VISIT);
     }
 
@@ -308,19 +312,34 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             return;
         }
         Log.d(TAG, "获取的日期:" + String.valueOf(data.getSerializableExtra(DatePickerFragment.EXTRA_DATE)));
-        Date resultDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+
         switch (requestCode) {
             case REQUEST_SIBFGIN_CODE:
-                mDateSIBegin = resultDate;
+                setTime(mDateSIBegin, data);
                 break;
             case REQUEST_SIOFF_CODE:
-                mDateSIEnd = resultDate;
+                setTime(mDateSIEnd, data);
+                break;
+            case REQUEST_SIGN_OFF_CODE:
+                changeVisitorRecord(data);
                 break;
             default:
                 break;
         }
-        mSelectText.setText(formatDate(resultDate));
+
     }
+
+    private void changeVisitorRecord(Intent data) {
+        boolean isLeave = data.getBooleanExtra(OffDetailFragment.EXTRA_IS_SIGN_OFF, false);
+        mVisitRecord.setLeave_flag(isLeave);
+        mRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    private void setTime(Date date, Intent data) {
+        date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+        mSelectText.setText(formatDate(date));
+    }
+
 
     /**
      * 格式化 日期
@@ -423,6 +442,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             VisitRecord record = (VisitRecord) v.getTag();
             switch (v.getId()) {
                 case R.id.cell_container:
+                    mVisitRecord = record;
                     showDetail(record);
                     break;
                 default:

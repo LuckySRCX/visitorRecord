@@ -3,11 +3,14 @@ package net.jiaobaowang.visitor.manage;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -20,13 +23,23 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
+import net.jiaobaowang.visitor.entity.SignOffResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.utils.TimeFormat;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by rocka on 2018/1/15.
@@ -34,12 +47,16 @@ import java.util.Date;
 
 public class OffDetailFragment extends DialogFragment implements View.OnClickListener {
     private final static String EXTRA_ARGS_VISIT = "net.jiaobangwang.visitor.manage.OffDetailFragment.visit";
+    public final static String EXTRA_IS_SIGN_OFF = "net.jiaobaowang.visitor.manage.offDetailFragment.isSignOff";
     private final static int REQUEST_OFF_CODE = 2;
     private final static String TAG_OFF_TIME_QUERY = "leaveTime";
     private VisitRecord mVisitRecord;
     private AlertDialog dialog;
     private TextView mOffTimeText;
     private Date mSelectLeaveTime;
+    private String mToken;
+    private OkHttpClient mOkHttpClient;
+    private MyHandler mHandler;
 
     @NonNull
     @Override
@@ -79,6 +96,9 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         if (getArguments() != null) {
             mVisitRecord = (VisitRecord) getArguments().getSerializable(EXTRA_ARGS_VISIT);
         }
+        mOkHttpClient = new OkHttpClient();
+        mHandler = new MyHandler(getActivity());
+        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
     }
 
     public static OffDetailFragment newInstance(VisitRecord visitRecord) {
@@ -101,7 +121,8 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.off_detail_sure:
-                dialog.dismiss();
+                requestSignOff();
+//                dialog.dismiss();
                 break;
             case R.id.off_detail_cancel:
                 dialog.dismiss();
@@ -117,6 +138,70 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         }
     }
 
+    private void requestSignOff() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    FormBody body = new FormBody.Builder()
+                            .add("token", mToken)
+                            .add("id", mVisitRecord.getId() + "")
+                            .add("leave_time", TimeFormat.formatTime(mSelectLeaveTime)).build();
+                    Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LEAVE).post(body).build();
+                    Response response = mOkHttpClient.newCall(request).execute();
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Exception" + response);
+                    } else {
+                        dealResult(response.body().string());
+                    }
+                } catch (Exception e) {
+                    Log.e("ERROR", "获取信息错误", e);
+                }
+            }
+        }).start();
+    }
+
+    private void dealResult(String string) {
+        Gson gson = new Gson();
+        SignOffResult result = gson.fromJson(string, SignOffResult.class);
+        if (result.getCode().equals("0000")) {
+            mHandler.sendEmptyMessage(0);
+        } else {
+            mHandler.sendEmptyMessage(1);
+        }
+        dialog.dismiss();
+    }
+
+    class MyHandler extends Handler {
+        private Context mContext;
+
+        public MyHandler(Context context) {
+            super();
+            mContext = context;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    sendResult(true);
+                    break;
+                case 1:
+                    sendResult(false);
+                    break;
+            }
+        }
+    }
+
+    private void sendResult(boolean b) {
+        if (getTargetFragment() == null) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_IS_SIGN_OFF, b);
+        getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, intent);
+    }
+
     private void showTimePicker() {
         FragmentManager fragmentManager = getFragmentManager();
         DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(1, mSelectLeaveTime, TimeFormat.getDateFromFormatTime(mVisitRecord.getIn_time()));
@@ -129,7 +214,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         if (resultCode != Activity.RESULT_OK) {
             return;
         }
-        mSelectLeaveTime= (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+        mSelectLeaveTime = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
         switch (requestCode) {
             case REQUEST_OFF_CODE:
                 mOffTimeText.setText(TimeFormat.formatTime(mSelectLeaveTime));
