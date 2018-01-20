@@ -80,13 +80,29 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         mSelectLeaveTime = new Date();
         mOffTimeText.setText(TimeFormat.formatTime(mSelectLeaveTime));
         ((TextView) v.findViewById(R.id.off_detail_checkTime)).setText(mVisitRecord.getCreate_time());
-        ((TextView) v.findViewById(R.id.off_detail_beVisitor)).setText(mVisitRecord.getInterviewee_type() == 0 ? mVisitRecord.getStudent_name() : mVisitRecord.getTeacher_name());
-        ((TextView) v.findViewById(R.id.off_detail_beVisitorDepart)).setText(mVisitRecord.getDepartment_name());
+        setBeVisitor(v);
         new DownloadImageTask((ImageView) v.findViewById(R.id.off_detail_portrait)).execute(mVisitRecord.getImg_url());
         v.findViewById(R.id.off_detail_sure).setOnClickListener(this);
         v.findViewById(R.id.off_detail_cancel).setOnClickListener(this);
         v.findViewById(R.id.off_detail_offTime).setOnClickListener(this);
         v.findViewById(R.id.off_detail_offTimeContainer).setOnClickListener(this);
+    }
+
+    private void setBeVisitor(View v) {
+        if (mVisitRecord.getInterviewee_type() == 0) {
+            v.findViewById(R.id.tea_container).setVisibility(View.VISIBLE);
+            v.findViewById(R.id.stu_container).setVisibility(View.GONE);
+            ((TextView) v.findViewById(R.id.off_detail_beVisitor)).setText(mVisitRecord.getTeacher_name());
+            Log.d("OffDetailFragment", mVisitRecord.getDepartment_name());
+            ((TextView) v.findViewById(R.id.off_detail_beVisitorDepart)).setText(mVisitRecord.getDepartment_name());
+        } else {
+            v.findViewById(R.id.tea_container).setVisibility(View.GONE);
+            v.findViewById(R.id.stu_container).setVisibility(View.VISIBLE);
+            ((TextView) v.findViewById(R.id.off_detail_stuName)).setText(mVisitRecord.getStudent_name());
+            ((TextView) v.findViewById(R.id.off_detail_stuClass)).setText(mVisitRecord.getClass_name());
+            ((TextView) v.findViewById(R.id.off_detail_stuGrade)).setText(mVisitRecord.getGrade_name());
+            ((TextView) v.findViewById(R.id.off_detail_stuHeaderTea)).setText(mVisitRecord.getHead_teacher_name());
+        }
     }
 
 
@@ -204,6 +220,10 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
 
     private void showTimePicker() {
         FragmentManager fragmentManager = getFragmentManager();
+        DatePickerFragment fragment = (DatePickerFragment) fragmentManager.findFragmentByTag(TAG_OFF_TIME_QUERY);
+        if (fragment != null) {
+            return;
+        }
         DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(1, mSelectLeaveTime, TimeFormat.getDateFromFormatTime(mVisitRecord.getIn_time()));
         datePickerFragment.setTargetFragment(OffDetailFragment.this, REQUEST_OFF_CODE);
         datePickerFragment.show(fragmentManager, TAG_OFF_TIME_QUERY);

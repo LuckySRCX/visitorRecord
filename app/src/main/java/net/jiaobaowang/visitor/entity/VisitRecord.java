@@ -29,7 +29,7 @@ public class VisitRecord implements Serializable {
     private String leave_time;//:2018-12-05 15;//:15,（离开时间）
     private String address;//:null,（访客的地址）
     private String create_time;//:2018-01-05 10;//:06,（创建时间）
-    private int interviewee_type;//:0,（被访者类型）
+    private int interviewee_type;//:0,（被访者类型）0老师 1学生
     private int department_id;//:null,（部门id）
     private String department_name;//:政教处,（部门名称）
     private int student_id;//:null,（学生id）

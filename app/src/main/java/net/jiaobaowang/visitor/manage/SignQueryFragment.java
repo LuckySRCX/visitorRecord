@@ -298,6 +298,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
      */
     private void showDialog(int requestCode, Date selectDate, Date beginDate) {
         FragmentManager fragmentManager = getFragmentManager();
+        DatePickerFragment fragment = (DatePickerFragment) fragmentManager.findFragmentByTag(DIALOG_DATE);
+        if (fragment != null) {
+            return;
+        }
         DatePickerFragment dialog = DatePickerFragment.newInstance(0, selectDate, beginDate);
         dialog.setTargetFragment(SignQueryFragment.this, requestCode);
         dialog.show(fragmentManager, DIALOG_DATE);
@@ -401,10 +405,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             mHeadTeaName.setText(record.getHead_teacher_name());
             mInTime.setText(record.getIn_time());
             mLeaveTime.setText(record.getLeave_time());
-            if(record.isLeave_flag()){
+            if (record.isLeave_flag()) {
                 mIsLeft.setText("是");
                 mIsLeft.setTextColor(getResources().getColor(R.color.is_leave));
-            }else{
+            } else {
                 mIsLeft.setText("否");
                 mIsLeft.setTextColor(getResources().getColor(R.color.is_not_leave));
             }

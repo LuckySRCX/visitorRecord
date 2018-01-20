@@ -15,7 +15,7 @@ import net.jiaobaowang.visitor.R;
  */
 
 public abstract class BaseFragmentActivity extends AppCompatActivity {
-    private  String TAG;
+    private static String TAG;
 
     public abstract Fragment createFragment();
 

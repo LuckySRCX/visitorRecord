@@ -104,7 +104,6 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_off, container, false);
-
         mSignInBegin = v.findViewById(R.id.sign_in_begin);
         mSignInEnd = v.findViewById(R.id.sign_in_end);
         setTextView(mSignInBegin, mDateSIBegin);
@@ -294,13 +293,22 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
      */
     private void showDialog(int requestCode, Date selectDate, Date beginDate) {
         FragmentManager fragmentManager = getFragmentManager();
+        DatePickerFragment fragment = (DatePickerFragment) fragmentManager.findFragmentByTag(DIALOG_DATE);
+        if (fragment != null) {
+            return;
+        }
         DatePickerFragment dialog = DatePickerFragment.newInstance(0, selectDate, beginDate);
         dialog.setTargetFragment(SignOffFragment.this, requestCode);
         dialog.show(fragmentManager, DIALOG_DATE);
     }
 
     private void showDetail(VisitRecord record) {
+
         FragmentManager fragmentManager = getFragmentManager();
+        OffDetailFragment fragment = (OffDetailFragment) fragmentManager.findFragmentByTag(DIALOG_VISIT);
+        if (fragment != null) {
+            return;
+        }
         OffDetailFragment offDetailFragment = OffDetailFragment.newInstance(record);
         offDetailFragment.setTargetFragment(SignOffFragment.this, REQUEST_SIGN_OFF_CODE);
         offDetailFragment.show(fragmentManager, DIALOG_VISIT);
@@ -358,7 +366,6 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
     }
 
     @Override
