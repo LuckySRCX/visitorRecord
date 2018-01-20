@@ -53,16 +53,17 @@ public class EncryptUtil {
     public static String hmacSHA1Encrypt(String encryptText, String encryptKey) throws Exception {
         System.out.println(encryptText);
         byte[] data = encryptKey.getBytes(ENCODING);
-        //根据给定的字节数组构造一个密钥,第二参数指定一个密钥算法的名称  
+        //根据给定的字节数组构造一个密钥,第二参数指定一个密钥算法的名称
         SecretKey secretKey = new SecretKeySpec(data, MAC_NAME);
-        //生成一个指定 Mac 算法 的 Mac 对象  
+        //生成一个指定 Mac 算法 的 Mac 对象
         Mac mac = Mac.getInstance(MAC_NAME);
-        //用给定密钥初始化 Mac 对象  
+        //用给定密钥初始化 Mac 对象
         mac.init(secretKey);
 
         byte[] text = encryptText.getBytes(ENCODING);
-        //完成 Mac 操作   
-        return Base64.encodeToString(mac.doFinal(text), Base64.DEFAULT);
+        //完成 Mac 操作
+        return Base64.encodeToString(mac.doFinal(text), Base64.NO_WRAP);
+        //return new BASE64Encoder().encode(mac.doFinal(text)) ;
     }
 
 
@@ -83,7 +84,9 @@ public class EncryptUtil {
         Cipher enCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");// 得到加密对象Cipher
         enCipher.init(Cipher.ENCRYPT_MODE, key);// 设置工作模式为加密模式，给出密钥和向量
         byte[] pasByte = enCipher.doFinal(inputData.getBytes("utf-8"));
-        return Base64.encodeToString(pasByte, Base64.DEFAULT);
+        return Base64.encodeToString(pasByte, Base64.NO_WRAP);
+        //BASE64Encoder base64Encoder = new BASE64Encoder();
+        //return base64Encoder.encode(pasByte);
     }
 
     /**
@@ -95,7 +98,9 @@ public class EncryptUtil {
      * @throws Exception
      */
     public static String desDecrypt(String inputData, String inputKey) throws Exception {
-        byte[] byteInputData = Base64.decode(inputData.getBytes(), Base64.DEFAULT);
+        byte[] byteInputData = Base64.decode(inputData, Base64.NO_WRAP);
+        //BASE64Decoder base64Decoder = new BASE64Decoder();
+        //byte[] byteInputData = base64Decoder.decodeBuffer(inputData);
 
         byte[] DESkey = inputKey.getBytes();// 设置密钥
         DESKeySpec keySpec = new DESKeySpec(DESkey);// 设置密钥参数
@@ -126,7 +131,8 @@ public class EncryptUtil {
             e.printStackTrace();
         }
         if (b != null) {
-            s = Base64.encodeToString(b, Base64.DEFAULT);
+            s = Base64.encodeToString(b, Base64.NO_WRAP);
+            //s = new BASE64Encoder().encode(b);
         }
         return s;
     }
@@ -141,8 +147,10 @@ public class EncryptUtil {
         byte[] b = null;
         String result = null;
         if (s != null) {
+            //BASE64Decoder decoder = new BASE64Decoder();
             try {
-                b = Base64.decode(s, Base64.DEFAULT);
+                b = Base64.decode(s, Base64.NO_WRAP);
+                //b = decoder.decodeBuffer(s);
                 result = new String(b, "utf-8");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -212,7 +220,8 @@ public class EncryptUtil {
      * @throws Exception
      */
     public static String aesEncrypt(String content, String encryptKey) throws Exception {
-        return Base64.encodeToString(aesEncryptToBytes(content, encryptKey), Base64.DEFAULT);
+        return Base64.encodeToString(aesEncryptToBytes(content, encryptKey), Base64.NO_WRAP);
+        //return new BASE64Encoder().encode(aesEncryptToBytes(content, encryptKey));
     }
 
     /**
@@ -243,7 +252,8 @@ public class EncryptUtil {
      * @throws Exception
      */
     public static String aesDecrypt(String encryptStr, String decryptKey) throws Exception {
-        return aesDecryptByBytes(Base64.decode(encryptStr, Base64.DEFAULT), decryptKey);
+        return aesDecryptByBytes(Base64.decode(encryptStr, Base64.NO_WRAP), decryptKey);
+        //return aesDecryptByBytes(new BASE64Decoder().decodeBuffer(encryptStr), decryptKey);
     }
 
     /**

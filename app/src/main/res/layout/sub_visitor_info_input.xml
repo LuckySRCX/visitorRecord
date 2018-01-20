@@ -12,7 +12,7 @@
 
         <LinearLayout
             android:layout_width="208dp"
-            android:layout_height="268dp"
+            android:layout_height="228dp"
             android:background="@drawable/image_border"
             android:gravity="center">
 
@@ -28,9 +28,9 @@
 
         <Button
             android:id="@+id/id_card_read_btn"
-            style="@style/button_yes"
-            android:layout_width="86dp"
-            android:layout_height="40dp"
+            style="@style/button_read_id_card"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_marginTop="20dp"
             android:text="@string/read_id_card" />
     </LinearLayout>
