@@ -1,5 +1,6 @@
 package net.jiaobaowang.visitor.printer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -11,16 +12,25 @@ import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 
 public class VisitorFormDetailsActivity extends AppCompatActivity {
+    private VisitRecord visitRecord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        VisitRecord visitRecord = (VisitRecord) getIntent().getSerializableExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA);
+        visitRecord = (VisitRecord) getIntent().getSerializableExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA);
         setContentView(R.layout.activity_visitor_form_details);
         findViewById(R.id.cancel_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        findViewById(R.id.print_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(VisitorFormDetailsActivity.this, PrinterActivity.class);
+                intent.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, visitRecord);
+                startActivity(intent);
             }
         });
         //访客姓名

@@ -35,17 +35,24 @@ import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.AddFormResult;
+import net.jiaobaowang.visitor.entity.QiNiuCommand;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
+import net.jiaobaowang.visitor.utils.EncryptUtil;
 import net.jiaobaowang.visitor.utils.ToastUtils;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -234,6 +241,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             case R.id.save_btn://保存
                 isNeedPrint = false;
                 checkSaveData();
+                //new GetQiNiuTokenTask().execute();
                 break;
             case R.id.print_tape_btn://保存并打印
                 isNeedPrint = true;
@@ -464,7 +472,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     /**
      * 设置需要保存的数据
      */
-    private void setSubmitData(){
+    private void setSubmitData() {
         params = new FormBody.Builder();
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
         String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
@@ -472,7 +480,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //访客姓名
         params.add("visitor_name", nameEt.getText().toString().trim());
         //访客性别
-        String visitor_sex="0";
+        String visitor_sex = "0";
         if (femaleRb.isChecked()) {
             visitor_sex = "1";
         }
@@ -529,7 +537,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             params.add("note", note);
         }
         //手机
-        String visitor_phone=phoneNumberEt.getText().toString().trim();
+        String visitor_phone = phoneNumberEt.getText().toString().trim();
         if (!"".equals(visitor_phone)) {
             params.add("visitor_phone", visitor_phone);
         }
@@ -614,6 +622,75 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             } else {
                 DialogUtils.showAlert(mContext, "保存访客记录失败：" + resultStr[1]);
             }
+        }
+    }
+
+    private class GetQiNiuTokenTask extends AsyncTask<Void, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(Void... Void) {
+            Log.i(TAG, "doInBackground");
+            String result[] = new String[2];
+            String Key = "idcardimage/" + System.currentTimeMillis() + (int) (Math.random() * 1000) + ".jpg";
+            Key = "idcardimage/1234567890.jpg";
+            QiNiuCommand command = new QiNiuCommand(VisitorConfig.QINIU_PUBLIC_SPACE, Key, "", "");
+            List<QiNiuCommand> commands = new ArrayList<>();
+            commands.add(command);
+
+            Gson gson = new Gson();
+            String commandJson = gson.toJson(commands);
+            Log.i(TAG, "commandJson:" + commandJson);
+            //String commandJson = "[{\"Pops\":\"\",\"NotifyUrl\":\"\",\"Key\":\"idcardimage/1234567890.jpg\",\"Bucket\":\"pb\"}]";
+            try {
+                String Param = EncryptUtil.desEncrypt(commandJson, VisitorConfig.QINIU_VISITOR_SYSTEM_SECRET_KEY);
+                Log.i(TAG, "Param:" + Param);
+                //String Param = "B4B4B921A4AE7A434DC7C1BBF11ACD25EB3C58227E55A06BF94DE8F359CE400FA8414A9F5B20BF34DF4405D29F4D3270D00465D3FB48799968DE48798B34AD2C1019C0C72FA8FD19CC4FEA9E6F3253C9394BA0C064770E62F5B751343FED28403B990CD71B176B605A3F750D3B07CC4579F305020351F295B3874589B5B3948F83B4C244B64815F23BB727A5C4DD4C0CC253395868D4CA4D38A7739D46152AC6";
+//                // Log.i(TAG, "Param:" + EncryptUtil.desDecrypt(Param, VisitorConfig.QINIU_VISITOR_SYSTEM_SECRET_KEY));
+//                String AppIdStr = "\"AppID\":\"" + VisitorConfig.QINIU_VISITOR_SYSTEM_APP_ID + "\"";
+//                String ParamStr = ",\"Param\":\"" + Param + "\"";
+//                String json = "{" + AppIdStr + ParamStr + "}";
+//                Log.i(TAG, "json:" + json);
+//                RequestBody body = RequestBody.create(VisitorConfig.JSON, json);
+//                Request request = new Request.Builder()
+//                        .url(VisitorConfig.QINIU_GET_UPLOAD_TOKEN)
+//                        .addHeader("content-type", "application/json; charset=utf-8")
+//                        .post(body)
+//                        .build();
+//                Log.i(TAG, "Url:" + VisitorConfig.QINIU_GET_UPLOAD_TOKEN);
+//                Log.i(TAG, "AppID:" + VisitorConfig.QINIU_VISITOR_SYSTEM_APP_ID);
+//                Log.i(TAG, "SECRET_KEY:" + VisitorConfig.QINIU_VISITOR_SYSTEM_SECRET_KEY);
+                //String Param = "[\"http://qn-kfpv.jiaobaowang.net/GroupPhoto_Big.png\"]";
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("AppID", VisitorConfig.QINIU_VISITOR_SYSTEM_APP_ID);
+                jsonObject.put("Param", Param);
+                String json = jsonObject.toString();
+                Log.i(TAG, "json:" + json);
+                //RequestBody body = RequestBody.create(VisitorConfig.JSON, json);
+                RequestBody body = new FormBody.Builder().add("data", json).build();
+                Request request = new Request.Builder()
+                        .url(VisitorConfig.QINIU_GET_DOWNLOAD_TOKEN)
+                        .addHeader("content-type", "application/json; charset=utf-8")
+                        .post(body)
+                        .build();
+                Response response = mOkHttpClient.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    result[0] = "1";
+                    result[1] = response.body().string();
+                    return result;
+                } else {
+                    throw new IOException("Unexpected code " + response);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result[0] = "0";
+                result[1] = e.toString();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String resultStr[]) {
+            Log.i(TAG, "onPostExecute:" + resultStr[0] + " " + resultStr[1]);
         }
     }
 }
