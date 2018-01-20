@@ -30,6 +30,7 @@ import net.jiaobaowang.visitor.utils.Tools;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
 import java.util.TreeMap;
 
 import okhttp3.FormBody;
@@ -150,9 +151,10 @@ public class LoginActivity extends AppCompatActivity {
         map.put("appid", Tools.getAppId(LoginActivity.this));
         map.put("schid", 100005 + "");
         map.put("utp", "0");
-        String uid=EncryptUtil.encryptByPublicKey("ceshi01", EncryptUtil.getPublicKey(shakeHandData.getModulus(), shakeHandData.getExponent()));
+        RSAPublicKey key=EncryptUtil.getPublicKey(shakeHandData.getModulus(), shakeHandData.getExponent());
+        String uid=EncryptUtil.encryptByPublicKey("ceshi01", key);
         map.put("uid",uid);
-        String pw=EncryptUtil.encryptByPublicKey("123456", EncryptUtil.getPublicKey(shakeHandData.getModulus(), shakeHandData.getExponent()));
+        String pw=EncryptUtil.encryptByPublicKey("123456", key);
         map.put("pw",pw);
         map.put("sign", Tools.getSign(map));
         RequestBody body = null;
