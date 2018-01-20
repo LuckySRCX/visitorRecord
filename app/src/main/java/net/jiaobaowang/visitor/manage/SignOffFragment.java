@@ -3,6 +3,7 @@ package net.jiaobaowang.visitor.manage;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.Listener.OnLoadMoreListener;
 import net.jiaobaowang.visitor.R;
@@ -32,8 +34,12 @@ import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.ListResult;
 import net.jiaobaowang.visitor.entity.OffRecordLab;
-import net.jiaobaowang.visitor.entity.SignOffResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
+import net.jiaobaowang.visitor.utils.DialogUtils;
+import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
+import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoResult;
+import net.jiaobaowang.visitor.visitor_interface.OnGetQRCodeListener;
+import net.jiaobaowang.visitor.visitor_interface.OnGetQRCodeResult;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -56,7 +62,7 @@ import okhttp3.Response;
  * Use the {@link SignOffFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SignOffFragment extends BaseFragment implements View.OnClickListener {
+public class SignOffFragment extends BaseFragment implements View.OnClickListener, OnGetIdentityInfoResult, OnGetQRCodeResult {
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
     private TextView mSelectText;
@@ -78,6 +84,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private MyHandler mMyHandler;
     private OkHttpClient okHttpClient = new OkHttpClient();
     private VisitRecord mVisitRecord;
+    private OnGetIdentityInfoListener onGetIdentityInfoListener;
+    private OnGetQRCodeListener onGetQRCodeListener;
 
     public SignOffFragment() {
         // Required empty public constructor
@@ -112,11 +120,15 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         v.findViewById(R.id.sign_in_endContainer).setOnClickListener(this);
         v.findViewById(R.id.back_up).setOnClickListener(this);
         v.findViewById(R.id.btn_query).setOnClickListener(this);
+        v.findViewById(R.id.qrcode_btn).setOnClickListener(this);
+        v.findViewById(R.id.id_card_read_btn).setOnClickListener(this);
         mRecyclerView = v.findViewById(R.id.recycler_query);
         v.findViewById(R.id.leave_time).setVisibility(View.GONE);
         mText_keywords = v.findViewById(R.id.edit_keywords);
         mSpinner_identity = v.findViewById(R.id.spinner_identity);
         setSpinner(mSpinner_identity, R.array.person_identity);
+        onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
+        onGetQRCodeListener = (OnGetQRCodeListener) getActivity();
         queryRecords();
         return v;
     }
@@ -200,6 +212,12 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 pageIndex = 1;
                 queryRecords();
                 break;
+            case R.id.qrcode_btn:
+                onGetQRCodeListener.getQRCode();
+                break;
+            case R.id.id_card_read_btn:
+                onGetIdentityInfoListener.getIdentityInfo();
+                break;
             default:
                 break;
         }
@@ -254,6 +272,43 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             }
         } else {
             Toast.makeText(getActivity(), "无请求数据", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * 返回身份证信息和身份证头像
+     *
+     * @param code          0，失败；1，成功
+     * @param msg           失败信息
+     * @param identityInfo  身份证信息
+     * @param identityImage 身份证头像
+     */
+    @Override
+    public void getIdentityInfoResult(int code, String msg, IdentityInfo identityInfo, Bitmap identityImage) {
+        Log.i(TAG, "getIdentityInfoResult");
+        if (code == 0) {
+            //失败
+            DialogUtils.showAlert(getActivity(), msg);
+        } else {
+
+        }
+    }
+
+    /**
+     * 返回条码/二维码
+     *
+     * @param code   0，失败；1，成功
+     * @param msg    失败信息
+     * @param qrCode 条码/二维码
+     */
+    @Override
+    public void getQRCodeResult(int code, String msg, String qrCode) {
+        Log.i(TAG, "getIdentityInfoResult:" + qrCode);
+        if (code == 0) {
+            //失败
+            DialogUtils.showAlert(getActivity(), msg);
+        } else {
+
         }
     }
 
