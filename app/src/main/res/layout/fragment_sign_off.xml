@@ -19,6 +19,7 @@
         android:paddingBottom="8dp">
 
         <Button
+            android:id="@+id/qrcode_btn"
             android:layout_width="75dp"
             android:layout_height="40dp"
             android:layout_marginStart="16dp"
@@ -27,6 +28,7 @@
             android:textColor="@drawable/query_btn_text" />
 
         <Button
+            android:id="@+id/id_card_read_btn"
             android:layout_width="75dp"
             android:layout_height="40dp"
             android:layout_marginStart="16dp"

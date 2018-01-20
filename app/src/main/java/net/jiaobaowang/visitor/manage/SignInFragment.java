@@ -26,9 +26,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.google.zxing.other.BeepManager;
-import com.telpo.tps550.api.TelpoException;
-import com.telpo.tps550.api.idcard.IdCard;
 import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.R;
@@ -40,6 +37,8 @@ import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.EncryptUtil;
 import net.jiaobaowang.visitor.utils.ToastUtils;
+import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
+import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoResult;
 
 import org.json.JSONObject;
 
@@ -60,20 +59,19 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * 访客登记
  */
-public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, OnGetIdentityInfoResult {
     private static final String TAG = "SignInFragment";
 
     private boolean isNeedPrint = false;//是否需要打印
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
-    private BeepManager beepManager;//bee声音
-    private ArrayAdapter<String> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
-    private FormBody.Builder params;//保存的数据
+
     private OkHttpClient mOkHttpClient = new OkHttpClient();
+    private FormBody.Builder params;//保存的数据
+    private OnGetIdentityInfoListener onGetIdentityInfoListener;
 
     private Context mContext;
-    private LinearLayout typeTeacherLL;//教职工区域
-    private LinearLayout typeStudentLL;//学生区域
+    private LinearLayout typeTeacherLL, typeStudentLL;//教职工区域//学生区域
     private Button idCardReadBtn;//读取身份证
     private TextView idCardHeadTv;//身份证头像
     private EditText nameEt;//姓名
@@ -85,10 +83,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private EditText organizationEt;//单位名称
     private EditText plateNumberEt;//车牌号
     private EditText remarksEt;//备注
-    private RadioButton maleRb;//男
-    private RadioButton femaleRb;//女
-    private RadioButton typeTeacherRb;//教职工类型
-    private RadioButton typeStudentRb;//学生类型
+    private RadioButton maleRb, femaleRb, typeTeacherRb, typeStudentRb;//男//女//教职工类型//学生类型
     private AutoCompleteTextView credentialsTypeAc;//证件类型
     private AutoCompleteTextView reasonAc;//访问事由
     private AutoCompleteTextView visitorNumberAc;//访客人数
@@ -98,7 +93,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private AutoCompleteTextView classesAc;//班级
     private AutoCompleteTextView studentNameAc;//学生姓名
     private AutoCompleteTextView headMasterAc;//班主任姓名
-
+    private ArrayAdapter<String> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
 
     public SignInFragment() {
     }
@@ -106,7 +101,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     public static SignInFragment newInstance() {
         return new SignInFragment();
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -200,39 +194,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //班主任
         headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         headMasterAc.setAdapter(headMasterAdapter);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        beepManager = new BeepManager(getActivity(), R.raw.beep);
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    IdCard.open(getActivity());
-                } catch (TelpoException e) {
-                    e.printStackTrace();
-                    getActivity().runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            idCardReadBtn.setEnabled(false);
-                            ToastUtils.showMessage(mContext, R.string.identify_read_fail);
-                        }
-                    });
-                }
-            }
-        }).start();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        beepManager.close();
-        beepManager = null;
-        IdCard.close();
+        onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
     }
 
     @Override
@@ -252,7 +214,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 break;
             case R.id.id_card_read_btn://读取身份证
                 clearVisitorInfo();
-                new GetIDInfoTask().execute();
+                onGetIdentityInfoListener.getIdentityInfo();
                 break;
             case R.id.teacher_name_tv:
                 teacherNameAc.showDropDown();
@@ -298,65 +260,23 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         }
     }
 
-    private class GetIDInfoTask extends AsyncTask<Void, Integer, TelpoException> {
-        ProgressDialog dialog;
-
-        @Override
-        protected void onPreExecute() {
-            //在execute被调用后立即执行
-            super.onPreExecute();
-            idCardReadBtn.setEnabled(false);
-            dialog = new ProgressDialog(mContext);
-            dialog.setTitle("操作中");
-            dialog.setMessage("连接读卡器...");
-            dialog.setCancelable(false);
-            dialog.show();
-        }
-
-        @Override
-        protected TelpoException doInBackground(Void... voids) {
-            //在onPreExecute()完成后立即执行
-            TelpoException result = null;
-            try {
-                publishProgress(1);
-                idCardInfo = IdCard.checkIdCard(1600);// luyq modify
-                if (idCardInfo != null) {
-                    byte[] image = IdCard.getIdCardImage();
-                    headImage = IdCard.decodeIdCardImage(image);
-                }
-            } catch (TelpoException e) {
-                e.printStackTrace();
-                result = e;
-            }
-            return result;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            //在调用publishProgress时此方法被执行
-            super.onProgressUpdate(values);
-            if (values[0] == 1) {
-                dialog.setMessage("获取身份证信息");
-            }
-        }
-
-        @Override
-        protected void onPostExecute(TelpoException result) {
-            //当后台操作结束时，此方法将会被调用
-            super.onPostExecute(result);
-            dialog.dismiss();
-            idCardReadBtn.setEnabled(true);
-            if (result == null) {
-                inputIdCardInfo();
-            } else {
-                String errorStr = result.toString();
-                if (errorStr.equals("com.telpo.tps550.api.TimeoutException")) {
-                    errorStr = "超时，请重新尝试";
-                } else if (errorStr.equals("com.telpo.tps550.api.DeviceNotOpenException")) {
-                    errorStr = "读卡器未打开";
-                }
-                DialogUtils.showAlert(mContext, errorStr);
-            }
+    /**
+     * 返回身份证信息和身份证头像
+     *
+     * @param code          0，失败；1，成功
+     * @param msg           失败信息
+     * @param identityInfo  身份证信息
+     * @param identityImage 身份证头像
+     */
+    @Override
+    public void getIdentityInfoResult(int code, String msg, IdentityInfo identityInfo, Bitmap identityImage) {
+        Log.i(TAG, "getIdentityInfoResult");
+        if (code == 0) {
+            DialogUtils.showAlert(mContext, msg);
+        } else {
+            idCardInfo = identityInfo;
+            headImage = identityImage;
+            inputIdCardInfo();
         }
     }
 
@@ -399,9 +319,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      * 输入身份证信息
      */
     private void inputIdCardInfo() {
-        if (beepManager != null) {
-            beepManager.playBeepSoundAndVibrate();
-        }
         credentialsTypeAc.setText("身份证");
         ImageSpan imgSpan = new ImageSpan(mContext, headImage);
         SpannableString spanString = new SpannableString("icon");
@@ -419,19 +336,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         dateOfBirthEt.setText(idCardInfo.getBorn());
         idNumberEt.setText(idCardInfo.getNo());
         addressEt.setText(idCardInfo.getAddress());
-        Log.i(TAG, "---身份证---" + "\n"
-                + "姓名：" + idCardInfo.getName() + "\n"
-                + "性别：" + idCardInfo.getSex() + "\n"
-                + "民族：" + idCardInfo.getNation() + "\n"
-                + "出生日期：" + idCardInfo.getBorn() + "\n"
-                + "地址：" + idCardInfo.getAddress() + "\n"
-                + "签发机关：" + idCardInfo.getApartment() + "\n"
-                + "有效期限：" + idCardInfo.getPeriod() + "\n"
-                + "身份证号码：" + idCardInfo.getNo() + "\n"
-                + "国籍或所在地区代码：" + idCardInfo.getCountry() + "\n"
-                + "中文姓名：" + idCardInfo.getCn_name() + "\n"
-                + "证件类型：" + idCardInfo.getCard_type() + "\n"
-                + "保留信息：" + idCardInfo.getReserve());
     }
 
     /**
