@@ -64,4 +64,5 @@ public class VisitorConfig {
     public static final String VISIT_LOCAL_STORAGE = "net.jiaobaowang.visitor.localStorage";//存储到本地的key
     public static final String VISIT_LOCAL_SCHOOL_ID = "net.jiaobangwang.visitor.school_id";//学校id
     public static final String VISIT_LOCAL_TOKEN = "net.jiaobaowang.visitor.token";//token
+    public static final String VISIT_LOCAL_USERINFO = "net.jiaobangwang.visitor.userInfo";//账号信息
 }

@@ -13,7 +13,6 @@ import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
@@ -31,7 +30,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class Tools {
     public static String RSAEncrypt(String s, ShakeHandData shakeHandData) throws Exception {
         RSAPublicKey key = getPublicKey(shakeHandData);
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] encryptedBytes = cipher.doFinal(s.getBytes());
         return bytesToHex(encryptedBytes);
