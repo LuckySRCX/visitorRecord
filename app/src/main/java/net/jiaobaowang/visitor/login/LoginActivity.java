@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -21,19 +19,17 @@ import com.google.gson.Gson;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.FlagObject;
 import net.jiaobaowang.visitor.common.VisitorConfig;
-import net.jiaobaowang.visitor.entity.LoginResult;
+import net.jiaobaowang.visitor.entity.SchoolLoginResult;
 import net.jiaobaowang.visitor.entity.ShakeHandData;
 import net.jiaobaowang.visitor.entity.ShakeHandResult;
-import net.jiaobaowang.visitor.utils.EncryptUtil;
+import net.jiaobaowang.visitor.utils.SharePreferencesUtil;
 import net.jiaobaowang.visitor.utils.Tools;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPublicKey;
 import java.util.TreeMap;
 
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -50,19 +46,16 @@ public class LoginActivity extends AppCompatActivity {
     OkHttpClient okHttpClient = new OkHttpClient();
     String mUserName;
     String mPassword;
-    MyHandler mHandler = new MyHandler(LoginActivity.this);
     private int mSchoolId;
-    ShakeHandData shakeHandData;
+    ShakeHandResult mShakeHandResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         findViewById(R.id.login_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new LoginTask(REQUEST_FLAG_SHAKEHAND).execute();
                 mUserName = ((EditText) findViewById(R.id.login_userName)).getText().toString();
                 mPassword = ((EditText) findViewById(R.id.login_password)).getText().toString();
                 mSchoolId = Tools.getSchoolId(LoginActivity.this);
@@ -79,25 +72,8 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "请输入密码", Toast.LENGTH_LONG).show();
                     return;
                 }
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            RequestBody body = new FormBody.Builder().add("username", mUserName).add("password", mPassword)
-                                    .add("school_id", mSchoolId + "").build();
-                            Request request = new Request.Builder().url(VisitorConfig.VISITOR_GET_TOKEN).post(body).build();
-                            Response response = okHttpClient.newCall(request).execute();
-                            if (!response.isSuccessful()) {
-                                throw new IOException("unexpected code" + response);
-                            } else {
-//                                Log.e(TAG, response.body().string());
-                                resultDealt(response.body().string());
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "获取token错误", e);
-                        }
-                    }
-                }).start();
+                new LoginTask(LoginActivity.this, REQUEST_FLAG_SHAKEHAND).execute();
+
             }
         });
         findViewById(R.id.menu_setting).setOnClickListener(new View.OnClickListener() {
@@ -108,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private ShakeHandData shakeHand() {
+    private ShakeHandResult shakeHand() {
         TreeMap<String, String> map = new TreeMap<>();
         map.put("uuid", Tools.getDeviceId(LoginActivity.this));
         map.put("shaketype", "login");
@@ -121,9 +97,9 @@ public class LoginActivity extends AppCompatActivity {
             String json = gson.toJson(map);
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             body = RequestBody.create(JSON, json);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
             e.printStackTrace();
         }
         Request request = new Request.Builder().url("https://jsypay.jiaobaowang.net/useradminwebapi/api/data/ShakeHand").post(body).build();
@@ -134,9 +110,12 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(result, "");
                 Gson gson = new Gson();
                 ShakeHandResult result1 = gson.fromJson(result, ShakeHandResult.class);
-                Log.d("这事对的吗", result);
-                result1.getRspData().setFlag(REQUEST_FLAG_SHAKEHAND);
-                return result1.getRspData();
+                if (result1.getRspCode().equals("0000")) {
+                    Log.d("这事对的吗", result);
+                    result1.setFlag(REQUEST_FLAG_SHAKEHAND);
+                    return result1;
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -144,18 +123,18 @@ public class LoginActivity extends AppCompatActivity {
         return null;
     }
 
-    private FlagObject schoolLogin(ShakeHandData shakeHandData) throws Exception {
+    private SchoolLoginResult schoolLogin(ShakeHandData shakeHandData) throws Exception {
         TreeMap<String, String> map = new TreeMap<>();
         map.put("uuid", Tools.getDeviceId(LoginActivity.this));
         map.put("shaketype", "login");
         map.put("appid", Tools.getAppId(LoginActivity.this));
-        map.put("schid", 100005 + "");
+        map.put("schid", mSchoolId + "");
         map.put("utp", "0");
-        RSAPublicKey key=EncryptUtil.getPublicKey(shakeHandData.getModulus(), shakeHandData.getExponent());
-        String uid=EncryptUtil.encryptByPublicKey("ceshi01", key);
-        map.put("uid",uid);
-        String pw=EncryptUtil.encryptByPublicKey("123456", key);
-        map.put("pw",pw);
+//        RSAPublicKey key = EncryptUtil.getPublicKey(shakeHandData.getModulus(), shakeHandData.getExponent());
+        String uid = Tools.RSAEncrypt(mUserName, shakeHandData);
+        map.put("uid", uid);
+        String pw = Tools.RSAEncrypt(mPassword, shakeHandData);
+        map.put("pw", pw);
         map.put("sign", Tools.getSign(map));
         RequestBody body = null;
 
@@ -168,17 +147,24 @@ public class LoginActivity extends AppCompatActivity {
         if (response.isSuccessful()) {
             String s = response.body().string();
             Log.d(TAG, s);
-            return new FlagObject() {
-            };
+            SharePreferencesUtil preferencesUtil = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
+            preferencesUtil.putString(VisitorConfig.VISIT_LOCAL_USERINFO, s);
+            SchoolLoginResult result = gson.fromJson(s, SchoolLoginResult.class);
+            result.setFlag(REQUEST_FLAG_LOGIN);
+            return result;
         }
-        return new FlagObject() {
-        };
+        return null;
     }
 
 
     private void showSetDialog() {
         final EditText editText = new EditText(this);
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        SharePreferencesUtil preferencesUtil = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE, false);
+        int schoolId = preferencesUtil.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID);
+        if (schoolId > 0) {
+            editText.setText(String.valueOf(schoolId));
+        }
         new AlertDialog.Builder(LoginActivity.this)
                 .setTitle("设置学校ID")
                 .setView(editText)
@@ -189,10 +175,8 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "请输入学校ID", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        SharedPreferences preferences = getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, Integer.valueOf(editText.getText().toString()));
-                        editor.apply();
+                        SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
+                        util.putInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, Integer.valueOf(editText.getText().toString()));
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -204,73 +188,47 @@ public class LoginActivity extends AppCompatActivity {
                 .create().show();
     }
 
-    /**
-     * MyHandler
-     */
-    private static class MyHandler extends Handler {
-        private Context mContext;
-
-        MyHandler(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            Log.d(TAG, "获取的信息为：" + String.valueOf(msg.what));
-            switch (msg.what) {
-                case 0:
-                    showToast();
-                    break;
-                case 1:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void showToast() {
-            Toast.makeText(mContext, "用户名或密码错误！", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * @param result 整理结果
-     */
-    private void resultDealt(String result) {
-        Gson gson = new Gson();
-        LoginResult result1 = gson.fromJson(result, LoginResult.class);
-        if (result1.getCode().equals("0000")) {
-            SharedPreferences preferences = getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(VisitorConfig.VISIT_LOCAL_TOKEN, result1.getToken());
-            editor.apply();
-            Intent intent = new Intent();
-            intent.setClass(this, HomeActivity.class);
-            startActivity(intent);
-        } else {
-            mHandler.sendEmptyMessage(0);
-        }
-    }
 
     class LoginTask extends AsyncTask<Void, Void, FlagObject> {
         private int flag;
+        private Context mContext;
 
-        public LoginTask(int flag) {
+        public LoginTask(Context context, int flag) {
             super();
+            mContext = context;
             this.flag = flag;
         }
 
         @Override
         protected void onPostExecute(FlagObject flagObject) {
             super.onPostExecute(flagObject);
+            if (flagObject == null) {
+                return;
+            }
             Log.d(TAG, "omPostExecute");
             switch (flagObject.getFlag()) {
                 case REQUEST_FLAG_SHAKEHAND:
-                    shakeHandData = (ShakeHandData) flagObject;
-                    new LoginTask(REQUEST_FLAG_LOGIN).execute();
+                    mShakeHandResult = (ShakeHandResult) flagObject;
+                    if (mShakeHandResult.getRspCode().equals("0000")) {
+                        new LoginTask(mContext, REQUEST_FLAG_LOGIN).execute();
+                    } else {
+                        Toast.makeText(mContext, mShakeHandResult.getRspTxt(), Toast.LENGTH_LONG).show();
+                    }
                     break;
                 case REQUEST_FLAG_LOGIN:
-
+                    SchoolLoginResult data = (SchoolLoginResult) flagObject;
+                    Log.d(TAG, "获取登录信息成功");
+                    if (data.getRspCode().equals("0000")) {
+                        SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
+                        util.putString(VisitorConfig.VISIT_LOCAL_TOKEN, data.getRspData().getUtoken());
+                        Intent intent = new Intent();
+                        intent.setClass(mContext, HomeActivity.class);
+                        startActivity(intent);
+                    } else if (data.getRspCode().equals("0005")) {
+                        Toast.makeText(mContext, "用户名、密码或学校id设置错误", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(mContext, data.getRspTxt(), Toast.LENGTH_LONG).show();
+                    }
                     break;
                 default:
                     break;
@@ -285,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
                     return shakeHand();
                 case REQUEST_FLAG_LOGIN:
                     try {
-                        return schoolLogin(shakeHandData);
+                        return schoolLogin(mShakeHandResult.getRspData());
                     } catch (Exception e) {
                         e.printStackTrace();
                         return null;

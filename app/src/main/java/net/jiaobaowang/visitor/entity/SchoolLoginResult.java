@@ -3,13 +3,13 @@ package net.jiaobaowang.visitor.entity;
 import net.jiaobaowang.visitor.base.FlagObject;
 
 /**
- * Created by rocka on 2018/1/19.
+ * Created by rocka on 2018/1/22.
  */
 
-public class ShakeHandResult extends FlagObject {
+public class SchoolLoginResult extends FlagObject {
     private String RspCode;
-    private ShakeHandData RspData;
     private String RspTxt;
+    private SchoolLoginRspData RspData;
 
     public String getRspCode() {
         return RspCode;
@@ -19,19 +19,19 @@ public class ShakeHandResult extends FlagObject {
         RspCode = rspCode;
     }
 
-    public ShakeHandData getRspData() {
-        return RspData;
-    }
-
-    public void setRspData(ShakeHandData rspData) {
-        RspData = rspData;
-    }
-
     public String getRspTxt() {
         return RspTxt;
     }
 
     public void setRspTxt(String rspTxt) {
         RspTxt = rspTxt;
+    }
+
+    public SchoolLoginRspData getRspData() {
+        return RspData;
+    }
+
+    public void setRspData(SchoolLoginRspData rspData) {
+        RspData = rspData;
     }
 }
