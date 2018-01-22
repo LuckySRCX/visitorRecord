@@ -30,7 +30,7 @@ public class VisitorConfig {
     /**
      * 七牛获取上传token
      */
-    public static final String QINIU_GET_UPLOAD_TOKEN = "https://jbyc.jiaobaowang.net:8445/Api/QiNiu/GetUpLoadToKen";
+    public static final String QINIU_GET_UPLOAD_TOKEN = "http://114.215.222.186:8005/Api/QiNiu/GetUpLoadToKen";
     /**
      * 七牛获取下载token
      */
