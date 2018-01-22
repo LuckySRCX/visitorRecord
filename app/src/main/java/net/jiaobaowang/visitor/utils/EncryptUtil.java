@@ -84,7 +84,7 @@ public class EncryptUtil {
         Cipher enCipher = Cipher.getInstance("DES/ECB/PKCS5Padding");// 得到加密对象Cipher
         enCipher.init(Cipher.ENCRYPT_MODE, key);// 设置工作模式为加密模式，给出密钥和向量
         byte[] pasByte = enCipher.doFinal(inputData.getBytes("utf-8"));
-        return Base64.encodeToString(pasByte, Base64.NO_WRAP);
+        return Base64.encodeToString(pasByte, Base64.DEFAULT);
         //BASE64Encoder base64Encoder = new BASE64Encoder();
         //return base64Encoder.encode(pasByte);
     }
