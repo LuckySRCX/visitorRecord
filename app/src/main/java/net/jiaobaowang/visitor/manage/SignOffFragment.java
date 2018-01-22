@@ -1,6 +1,7 @@
 package net.jiaobaowang.visitor.manage;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -86,6 +87,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private VisitRecord mVisitRecord;
     private OnGetIdentityInfoListener onGetIdentityInfoListener;
     private OnGetQRCodeListener onGetQRCodeListener;
+    private ProgressDialog mDialog;
 
     public SignOffFragment() {
         // Required empty public constructor
@@ -225,6 +227,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void queryRecords() {
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setMessage("加载中...");
+        mDialog.show();
         final String keywords = mText_keywords.getText().toString().trim();
         final int identityType = mSpinner_identity.getSelectedItemPosition() - 1;
         new Thread(new Runnable() {
@@ -243,11 +248,13 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
+                        mMyHandler.sendEmptyMessage(-1);
                         throw new IOException("Exception" + response);
                     } else {
                         resultDealt(response.body().string());
                     }
                 } catch (Exception e) {
+                    mMyHandler.sendEmptyMessage(-1);
                     Log.d("ERROR", "请求数据错误", e);
                 }
             }
@@ -326,6 +333,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         public void handleMessage(Message msg) {
             Log.d(TAG, "获取的信息为：" + String.valueOf(msg.what));
             switch (msg.what) {
+                case -1:
+                    break;
                 case 0:
                     Log.d(TAG, OffRecordLab.get(mContext).getVisitRecords().toString());
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -337,6 +346,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     break;
                 default:
                     break;
+            }
+            if (mDialog.isShowing()) {
+                mDialog.dismiss();
             }
         }
     }

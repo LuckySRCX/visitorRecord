@@ -1,5 +1,6 @@
 package net.jiaobaowang.visitor.login;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -188,21 +189,36 @@ public class LoginActivity extends AppCompatActivity {
                 .create().show();
     }
 
+    private ProgressDialog mDialog;
 
     class LoginTask extends AsyncTask<Void, Void, FlagObject> {
         private int flag;
         private Context mContext;
-
         public LoginTask(Context context, int flag) {
             super();
             mContext = context;
             this.flag = flag;
+            if (flag == REQUEST_FLAG_SHAKEHAND) {
+                mDialog = new ProgressDialog(context);
+            }
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (flag == REQUEST_FLAG_SHAKEHAND) {
+                mDialog.setMessage("登录中...");
+                mDialog.show();
+            }
         }
 
         @Override
         protected void onPostExecute(FlagObject flagObject) {
             super.onPostExecute(flagObject);
             if (flagObject == null) {
+                if (mDialog.isShowing()) {
+                    mDialog.dismiss();
+                }
                 return;
             }
             Log.d(TAG, "omPostExecute");
@@ -232,7 +248,9 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 default:
                     break;
-
+            }
+            if (flag == REQUEST_FLAG_LOGIN && mDialog.isShowing()) {
+                mDialog.dismiss();
             }
         }
 

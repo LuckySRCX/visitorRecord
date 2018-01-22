@@ -3,6 +3,7 @@ package net.jiaobaowang.visitor.manage;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -57,6 +58,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     private String mToken;
     private OkHttpClient mOkHttpClient;
     private MyHandler mHandler;
+    private ProgressDialog mDialog;
 
     @NonNull
     @Override
@@ -155,6 +157,9 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     }
 
     private void requestSignOff() {
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setMessage("加载中");
+        mDialog.show();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -166,12 +171,14 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LEAVE).post(body).build();
                     Response response = mOkHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
+                        mHandler.sendEmptyMessage(-1);
                         throw new IOException("Exception" + response);
                     } else {
                         dealResult(response.body().string());
                     }
                 } catch (Exception e) {
                     Log.e("ERROR", "获取信息错误", e);
+                    mHandler.sendEmptyMessage(-1);
                 }
             }
         }).start();
@@ -205,6 +212,11 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                 case 1:
                     sendResult(false);
                     break;
+                default:
+                    break;
+            }
+            if (mDialog.isShowing()) {
+                mDialog.dismiss();
             }
         }
     }

@@ -1,6 +1,7 @@
 package net.jiaobaowang.visitor.manage;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -79,6 +80,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     private boolean isLastPage;
     OkHttpClient okHttpClient = new OkHttpClient();
     MyHandler mMyHandler;
+    private ProgressDialog mDialog;
 
     public SignQueryFragment() {
         // Required empty public constructor
@@ -214,6 +216,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         final String keywords = mText_keywords.getText().toString().trim();
         final int leaveFlag = mSpinner_visitorState.getSelectedItemPosition() - 1;
         final int identityType = mSpinner_identity.getSelectedItemPosition() - 1;
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setMessage("加载中...");
+        mDialog.show();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -230,11 +235,13 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
+                        mMyHandler.sendEmptyMessage(-1);
                         throw new IOException("Exception" + response);
                     } else {
                         resultDealt(response.body().string());
                     }
                 } catch (Exception e) {
+                    mMyHandler.sendEmptyMessage(-1);
                     Log.d("ERROR", "请求数据错误", e);
                 }
             }
@@ -267,7 +274,6 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
      */
     private class MyHandler extends Handler {
         private Activity mContext;
-
         MyHandler(Activity context) {
             mContext = context;
         }
@@ -276,6 +282,8 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         public void handleMessage(Message msg) {
             Log.d(TAG, "获取的信息为：" + String.valueOf(msg.what));
             switch (msg.what) {
+                case -1:
+                    break;
                 case 0:
                     Log.d(TAG, VisitRecordLab.get(mContext).getVisitRecords().toString());
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -287,6 +295,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     break;
                 default:
                     break;
+            }
+            if (mDialog.isShowing()) {
+                mDialog.dismiss();
             }
         }
     }
