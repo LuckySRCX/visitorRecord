@@ -81,7 +81,7 @@ public class Tools {
 
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-    private static String bytesToHex(byte[] bytes) {
+    public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         int v;
         for (int j = 0; j < bytes.length; j++) {
