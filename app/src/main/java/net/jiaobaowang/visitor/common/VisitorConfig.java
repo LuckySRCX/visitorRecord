@@ -8,9 +8,9 @@ import okhttp3.MediaType;
 
 public class VisitorConfig {
     //学校用户系统各接口
-    private static final String VISIT_SCHCOOL_MAIN="https://jsypay.jiaobaowang.net/useradminwebapi/api/data/";
-    public static final String VISIT_SCHOOL_SHAKEHAND=VISIT_SCHCOOL_MAIN+"ShakeHand";
-    public static final String VISIT_SCHOOL_LOGIN=VISIT_SCHCOOL_MAIN+"Login";
+    private static final String VISIT_SCHOOL_MAIN = "https://jsypay.jiaobaowang.net/useradminwebapi/api/data/";
+    public static final String VISIT_SCHOOL_SHAKEHAND = VISIT_SCHOOL_MAIN + "ShakeHand";
+    public static final String VISIT_SCHOOL_LOGIN = VISIT_SCHOOL_MAIN + "Login";
     /**
      * 获取token
      */
