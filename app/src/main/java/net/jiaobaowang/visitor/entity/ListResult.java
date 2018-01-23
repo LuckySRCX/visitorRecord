@@ -8,6 +8,7 @@ public class ListResult {
     private String code;
     private ListData data;
     private String stat;
+    private String msg;
 
     public String getCode() {
         return code;
@@ -31,5 +32,13 @@ public class ListResult {
 
     public void setStat(String stat) {
         this.stat = stat;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }

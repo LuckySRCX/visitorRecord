@@ -7,6 +7,10 @@ import okhttp3.MediaType;
  */
 
 public class VisitorConfig {
+    //学校用户系统各接口
+    private static final String VISIT_SCHCOOL_MAIN="https://jsypay.jiaobaowang.net/useradminwebapi/api/data/";
+    public static final String VISIT_SCHOOL_SHAKEHAND=VISIT_SCHCOOL_MAIN+"ShakeHand";
+    public static final String VISIT_SCHOOL_LOGIN=VISIT_SCHCOOL_MAIN+"Login";
     /**
      * 获取token
      */
@@ -30,7 +34,7 @@ public class VisitorConfig {
     /**
      * 七牛获取上传token
      */
-    public static final String QINIU_GET_UPLOAD_TOKEN = "http://114.215.222.186:8005/Api/QiNiu/GetUpLoadToKen";
+    public static final String QINIU_GET_UPLOAD_TOKEN = "https://jbyc.jiaobaowang.net:8445/Api/QiNiu/GetUpLoadToKen";
     /**
      * 七牛获取下载token
      */

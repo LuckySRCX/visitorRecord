@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -43,6 +44,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
+ * 签离详情界面
  * Created by rocka on 2018/1/15.
  */
 
@@ -63,7 +65,6 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.e("----onCreateDialog---", "你好");
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_off_detail, null, false);
         initialView(v);
         dialog = new AlertDialog.Builder(getActivity())
@@ -130,8 +131,8 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     @Override
     public void onStart() {
         super.onStart();
-        if (dialog != null) {
-            dialog.getWindow().setLayout(950, ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (dialog != null && dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(550, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 
@@ -184,21 +185,22 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         }).start();
     }
 
+    SignOffResult result;
+
     private void dealResult(String string) {
         Gson gson = new Gson();
-        SignOffResult result = gson.fromJson(string, SignOffResult.class);
+        result = gson.fromJson(string, SignOffResult.class);
         if (result.getCode().equals("0000")) {
             mHandler.sendEmptyMessage(0);
         } else {
-            mHandler.sendEmptyMessage(1);
+            mHandler.sendEmptyMessage(-1);
         }
-        dialog.dismiss();
     }
 
     class MyHandler extends Handler {
         private Context mContext;
 
-        public MyHandler(Context context) {
+        MyHandler(Context context) {
             super();
             mContext = context;
         }
@@ -206,6 +208,11 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
+                case -1:
+                    if (result != null && result.getMsg() != null) {
+                        Toast.makeText(getActivity(), result.getMsg(), Toast.LENGTH_LONG).show();
+                    }
+                    break;
                 case 0:
                     sendResult(true);
                     break;
@@ -259,7 +266,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
+        DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
 

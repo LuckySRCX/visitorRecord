@@ -137,7 +137,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 
     private void setSpinner(Spinner spinner, int resId) {
         String[] options = getResources().getStringArray(resId);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.visit_spinner_item, options);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.visit_spinner_item, options);
         adapter.setDropDownViewResource(R.layout.visit_drop_down_item);
         spinner.setAdapter(adapter);
     }
@@ -147,10 +147,10 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         List<VisitRecord> records = recordLab.getVisitRecords();
         mRecyclerAdapter = new OffRecyclerAdapter(mRecyclerView, records);
         mRecyclerView.setAdapter(mRecyclerAdapter);
-        setListener(recordLab, records);
+        setListener(records);
     }
 
-    private void setListener(final OffRecordLab lab, final List<VisitRecord> records) {
+    private void setListener(final List<VisitRecord> records) {
         mRecyclerAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
@@ -187,9 +187,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        Date minDate = null;
-        Date selectDate = null;
-        int code = 0;
+        Date minDate;
+        Date selectDate;
+        int code;
 
         switch (v.getId()) {
             case R.id.sign_in_beginContainer:
@@ -197,7 +197,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 mSelectText = mSignInBegin;
                 selectDate = mDateSIBegin;
                 code = REQUEST_SIBFGIN_CODE;
-                showDialog(code, selectDate, minDate);
+                showDialog(code, selectDate, null);
                 break;
             case R.id.sign_in_endContainer:
             case R.id.sign_in_end://签到结束时间
@@ -261,10 +261,12 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         }).start();
     }
 
+    ListResult listResult;
+
     private void resultDealt(String string) {
         Log.d(TAG, string);
         Gson gson = new Gson();
-        ListResult listResult = gson.fromJson(string, ListResult.class);
+        listResult = gson.fromJson(string, ListResult.class);
         if (listResult.getCode().equals("0000")) {
             isLastPage = listResult.getData().isLastPage();
             if (pageIndex == 1) {
@@ -278,7 +280,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 pageIndex++;
             }
         } else {
-            Toast.makeText(getActivity(), "无请求数据", Toast.LENGTH_LONG).show();
+            mMyHandler.sendEmptyMessage(-1);
         }
     }
 
@@ -334,6 +336,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             Log.d(TAG, "获取的信息为：" + String.valueOf(msg.what));
             switch (msg.what) {
                 case -1:
+                    if (listResult != null && listResult.getMsg() != null) {
+                        Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    }
                     break;
                 case 0:
                     Log.d(TAG, OffRecordLab.get(mContext).getVisitRecords().toString());
@@ -458,7 +463,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         private ImageView mIconPrint;
 
 
-        public OffViewHolder(LayoutInflater inflater, ViewGroup parent) {
+        OffViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.visit_record_item, parent, false));
             mCellContainer = itemView.findViewById(R.id.cell_container);
             mVisitorName = itemView.findViewById(R.id.visitor_name);
@@ -480,7 +485,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             mIconDetail.setImageResource(R.mipmap.ic_quit);
         }
 
-        public void bind(VisitRecord record, int position) {
+        void bind(VisitRecord record, int position) {
             mVisitorName.setText(record.getVisitor_name());
             mVisitorCounter.setText(record.getVisitor_counter());
             mVisitReason.setText(record.getNote());
@@ -505,9 +510,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 mCellContainer.setBackground(getResources().getDrawable(R.drawable.visit_record_item));
             }
             mCellContainer.setTag(record);
-//            mIconDetail.setTag(record);
             mCellContainer.setOnClickListener(this);
-//            mIconDetail.setOnClickListener(this);
         }
 
         @Override
@@ -526,14 +529,14 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     class LoadingViewHolder extends RecyclerView.ViewHolder {
-        public ProgressBar mBar;
+        ProgressBar mBar;
 
-        public LoadingViewHolder(LayoutInflater inflater, ViewGroup parent) {
+        LoadingViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.item_loading, parent, false));
             mBar = itemView.findViewById(R.id.progress_bar);
         }
 
-        public void bind() {
+        void bind() {
             mBar.setIndeterminate(true);
         }
     }
@@ -547,11 +550,11 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         private final int VIEW_TYPE_LOADING = 1;
         private OnLoadMoreListener mLoadMoreListener;
 
-        public void setOnLoadMoreListener(OnLoadMoreListener listener) {
+        void setOnLoadMoreListener(OnLoadMoreListener listener) {
             mLoadMoreListener = listener;
         }
 
-        public OffRecyclerAdapter(RecyclerView recyclerView, List<VisitRecord> records) {
+        OffRecyclerAdapter(RecyclerView recyclerView, List<VisitRecord> records) {
             mVisitRecords = records;
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -609,7 +612,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             return mVisitRecords.size();
         }
 
-        public void setLoaded() {
+        void setLoaded() {
             isLoading = false;
         }
     }

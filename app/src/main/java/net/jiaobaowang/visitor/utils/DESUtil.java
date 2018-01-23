@@ -1,10 +1,8 @@
 package net.jiaobaowang.visitor.utils;
 
-import android.util.Log;
-
-import java.util.Arrays;
-
 /**
+ * DES加密模块 javascript C#三方通用
+ * http://hyhvi.iteye.com/blog/1923130
  * Created by rocka on 2018/1/23.
  */
 
@@ -29,13 +27,10 @@ public class DESUtil {
 
 
         int[] keys = DES_CreateKey(key);
-        Log.d("获取的keys数组", Arrays.toString(keys));
 
         int m = 0, i, j, temp, right1, right2, left, right;
 
         int[] looping;
-
-        int cbcleft = 0, cbcleft2 = 0, cbcright = 0, cbcright2 = 0;
 
         int endloop, loopinc;
 
@@ -50,7 +45,6 @@ public class DESUtil {
         } else {
             looping = isEncrypt ? new int[]{0, 32, 2, 62, 30, -2, 64, 96, 2} : new int[]{94, 62, -2, 32, 64, 2, 30, -2, -2};
         }
-        Log.d("获取的looping:", Arrays.toString(looping));
         strMessage += "\0\0\0\0\0\0\0\0";
         StringBuilder result = new StringBuilder();
         StringBuilder tempresult = new StringBuilder();
@@ -145,9 +139,6 @@ public class DESUtil {
             }
 
         }
-        Log.d("获取的result:", result.toString());
-        Log.d("获取的tempresult", tempresult.toString());
-        Log.d("最终结果", result.toString() + tempresult.toString());
         return result.toString() + tempresult.toString();
 
     }
@@ -185,118 +176,63 @@ public class DESUtil {
 
         int[] pc2bytes13 = new int[]{0, 0x4, 0x100, 0x104, 0, 0x4, 0x100, 0x104, 0x1, 0x5, 0x101, 0x105, 0x1, 0x5, 0x101, 0x105};
 
-
         int iterations = strKey.length() >= 24 ? 3 : 1;
 
-
         int[] keys = new int[32 * iterations];
-
         int[] shifts = new int[]{0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0};
-
         int lefttemp, righttemp;
-
         int m = 0, n = 0;
-
         int left, right, temp;
-
-
         char[] ckey = strKey.toCharArray();
 
-
         int strLen = strKey.length();
-
         int keyLen = strLen + iterations * 8;
-
         int[] key = new int[keyLen];
-
-
         for (int i = 0; i < strLen; ++i) {
             key[i] = ckey[i];
         }
-
         for (int i = strLen; i < keyLen; ++i) {
             key[i] = 0;
         }
-
         for (int j = 0; j < iterations; j++) {
-
             left = (key[m++] << 24) | (key[m++] << 16) | (key[m++] << 8) | key[m++];
-
             right = (key[m++] << 24) | (key[m++] << 16) | (key[m++] << 8) | key[m++];
-
             temp = ((left >>> 4) ^ right) & 0x0f0f0f0f;
-
             right ^= temp;
-
             left ^= (temp << 4);
-
             temp = (MoveByte(right, -16) ^ left) & 0x0000ffff;
-
             left ^= temp;
-
             right ^= (temp << -16);
-
             temp = (MoveByte(left, 2) ^ right) & 0x33333333;
-
             right ^= temp;
-
             left ^= (temp << 2);
-
             temp = (MoveByte(right, -16) ^ left) & 0x0000ffff;
-
             left ^= temp;
-
             right ^= (temp << -16);
-
             temp = (MoveByte(left, 1) ^ right) & 0x55555555;
-
             right ^= temp;
-
             left ^= (temp << 1);
-
             temp = (MoveByte(right, 8) ^ left) & 0x00ff00ff;
-
             left ^= temp;
-
             right ^= (temp << 8);
-
             temp = (MoveByte(left, 1) ^ right) & 0x55555555;
-
             right ^= temp;
-
             left ^= (temp << 1);
-
             temp = (left << 8) | (MoveByte(right, 20) & 0x000000f0);
-
             left = (right << 24) | ((right << 8) & 0xff0000) | (MoveByte(right, 8) & 0xff00) | (MoveByte(right, 24) & 0xf0);
-
             right = temp;
-
-
             int shiftLen = shifts.length;
-
             for (int i = 0; i < shiftLen; i++) {
-
                 if (shifts[i] == 1) {
-
                     left = (left << 2) | MoveByte(left, 26);
-
                     right = (right << 2) | MoveByte(right, 26);
-
                 } else {
-
                     left = (left << 1) | MoveByte(left, 27);
-
                     right = (right << 1) | MoveByte(right, 27);
-
                 }
-
                 left &= -0xf;
-
                 right &= -0xf;
-
                 lefttemp = pc2bytes0[MoveByte(left, 28)] | pc2bytes1[MoveByte(left, 24) & 0xf] | pc2bytes2[MoveByte(left, 20) & 0xf] | pc2bytes3[MoveByte(left, 16) & 0xf] | pc2bytes4[MoveByte(left, 12) & 0xf] | pc2bytes5[MoveByte(left, 8) & 0xf] | pc2bytes6[MoveByte(left, 4) & 0xf];
-
                 righttemp = pc2bytes7[MoveByte(right, 28)] | pc2bytes8[MoveByte(right, 24) & 0xf] | pc2bytes9[MoveByte(right, 20) & 0xf] | pc2bytes10[MoveByte(right, 16) & 0xf] | pc2bytes11[MoveByte(right, 12) & 0xf] | pc2bytes12[MoveByte(right, 8) & 0xf] | pc2bytes13[MoveByte(right, 4) & 0xf];
 
                 temp = (MoveByte(righttemp, 16) ^ lefttemp) & 0x0000ffff;
@@ -304,83 +240,56 @@ public class DESUtil {
                 keys[n++] = lefttemp ^ temp;
 
                 keys[n++] = righttemp ^ (temp << 16);
-
             }
-
         }
-
-
         return keys;
-
     }
 
 
     //实现无符号右移,相当于javascript中的>>>运算符
 
     private static int MoveByte(int val, int pos) {
-
-        String strBit = "";
         //转成32位长度的二进制
-        strBit = Integer.toBinaryString(val);
+        StringBuilder strBit = new StringBuilder(Integer.toBinaryString(val));
         if (val >= 0) {
             //取得二进制字符串
-            strBit = Integer.toBinaryString(val);
+            strBit = new StringBuilder(Integer.toBinaryString(val));
+//            strBit = Integer.toBinaryString(val);
             int len = strBit.length();
             len = 32 - len;
             for (int i = 0; i < len; ++i) {
-                strBit = "0" + strBit;
+                strBit.insert(0, "0");
+//                strBit = "0" + strBit;
             }
         }
         //如果pos小于0,则应移pos + 32位
         pos = (pos < 0) ? pos + 32 : pos;
         for (int i = 0; i < pos; ++i) {
-            strBit = "0" + strBit.substring(0, 31);
+            strBit.insert(0, "0");
+            strBit.delete(32, strBit.length());
         }
-        return Integer.valueOf(strBit, 2);
+        return Integer.valueOf(strBit.toString(), 2);
     }
 
 
 //将普通的字符串转换成16进制的字符串
 
-//    private static String StringToHex(String s) {
-//        return Tools.bytesToHex(s.getBytes());
-//    }
-
-    private static String StringToHex(String s)
-
-    {
-
+    private static String StringToHex(String s) {
         StringBuilder sb = new StringBuilder();
-
         char[] hexs = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-
         int len = s.length();
-
         char[] cs = s.toCharArray();
-
-        for (int i = 0; i < len; ++i)
-
-        {
-
+        for (int i = 0; i < len; ++i) {
             sb.append(hexs[cs[i] >> 4]);
-
             sb.append(hexs[cs[i] & 0xf]);
-
         }
-
-
         return sb.toString();
-
     }
 
 //C# DES加密函数
 
-    public static String DesEncrypt(String key, String message)
-
-    {
-
+    public static String DesEncrypt(String key, String message) {
         return StringToHex(DES(key, message, true, 0, ""));
-
     }
 }

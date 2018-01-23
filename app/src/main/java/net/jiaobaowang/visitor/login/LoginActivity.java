@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -27,8 +26,6 @@ import net.jiaobaowang.visitor.utils.SharePreferencesUtil;
 import net.jiaobaowang.visitor.utils.Tools;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.TreeMap;
 
 import okhttp3.MediaType;
@@ -90,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
         map.put("uuid", Tools.getDeviceId(LoginActivity.this));
         map.put("shaketype", "login");
         map.put("appid", Tools.getAppId(LoginActivity.this));
-        RequestBody body = null;
+        RequestBody body;
         try {
             String a = Tools.getSign(map);
             map.put("sign", a);
@@ -98,27 +95,19 @@ public class LoginActivity extends AppCompatActivity {
             String json = gson.toJson(map);
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             body = RequestBody.create(JSON, json);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
-        Request request = new Request.Builder().url("https://jsypay.jiaobaowang.net/useradminwebapi/api/data/ShakeHand").post(body).build();
-        try {
+            Request request = new Request.Builder().url(VisitorConfig.VISIT_SCHOOL_SHAKEHAND).post(body).build();
             Response response = okHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
                 String result = response.body().string();
                 Log.d(result, "");
-                Gson gson = new Gson();
                 ShakeHandResult result1 = gson.fromJson(result, ShakeHandResult.class);
                 if (result1.getRspCode().equals("0000")) {
                     Log.d("这事对的吗", result);
                     result1.setFlag(REQUEST_FLAG_SHAKEHAND);
                     return result1;
                 }
-
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -129,25 +118,21 @@ public class LoginActivity extends AppCompatActivity {
         map.put("uuid", Tools.getDeviceId(LoginActivity.this));
         map.put("shaketype", "login");
         map.put("appid", Tools.getAppId(LoginActivity.this));
-        map.put("schid", mSchoolId + "");
+        map.put("schid", String.valueOf(mSchoolId));
         map.put("utp", "0");
-//        RSAPublicKey key = EncryptUtil.getPublicKey(shakeHandData.getModulus(), shakeHandData.getExponent());
         String uid = Tools.RSAEncrypt(mUserName, shakeHandData);
         map.put("uid", uid);
         String pw = Tools.RSAEncrypt(mPassword, shakeHandData);
         map.put("pw", pw);
         map.put("sign", Tools.getSign(map));
-        RequestBody body = null;
-
         Gson gson = new Gson();
         String json = gson.toJson(map);
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder().url("https://jsypay.jiaobaowang.net/useradminwebapi/api/data/Login").post(body).build();
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder().url(VisitorConfig.VISIT_SCHOOL_LOGIN).post(body).build();
         Response response = okHttpClient.newCall(request).execute();
         if (response.isSuccessful()) {
             String s = response.body().string();
-            Log.d(TAG, s);
             SharePreferencesUtil preferencesUtil = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
             preferencesUtil.putString(VisitorConfig.VISIT_LOCAL_USERINFO, s);
             SchoolLoginResult result = gson.fromJson(s, SchoolLoginResult.class);
@@ -194,7 +179,8 @@ public class LoginActivity extends AppCompatActivity {
     class LoginTask extends AsyncTask<Void, Void, FlagObject> {
         private int flag;
         private Context mContext;
-        public LoginTask(Context context, int flag) {
+
+        LoginTask(Context context, int flag) {
             super();
             mContext = context;
             this.flag = flag;
@@ -234,16 +220,20 @@ public class LoginActivity extends AppCompatActivity {
                 case REQUEST_FLAG_LOGIN:
                     SchoolLoginResult data = (SchoolLoginResult) flagObject;
                     Log.d(TAG, "获取登录信息成功");
-                    if (data.getRspCode().equals("0000")) {
-                        SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
-                        util.putString(VisitorConfig.VISIT_LOCAL_TOKEN, data.getRspData().getUtoken());
-                        Intent intent = new Intent();
-                        intent.setClass(mContext, HomeActivity.class);
-                        startActivity(intent);
-                    } else if (data.getRspCode().equals("0005")) {
-                        Toast.makeText(mContext, "用户名、密码或学校id设置错误", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(mContext, data.getRspTxt(), Toast.LENGTH_LONG).show();
+                    switch (data.getRspCode()) {
+                        case "0000":
+                            SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
+                            util.putString(VisitorConfig.VISIT_LOCAL_TOKEN, data.getRspData().getUtoken());
+                            Intent intent = new Intent();
+                            intent.setClass(mContext, HomeActivity.class);
+                            startActivity(intent);
+                            break;
+                        case "0005":
+                            Toast.makeText(mContext, "用户名、密码或学校id设置错误", Toast.LENGTH_LONG).show();
+                            break;
+                        default:
+                            Toast.makeText(mContext, data.getRspTxt(), Toast.LENGTH_LONG).show();
+                            break;
                     }
                     break;
                 default:
