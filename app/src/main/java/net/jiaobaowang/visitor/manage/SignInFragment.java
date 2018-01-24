@@ -154,8 +154,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private void initView(View view) {
         view.findViewById(R.id.save_btn).setOnClickListener(this);
         view.findViewById(R.id.print_tape_btn).setOnClickListener(this);
-        view.findViewById(R.id.cancel_btn).setOnClickListener(this);
         view.findViewById(R.id.department_tv).setOnClickListener(this);
+        view.findViewById(R.id.cancel_btn).setOnClickListener(this);
         view.findViewById(R.id.teacher_name_tv).setOnClickListener(this);
         view.findViewById(R.id.grade_tv).setOnClickListener(this);
         view.findViewById(R.id.classes_tv).setOnClickListener(this);
@@ -567,9 +567,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             params.add("unit_name", unit_name);
         }
         //车牌号
-        String plate_Int = plateNumberEt.getText().toString().trim();
-        if (!"".equals(plate_Int)) {
-            params.add("plate_Int", plate_Int);
+        String plate_number = plateNumberEt.getText().toString().trim();
+        if (!"".equals(plate_number)) {
+            params.add("plate_number", plate_number);
         }
         //进入时间
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
