@@ -307,8 +307,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     mRecyclerAdapter.setLoaded();
                     break;
                 case 2:
+                    if(mRecyclerAdapter!=null){
+                        mRecyclerAdapter.notifyDataSetChanged();
+                    }
                     Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
-                    mRecyclerAdapter.notifyDataSetChanged();
                     break;
                 default:
                     break;

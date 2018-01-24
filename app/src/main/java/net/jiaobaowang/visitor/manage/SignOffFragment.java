@@ -359,7 +359,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     mRecyclerAdapter.setLoaded();
                     break;
                 case 2:
-                    mRecyclerAdapter.notifyDataSetChanged();
+                    if(mRecyclerAdapter!=null){
+                        mRecyclerAdapter.notifyDataSetChanged();
+                    }
                     Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
                     break;
                 default:
