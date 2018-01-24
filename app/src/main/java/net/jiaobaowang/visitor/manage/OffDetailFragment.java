@@ -33,6 +33,7 @@ import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.SignOffResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.utils.TimeFormat;
+import net.jiaobaowang.visitor.utils.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -117,7 +118,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         }
         mOkHttpClient = new OkHttpClient();
         mHandler = new MyHandler(getActivity());
-        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+        mToken = Tools.getToken(getActivity());
     }
 
     public static OffDetailFragment newInstance(VisitRecord visitRecord) {

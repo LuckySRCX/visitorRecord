@@ -37,6 +37,7 @@ import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.entity.VisitRecordLab;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.printer.VisitorFormDetailsActivity;
+import net.jiaobaowang.visitor.utils.Tools;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -100,7 +101,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMyHandler = new MyHandler(SignQueryFragment.this.getActivity());
-        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+        mToken = Tools.getToken(getActivity());
     }
 
     @Override

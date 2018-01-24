@@ -37,6 +37,7 @@ import net.jiaobaowang.visitor.entity.ListResult;
 import net.jiaobaowang.visitor.entity.OffRecordLab;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.utils.DialogUtils;
+import net.jiaobaowang.visitor.utils.Tools;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoResult;
 import net.jiaobaowang.visitor.visitor_interface.OnGetQRCodeListener;
@@ -107,7 +108,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMyHandler = new MyHandler(SignOffFragment.this.getActivity());
-        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+        mToken = Tools.getToken(getActivity());
     }
 
     @Override
