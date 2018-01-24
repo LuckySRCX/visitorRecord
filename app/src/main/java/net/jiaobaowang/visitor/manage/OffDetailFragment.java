@@ -97,7 +97,6 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
             v.findViewById(R.id.tea_container).setVisibility(View.VISIBLE);
             v.findViewById(R.id.stu_container).setVisibility(View.GONE);
             ((TextView) v.findViewById(R.id.off_detail_beVisitor)).setText(mVisitRecord.getTeacher_name());
-            Log.d("OffDetailFragment", mVisitRecord.getDepartment_name());
             ((TextView) v.findViewById(R.id.off_detail_beVisitorDepart)).setText(mVisitRecord.getDepartment_name());
         } else {
             v.findViewById(R.id.tea_container).setVisibility(View.GONE);

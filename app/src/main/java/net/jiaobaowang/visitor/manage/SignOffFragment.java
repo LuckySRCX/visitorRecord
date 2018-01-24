@@ -505,7 +505,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         void bind(VisitRecord record, int position) {
             mVisitorName.setText(record.getVisitor_name());
             mVisitorCounter.setText(record.getVisitor_counter());
-            mVisitReason.setText(record.getNote());
+            mVisitReason.setText(record.getVisitor_for());
             mDepartName.setText(record.getDepartment_name());
             mTeaName.setText(record.getTeacher_name());
             mGradeName.setText(record.getGrade_name());
