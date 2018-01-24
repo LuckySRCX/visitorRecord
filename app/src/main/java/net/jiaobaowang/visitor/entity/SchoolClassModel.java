@@ -1,6 +1,7 @@
 package net.jiaobaowang.visitor.entity;
 
 /**
+ * 班级
  * Created by rocka on 2018/1/22.
  */
 
@@ -10,6 +11,11 @@ public class SchoolClassModel {
     private int clsid;
     private int isms;
     private String clsname;
+
+    @Override
+    public String toString() {
+        return clsname;
+    }
 
     public String getGrdcode() {
         return grdcode;
