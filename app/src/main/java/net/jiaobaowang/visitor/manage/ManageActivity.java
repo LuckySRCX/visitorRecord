@@ -144,6 +144,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "onActivityResult:" + requestCode + " " + resultCode);
         if (requestCode == VisitorConstant.ARC_VISITOR_SYSTEM_QRCODE) {
             if (resultCode == 0) {
                 if (data != null) {

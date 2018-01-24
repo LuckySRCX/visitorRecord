@@ -25,7 +25,6 @@ import net.jiaobaowang.visitor.entity.ShakeHandResult;
 import net.jiaobaowang.visitor.utils.SharePreferencesUtil;
 import net.jiaobaowang.visitor.utils.Tools;
 
-import java.io.IOException;
 import java.util.TreeMap;
 
 import okhttp3.MediaType;
