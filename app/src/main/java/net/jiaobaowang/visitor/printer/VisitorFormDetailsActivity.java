@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.common.VisitorConstant;
@@ -33,10 +36,17 @@ public class VisitorFormDetailsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        //证件照片
+        if (visitRecord.getImg_url() != null) {
+            findViewById(R.id.id_card_head_tv).setVisibility(View.GONE);
+            Glide.with(VisitorFormDetailsActivity.this)
+                    .load(visitRecord.getImg_url())
+                    .into((ImageView) findViewById(R.id.visitor_iv));
+        }
         //访客姓名
         ((EditText) findViewById(R.id.visitor_name_et)).setText(visitRecord.getVisitor_name());
         //访客性别
-        if (visitRecord.getVisitor_sex() == 0) {
+        if (visitRecord.getVisitor_sex() == 1) {
             ((EditText) findViewById(R.id.visitor_gender_et)).setText("男");
         } else {
             ((EditText) findViewById(R.id.visitor_gender_et)).setText("女");
@@ -44,11 +54,9 @@ public class VisitorFormDetailsActivity extends AppCompatActivity {
         //访客出生日期
         ((EditText) findViewById(R.id.visitor_born_et)).setText(visitRecord.getVisitor_birthday());
         //证件类型
-        if (visitRecord.getCertificate_type() != null) {
-            ((EditText) findViewById(R.id.visitor_credentials_type_et)).setText(visitRecord.getCertificate_type());
-        }
+        ((EditText) findViewById(R.id.visitor_credentials_type_et)).setText(visitRecord.getCertificate_type());
         //证件号码
-        ((EditText) findViewById(R.id.visitor_credentials_type_et)).setText(visitRecord.getCertificate_number());
+        ((EditText) findViewById(R.id.visitor_id_number_et)).setText(visitRecord.getCertificate_number());
         //访客单号
         ((EditText) findViewById(R.id.visitor_form_id_et)).setText(String.valueOf(visitRecord.getId()));
         //访问事由

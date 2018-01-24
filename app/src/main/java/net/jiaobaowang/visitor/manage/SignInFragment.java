@@ -491,9 +491,9 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //访客姓名
         params.add("visitor_name", nameEt.getText().toString().trim());
         //访客性别
-        String visitor_sex = "0";
+        String visitor_sex = "1";
         if (femaleRb.isChecked()) {
-            visitor_sex = "1";
+            visitor_sex = "0";
         }
         params.add("visitor_sex", visitor_sex);
         //访问事由
@@ -533,15 +533,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             params.add("certificate_type", certificate_type);
         }
         //证件号码
-        String certificate_Int = idNumberEt.getText().toString().trim();
-        if (!"".equals(certificate_Int)) {
-            params.add("certificate_Int", certificate_Int);
+        String certificate_number = idNumberEt.getText().toString().trim();
+        if (!"".equals(certificate_number)) {
+            params.add("certificate_number", certificate_number);
         }
         if (headImageUrl != null) {
             Log.i(TAG, "img_url:" + headImageUrl);
             params.add("img_url", headImageUrl);
         }
-
         //地址
         String address = addressEt.getText().toString().trim();
         if (!"".equals(address)) {

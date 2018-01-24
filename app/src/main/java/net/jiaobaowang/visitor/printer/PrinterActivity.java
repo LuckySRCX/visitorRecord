@@ -119,7 +119,7 @@ public class PrinterActivity extends AppCompatActivity {
         printContent = visName + "\n";
         //性别
         String gender = getResources().getString(R.string.gender);
-        if (printForm.getVisitor_sex() == 0) {
+        if (printForm.getVisitor_sex() == 1) {
             gender = gender + "男";
         } else {
             gender = gender + "女";
