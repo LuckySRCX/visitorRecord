@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -33,10 +34,23 @@ import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.AddFormResult;
 import net.jiaobaowang.visitor.entity.QiNiuCommand;
+import net.jiaobaowang.visitor.entity.SchoolClassModel;
+import net.jiaobaowang.visitor.entity.SchoolClassStuModel;
+import net.jiaobaowang.visitor.entity.SchoolClassStuResult;
+import net.jiaobaowang.visitor.entity.SchoolClassTeaModel;
+import net.jiaobaowang.visitor.entity.SchoolClassTeaResult;
+import net.jiaobaowang.visitor.entity.SchoolDepartModel;
+import net.jiaobaowang.visitor.entity.SchoolDepartResult;
+import net.jiaobaowang.visitor.entity.SchoolDepartUserModel;
+import net.jiaobaowang.visitor.entity.SchoolDepartUserResult;
+import net.jiaobaowang.visitor.entity.SchoolGradeClassResult;
+import net.jiaobaowang.visitor.entity.SchoolGradeModel;
+import net.jiaobaowang.visitor.entity.SchoolGradeResult;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.EncryptUtil;
 import net.jiaobaowang.visitor.utils.ToastUtils;
+import net.jiaobaowang.visitor.utils.Tools;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoResult;
 
@@ -61,39 +75,44 @@ import static android.content.Context.MODE_PRIVATE;
  */
 public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, OnGetIdentityInfoResult {
     private static final String TAG = "SignInFragment";
-
+    private static final String REQUEST_FLAG_DEPARTMENT = "0";//部门
+    private static final String REQUEST_FLAG_DEPARTMENT_USER = "1";//教职工
+    private static final String REQUEST_FLAG_GRADE = "2";//年级
+    private static final String REQUEST_FLAG_CLASS = "3";//班级
+    private static final String REQUEST_FLAG_CLASS_STUDENT = "4";//学生
+    private static final String REQUEST_FLAG_CLASS_TEACHER = "5";//任课老师
+    private SignInTask teacherTask;
+    private SignInTask studentTask;
+    private SignInTask headMasterTask;
+    private SchoolDepartModel selectDepart;//选取的部门
+    private SchoolDepartUserModel selectTeacher;//选取的教职工
+    private SchoolGradeModel selectGrade;//选取的年级
+    private SchoolClassModel selectClass;//选取的班级
+    private SchoolClassStuModel selectStudent;//选取的学生
+    private SchoolClassTeaModel selectHeadMaster;//选取的班主任
     private boolean isNeedPrint = false;//是否需要打印
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
 
     private OkHttpClient mOkHttpClient = new OkHttpClient();
-    private FormBody.Builder params;//保存的数据
     private OnGetIdentityInfoListener onGetIdentityInfoListener;
 
     private Context mContext;
     private LinearLayout typeTeacherLL, typeStudentLL;//教职工区域//学生区域
     private Button idCardReadBtn;//读取身份证
     private TextView idCardHeadTv;//身份证头像
-    private EditText nameEt;//姓名
-    private EditText dateOfBirthEt;//出生日期
-    private EditText idNumberEt;//证件号码
-    private EditText addressEt;//地址
-    private EditText phoneNumberEt;//电话号码
-    private EditText belongingsEt;//随身物品
-    private EditText organizationEt;//单位名称
-    private EditText plateNumberEt;//车牌号
-    private EditText remarksEt;//备注
+    private EditText nameEt, dateOfBirthEt, idNumberEt, addressEt, phoneNumberEt;//姓名//出生日期//证件号码//地址//电话号码
+    private EditText belongingsEt, organizationEt, plateNumberEt, remarksEt;//随身物品//单位名称//车牌号//备注
     private RadioButton maleRb, femaleRb, typeTeacherRb, typeStudentRb;//男//女//教职工类型//学生类型
-    private AutoCompleteTextView credentialsTypeAc;//证件类型
-    private AutoCompleteTextView reasonAc;//访问事由
-    private AutoCompleteTextView visitorNumberAc;//访客人数
-    private AutoCompleteTextView departmentAc;//教职工部门
-    private AutoCompleteTextView teacherNameAc;//教职工姓名
-    private AutoCompleteTextView gradeAc;//年级
-    private AutoCompleteTextView classesAc;//班级
-    private AutoCompleteTextView studentNameAc;//学生姓名
-    private AutoCompleteTextView headMasterAc;//班主任姓名
-    private ArrayAdapter<String> departmentAdapter, gradeAdapter, classesAdapter, teacherNameAdapter, studentNameAdapter, headMasterAdapter;
+    private AutoCompleteTextView credentialsTypeAc, reasonAc, visitorNumberAc;//证件类型//访问事由//访客人数
+    private AutoCompleteTextView departmentAc, teacherNameAc;//教职工部门//教职工姓名
+    private AutoCompleteTextView gradeAc, classesAc, studentNameAc, headMasterAc;//年级//班级//学生姓名//班主任姓名
+    private ArrayAdapter<SchoolDepartModel> departmentAdapter;
+    private ArrayAdapter<SchoolDepartUserModel> teacherNameAdapter;
+    private ArrayAdapter<SchoolGradeModel> gradeAdapter;
+    private ArrayAdapter<SchoolClassModel> classesAdapter;
+    private ArrayAdapter<SchoolClassStuModel> studentNameAdapter;
+    private ArrayAdapter<SchoolClassTeaModel> headMasterAdapter;
 
     public SignInFragment() {
     }
@@ -118,6 +137,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         mContext = getActivity();
         initView(view);
+        initData();
         return view;
     }
 
@@ -179,31 +199,95 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         //部门
         departmentAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         departmentAc.setAdapter(departmentAdapter);
+        departmentAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                teacherTask.cancel(true);
+                selectDepart = (SchoolDepartModel) parent.getItemAtPosition(position);
+                teacherNameAdapter.clear();
+                Log.i(TAG, "点击部门：" + selectDepart.getDptid() + " " + selectDepart.getDptname());
+                teacherTask = new SignInTask(REQUEST_FLAG_DEPARTMENT_USER, String.valueOf(selectDepart.getDptid()));
+                teacherTask.execute();
+            }
+        });
+
         //教职工姓名
         teacherNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         teacherNameAc.setAdapter(teacherNameAdapter);
+        teacherNameAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectTeacher = (SchoolDepartUserModel) parent.getItemAtPosition(position);
+            }
+        });
         //年级
         gradeAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         gradeAc.setAdapter(gradeAdapter);
+        gradeAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                studentTask.cancel(true);
+                selectGrade = (SchoolGradeModel) parent.getItemAtPosition(position);
+                classesAdapter.clear();
+                studentNameAdapter.clear();
+                headMasterAdapter.clear();
+                Log.i(TAG, "点击年级：" + selectGrade.getGrdcode() + " " + selectGrade.getGrdname());
+                studentTask = new SignInTask(REQUEST_FLAG_CLASS, String.valueOf(selectGrade.getGrdcode()));
+                studentTask.execute();
+            }
+        });
         //班级
         classesAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         classesAc.setAdapter(classesAdapter);
+        classesAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                studentTask.cancel(true);
+                selectClass = (SchoolClassModel) parent.getItemAtPosition(position);
+                studentNameAdapter.clear();
+                headMasterAdapter.clear();
+                Log.i(TAG, "点击班级：" + selectClass.getClsid() + " " + selectClass.getClsname());
+                studentTask = new SignInTask(REQUEST_FLAG_CLASS_STUDENT, String.valueOf(selectClass.getClsid()));
+                studentTask.execute();
+                headMasterTask = new SignInTask(REQUEST_FLAG_CLASS_TEACHER, String.valueOf(selectClass.getClsid()));
+                headMasterTask.execute();
+            }
+        });
         //学生姓名
         studentNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         studentNameAc.setAdapter(studentNameAdapter);
+        studentNameAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectStudent = (SchoolClassStuModel) parent.getItemAtPosition(position);
+            }
+        });
         //班主任
         headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
         headMasterAc.setAdapter(headMasterAdapter);
+        headMasterAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectHeadMaster = (SchoolClassTeaModel) parent.getItemAtPosition(position);
+            }
+        });
         onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
+    }
+
+    private void initData() {
+        teacherTask = new SignInTask(REQUEST_FLAG_DEPARTMENT, "");
+        teacherTask.execute();
+        studentTask = new SignInTask(REQUEST_FLAG_GRADE, "");
+        studentTask.execute();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.save_btn://保存
-                //isNeedPrint = false;
-                //checkSaveData();
-                new GetQiNiuTokenTask().execute();
+                isNeedPrint = false;
+                checkSaveData();
+                //new GetQiNiuTokenTask().execute();
                 break;
             case R.id.print_tape_btn://保存并打印
                 isNeedPrint = true;
@@ -377,7 +461,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      * 设置需要保存的数据
      */
     private void setSubmitData() {
-        params = new FormBody.Builder();
+        FormBody.Builder params = new FormBody.Builder();
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
         String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
         params.add("token", token);
@@ -465,11 +549,16 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         Date curDate = new Date(System.currentTimeMillis());
         String in_time = sdf.format(curDate);
         params.add("in_time", in_time);
-        new SubmitDataTask().execute();
+        new SubmitDataTask(params).execute();
     }
 
     private class SubmitDataTask extends AsyncTask<Void, Void, String[]> {
+        private FormBody.Builder params;
         ProgressDialog submitDataDialog;
+
+        SubmitDataTask(FormBody.Builder params) {
+            this.params = params;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -497,7 +586,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-
                 result[0] = "0";
                 result[1] = e.toString();
             }
@@ -599,4 +687,191 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         return hexString.toString();
     }
 
+    private class SignInTask extends AsyncTask<Void, Void, String[]> {
+        private String flag;
+        private String data;
+
+        SignInTask(String flag, String data) {
+            this.flag = flag;
+            this.data = data;
+        }
+
+        @Override
+        protected String[] doInBackground(Void... voids) {
+            Log.i(TAG, "doInBackground:");
+            String result[] = new String[2];
+            String url = "";
+            SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
+            String utoken = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+            TreeMap<String, String> map = new TreeMap<>();
+            map.put("uuid", Tools.getDeviceId(getActivity()));
+            map.put("appid", Tools.getAppId(getActivity()));
+            map.put("utoken", utoken);
+            switch (flag) {
+                case REQUEST_FLAG_DEPARTMENT:
+                    Log.i(TAG, "doInBackground:获取部门");
+                    url = VisitorConfig.VISITOR_API_DEPARTMENT;
+                    break;
+                case REQUEST_FLAG_DEPARTMENT_USER:
+                    Log.i(TAG, "doInBackground:获取部门成员");
+                    url = VisitorConfig.VISITOR_API_DEPARTMENT_USER;
+                    map.put("dptids", data);
+                    break;
+                case REQUEST_FLAG_GRADE:
+                    Log.i(TAG, "doInBackground:获取年级");
+                    url = VisitorConfig.VISITOR_API_GRADE;
+                    break;
+                case REQUEST_FLAG_CLASS:
+                    Log.i(TAG, "doInBackground:获取年级下的班级");
+                    url = VisitorConfig.VISITOR_API_GRADE_CLASS;
+                    map.put("gradecodes", data);
+                    break;
+                case REQUEST_FLAG_CLASS_STUDENT:
+                    Log.i(TAG, "doInBackground:获取班级下的学生");
+                    url = VisitorConfig.VISITOR_API_CLASS_STUDENT;
+                    map.put("classids", data);
+                    break;
+                case REQUEST_FLAG_CLASS_TEACHER:
+                    Log.i(TAG, "doInBackground:获取班级下的任课老师");
+                    url = VisitorConfig.VISITOR_API_CLASS_TEACHER;
+                    map.put("classids", data);
+                    break;
+            }
+            try {
+                map.put("sign", Tools.getSign(map));
+                Gson gson = new Gson();
+                String json = gson.toJson(map);
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                RequestBody body = RequestBody.create(JSON, json);
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(body)
+                        .build();
+                Response response = mOkHttpClient.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    result[0] = "1";
+                    result[1] = response.body().string();
+                    return result;
+                } else {
+                    throw new IOException("Unexpected code " + response);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result[0] = "0";
+                result[1] = e.toString();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            Log.i(TAG, "onPostExecute:flag:" + flag + " result[0]:" + result[0] + " result[1]:" + result[1]);
+            switch (flag) {
+                case REQUEST_FLAG_DEPARTMENT://部门
+                    if ("1".equals(result[0])) {
+                        Gson gson = new Gson();
+                        SchoolDepartResult schoolDepartResult = gson.fromJson(result[1], SchoolDepartResult.class);
+                        if (schoolDepartResult.getRspCode().equals("0000")) {
+                            if (schoolDepartResult.getRspData() != null) {
+                                List<SchoolDepartModel> departModelList = schoolDepartResult.getRspData().getDpts();
+                                departmentAdapter.addAll(departModelList);
+                            }
+                        } else {
+                            ToastUtils.showMessage(mContext, "获取部门失败：" + schoolDepartResult.getRspTxt());
+                        }
+                    } else {
+                        ToastUtils.showMessage(mContext, "获取部门失败：" + result[1]);
+                    }
+                    break;
+                case REQUEST_FLAG_DEPARTMENT_USER://部门成员
+                    //progressDialog.dismiss();
+                    if ("1".equals(result[0])) {
+                        Gson gson = new Gson();
+                        SchoolDepartUserResult schoolDepartUserResult = gson.fromJson(result[1], SchoolDepartUserResult.class);
+                        if (schoolDepartUserResult.getRspCode().equals("0000")) {
+                            if (schoolDepartUserResult.getRspData() != null) {
+                                List<SchoolDepartUserModel> departUserModelList = schoolDepartUserResult.getRspData().getUsers();
+                                teacherNameAdapter.addAll(departUserModelList);
+                            }
+                        } else {
+                            ToastUtils.showMessage(mContext, "获取部门成员失败：" + schoolDepartUserResult.getRspTxt());
+                        }
+                    } else {
+                        ToastUtils.showMessage(mContext, "获取部门成员失败：" + result[1]);
+                    }
+                    break;
+                case REQUEST_FLAG_GRADE://年级
+                    if ("1".equals(result[0])) {
+                        Gson gson = new Gson();
+                        SchoolGradeResult schoolGradeResult = gson.fromJson(result[1], SchoolGradeResult.class);
+                        if (schoolGradeResult.getRspCode().equals("0000")) {
+                            if (schoolGradeResult.getRspData() != null) {
+                                List<SchoolGradeModel> gradeModelList = schoolGradeResult.getRspData().getGrds();
+                                gradeAdapter.addAll(gradeModelList);
+                            }
+                        } else {
+                            ToastUtils.showMessage(mContext, "获取年级失败：" + schoolGradeResult.getRspTxt());
+                        }
+                    } else {
+                        ToastUtils.showMessage(mContext, "获取年级失败：" + result[1]);
+                    }
+                    break;
+                case REQUEST_FLAG_CLASS://班级
+                    if ("1".equals(result[0])) {
+                        Gson gson = new Gson();
+                        SchoolGradeClassResult schoolGradeClassResult = gson.fromJson(result[1], SchoolGradeClassResult.class);
+                        if (schoolGradeClassResult.getRspCode().equals("0000")) {
+                            if (schoolGradeClassResult.getRspData() != null) {
+                                List<SchoolClassModel> schoolClassModelList = schoolGradeClassResult.getRspData().getClss();
+                                classesAdapter.addAll(schoolClassModelList);
+                            }
+                        } else {
+                            ToastUtils.showMessage(mContext, "获取班级失败：" + schoolGradeClassResult.getRspTxt());
+                        }
+                    } else {
+                        ToastUtils.showMessage(mContext, "获取班级失败：" + result[1]);
+                    }
+                    break;
+                case REQUEST_FLAG_CLASS_STUDENT://班级学生
+                    if ("1".equals(result[0])) {
+                        Gson gson = new Gson();
+                        SchoolClassStuResult schoolClassStuResult = gson.fromJson(result[1], SchoolClassStuResult.class);
+                        if (schoolClassStuResult.getRspCode().equals("0000")) {
+                            if (schoolClassStuResult.getRspData() != null) {
+                                List<SchoolClassStuModel> schoolClassModelList = schoolClassStuResult.getRspData().getClssstus();
+                                studentNameAdapter.addAll(schoolClassModelList);
+                            }
+                        } else {
+                            ToastUtils.showMessage(mContext, "获取学生失败：" + schoolClassStuResult.getRspTxt());
+                        }
+                    } else {
+                        ToastUtils.showMessage(mContext, "获取学生失败：" + result[1]);
+                    }
+                    break;
+                case REQUEST_FLAG_CLASS_TEACHER://班级任课老师
+                    if ("1".equals(result[0])) {
+                        Gson gson = new Gson();
+                        SchoolClassTeaResult schoolClassTeaResult = gson.fromJson(result[1], SchoolClassTeaResult.class);
+                        if (schoolClassTeaResult.getRspCode().equals("0000")) {
+                            if (schoolClassTeaResult.getRspData() != null) {
+                                List<SchoolClassTeaModel> schoolClassTeaModelList = schoolClassTeaResult.getRspData().getClssusers();
+                                List<SchoolClassTeaModel> headMasterList = new ArrayList<>();
+                                for (int i = 0; i < schoolClassTeaModelList.size(); i++) {
+                                    if (schoolClassTeaModelList.get(i).getIsms() == 1) {
+                                        headMasterList.add(schoolClassTeaModelList.get(i));
+                                        break;
+                                    }
+                                }
+                                headMasterAdapter.addAll(headMasterList);
+                            }
+                        } else {
+                            ToastUtils.showMessage(mContext, "获取老师失败：" + schoolClassTeaResult.getRspTxt());
+                        }
+                    } else {
+                        ToastUtils.showMessage(mContext, "获取老师失败：" + result[1]);
+                    }
+                    break;
+            }
+        }
+    }
 }
