@@ -308,7 +308,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             //失败
             DialogUtils.showAlert(getActivity(), msg);
         } else {
-
+            mText_keywords.setText(identityInfo.getName());
+            restoreData();
+            queryRecords();
         }
     }
 
@@ -326,8 +328,22 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             //失败
             DialogUtils.showAlert(getActivity(), msg);
         } else {
-
+            mText_keywords.setText(qrCode);
+            restoreData();
+            queryRecords();
         }
+    }
+
+    /**
+     * 重置数据
+     */
+    private void restoreData() {
+        mSpinner_identity.setSelection(0);
+        mSignInBegin.setText("");
+        mSignInEnd.setText("");
+        mDateSIBegin = null;
+        mSignInEnd = null;
+        pageIndex = 1;
     }
 
     /**
@@ -359,7 +375,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     mRecyclerAdapter.setLoaded();
                     break;
                 case 2:
-                    if(mRecyclerAdapter!=null){
+                    if (mRecyclerAdapter != null) {
                         mRecyclerAdapter.notifyDataSetChanged();
                     }
                     Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
@@ -433,7 +449,6 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void setTime(Date date, Intent data) {
-
         mSelectText.setText(formatDate(date));
     }
 
