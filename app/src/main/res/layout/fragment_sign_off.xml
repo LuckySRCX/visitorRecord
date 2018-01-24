@@ -71,7 +71,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/keywords_hint"
             android:inputType="text"
-            android:singleLine="false" />
+            android:singleLine="false"
+            android:focusableInTouchMode="true"/>
 
         <TextView
             style="@style/inputHintStyle"

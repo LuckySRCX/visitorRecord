@@ -67,6 +67,7 @@ import okhttp3.Response;
 public class SignOffFragment extends BaseFragment implements View.OnClickListener, OnGetIdentityInfoResult, OnGetQRCodeResult {
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
+    private boolean isCodeOff = false;
     private TextView mSelectText;
     private TextView mSignInBegin;
     private TextView mSignInEnd;
@@ -132,7 +133,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         setSpinner(mSpinner_identity, R.array.person_identity);
         onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
         onGetQRCodeListener = (OnGetQRCodeListener) getActivity();
-        queryRecords();
+        queryRecords(false);
         return v;
     }
 
@@ -167,7 +168,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void run() {
                         records.remove(records.size() - 1);
-                        queryRecords();
+                        queryRecords(false);
                     }
                 }, 1000);
             }
@@ -213,7 +214,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.btn_query:
                 pageIndex = 1;
-                queryRecords();
+                queryRecords(false);
                 break;
             case R.id.qrcode_btn:
                 onGetQRCodeListener.getQRCode();
@@ -227,7 +228,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 
     }
 
-    private void queryRecords() {
+    private void queryRecords(boolean isCode) {
+        isCodeOff = isCode;
         mDialog = new ProgressDialog(getActivity());
         mDialog.setMessage("加载中...");
         mDialog.show();
@@ -310,7 +312,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         } else {
             mText_keywords.setText(identityInfo.getName());
             restoreData();
-            queryRecords();
+            queryRecords(false);
         }
     }
 
@@ -330,7 +332,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         } else {
             mText_keywords.setText(qrCode);
             restoreData();
-            queryRecords();
+            queryRecords(true);
         }
     }
 
@@ -342,7 +344,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         mSignInBegin.setText("");
         mSignInEnd.setText("");
         mDateSIBegin = null;
-        mSignInEnd = null;
+        mDateSIEnd = null;
         pageIndex = 1;
     }
 
@@ -373,6 +375,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 case 1:
                     mRecyclerAdapter.notifyDataSetChanged();
                     mRecyclerAdapter.setLoaded();
+                    if (isCodeOff) {
+                        showDetail(listResult.getData().getList().get(0));
+                    }
                     break;
                 case 2:
                     if (mRecyclerAdapter != null) {
