@@ -133,7 +133,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     public void onStart() {
         super.onStart();
         if (dialog != null && dialog.getWindow() != null) {
-            dialog.getWindow().setLayout(550, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setLayout(560, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 
@@ -216,6 +216,8 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                     break;
                 case 0:
                     sendResult(true);
+                    Toast.makeText(getActivity(), "签离成功", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
                     break;
                 case 1:
                     sendResult(false);
