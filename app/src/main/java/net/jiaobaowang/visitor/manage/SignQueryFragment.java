@@ -307,7 +307,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     mRecyclerAdapter.setLoaded();
                     break;
                 case 2:
-                    if(mRecyclerAdapter!=null){
+                    if (mRecyclerAdapter != null) {
                         mRecyclerAdapter.notifyDataSetChanged();
                     }
                     Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
@@ -426,7 +426,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         void bind(VisitRecord record, int position) {
             mVisitorName.setText(record.getVisitor_name());
             mVisitorCounter.setText(record.getVisitor_counter());
-            mVisitReason.setText(record.getNote());
+            mVisitReason.setText(record.getVisitor_for());
             mDepartName.setText(record.getDepartment_name());
             mTeaName.setText(record.getTeacher_name());
             mGradeName.setText(record.getGrade_name());
