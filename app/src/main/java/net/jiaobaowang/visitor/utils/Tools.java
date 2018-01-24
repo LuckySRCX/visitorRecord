@@ -96,4 +96,9 @@ public class Tools {
         SharedPreferences preferences = context.getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE);
         return preferences.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0);
     }
+
+    public static String getToken(Context context) {
+        SharePreferencesUtil preferencesUtil = new SharePreferencesUtil(context, VisitorConfig.VISIT_LOCAL_STORAGE, false);
+        return preferencesUtil.getString(VisitorConfig.VISIT_LOCAL_TOKEN);
+    }
 }

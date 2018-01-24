@@ -37,6 +37,7 @@ import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.entity.VisitRecordLab;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.printer.VisitorFormDetailsActivity;
+import net.jiaobaowang.visitor.utils.Tools;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -100,7 +101,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMyHandler = new MyHandler(SignQueryFragment.this.getActivity());
-        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+        mToken = Tools.getToken(getActivity());
     }
 
     @Override
@@ -253,20 +254,27 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         Log.d(TAG, string);
         Gson gson = new Gson();
         listResult = gson.fromJson(string, ListResult.class);
-        if (listResult.getCode().equals("0000")) {
-            isLastPage = listResult.getData().isLastPage();
-            if (pageIndex == 1) {
-                VisitRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
-                mMyHandler.sendEmptyMessage(0);
-            } else {
-                VisitRecordLab.get(getActivity()).addVisitRecords(listResult.getData().getList());
-                mMyHandler.sendEmptyMessage(1);
-            }
-            if (!isLastPage) {
-                pageIndex++;
-            }
-        } else {
-            mMyHandler.sendEmptyMessage(-1);
+        switch (listResult.getCode()) {
+            case "0000":
+                isLastPage = listResult.getData().isLastPage();
+                if (pageIndex == 1) {
+                    VisitRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
+                    mMyHandler.sendEmptyMessage(0);
+                } else {
+                    VisitRecordLab.get(getActivity()).addVisitRecords(listResult.getData().getList());
+                    mMyHandler.sendEmptyMessage(1);
+                }
+                if (!isLastPage) {
+                    pageIndex++;
+                }
+                break;
+            case "0031":
+                VisitRecordLab.get(getActivity()).clearVisitRecords();
+                mMyHandler.sendEmptyMessage(2);
+                break;
+            default:
+                mMyHandler.sendEmptyMessage(-1);
+                break;
         }
     }
 
@@ -297,6 +305,12 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 case 1:
                     mRecyclerAdapter.notifyDataSetChanged();
                     mRecyclerAdapter.setLoaded();
+                    break;
+                case 2:
+                    if(mRecyclerAdapter!=null){
+                        mRecyclerAdapter.notifyDataSetChanged();
+                    }
+                    Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;

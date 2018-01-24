@@ -46,4 +46,8 @@ public class OffRecordLab {
     public void addVisitRecords(List<VisitRecord> list) {
         mVisitRecords.addAll(list);
     }
+
+    public void clearVisitRecords() {
+        mVisitRecords.clear();
+    }
 }

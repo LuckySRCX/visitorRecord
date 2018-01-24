@@ -37,6 +37,7 @@ import net.jiaobaowang.visitor.entity.ListResult;
 import net.jiaobaowang.visitor.entity.OffRecordLab;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.utils.DialogUtils;
+import net.jiaobaowang.visitor.utils.Tools;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoResult;
 import net.jiaobaowang.visitor.visitor_interface.OnGetQRCodeListener;
@@ -107,7 +108,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMyHandler = new MyHandler(SignOffFragment.this.getActivity());
-        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+        mToken = Tools.getToken(getActivity());
     }
 
     @Override
@@ -267,21 +268,29 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         Log.d(TAG, string);
         Gson gson = new Gson();
         listResult = gson.fromJson(string, ListResult.class);
-        if (listResult.getCode().equals("0000")) {
-            isLastPage = listResult.getData().isLastPage();
-            if (pageIndex == 1) {
-                OffRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
-                mMyHandler.sendEmptyMessage(0);
-            } else {
-                OffRecordLab.get(getActivity()).addVisitRecords(listResult.getData().getList());
-                mMyHandler.sendEmptyMessage(1);
-            }
-            if (!isLastPage) {
-                pageIndex++;
-            }
-        } else {
-            mMyHandler.sendEmptyMessage(-1);
+        switch (listResult.getCode()) {
+            case "0000":
+                isLastPage = listResult.getData().isLastPage();
+                if (pageIndex == 1) {
+                    OffRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
+                    mMyHandler.sendEmptyMessage(0);
+                } else {
+                    OffRecordLab.get(getActivity()).addVisitRecords(listResult.getData().getList());
+                    mMyHandler.sendEmptyMessage(1);
+                }
+                if (!isLastPage) {
+                    pageIndex++;
+                }
+                break;
+            case "0031":
+                mMyHandler.sendEmptyMessage(2);
+                OffRecordLab.get(getActivity()).clearVisitRecords();
+                break;
+            default:
+                mMyHandler.sendEmptyMessage(-1);
+                break;
         }
+
     }
 
     /**
@@ -349,6 +358,12 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     mRecyclerAdapter.notifyDataSetChanged();
                     mRecyclerAdapter.setLoaded();
                     break;
+                case 2:
+                    if(mRecyclerAdapter!=null){
+                        mRecyclerAdapter.notifyDataSetChanged();
+                    }
+                    Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    break;
                 default:
                     break;
             }
@@ -395,9 +410,11 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 
         switch (requestCode) {
             case REQUEST_SIBFGIN_CODE:
+                mDateSIBegin = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
                 setTime(mDateSIBegin, data);
                 break;
             case REQUEST_SIOFF_CODE:
+                mDateSIEnd = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
                 setTime(mDateSIEnd, data);
                 break;
             case REQUEST_SIGN_OFF_CODE:
@@ -416,7 +433,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void setTime(Date date, Intent data) {
-        date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+
         mSelectText.setText(formatDate(date));
     }
 

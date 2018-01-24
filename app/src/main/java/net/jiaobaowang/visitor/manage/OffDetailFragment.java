@@ -33,6 +33,7 @@ import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.SignOffResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.utils.TimeFormat;
+import net.jiaobaowang.visitor.utils.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,7 +76,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
 
     private void initialView(View v) {
         ((TextView) v.findViewById(R.id.off_detail_name)).setText(mVisitRecord.getVisitor_name());
-        ((TextView) v.findViewById(R.id.off_detail_sex)).setText(mVisitRecord.getVisitor_sex() == 0 ? "男" : "女");
+        ((TextView) v.findViewById(R.id.off_detail_sex)).setText(mVisitRecord.getVisitor_sex() == 0 ? "女" : "男");
         ((TextView) v.findViewById(R.id.off_detail_cardType)).setText(mVisitRecord.getCertificate_type());
         ((TextView) v.findViewById(R.id.off_detail_cardNo)).setText(mVisitRecord.getCertificate_number());
         ((TextView) v.findViewById(R.id.off_detail_signIn)).setText(mVisitRecord.getIn_time());
@@ -117,7 +118,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         }
         mOkHttpClient = new OkHttpClient();
         mHandler = new MyHandler(getActivity());
-        mToken = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, Context.MODE_PRIVATE).getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+        mToken = Tools.getToken(getActivity());
     }
 
     public static OffDetailFragment newInstance(VisitRecord visitRecord) {
@@ -132,7 +133,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     public void onStart() {
         super.onStart();
         if (dialog != null && dialog.getWindow() != null) {
-            dialog.getWindow().setLayout(550, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setLayout(560, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 
@@ -215,6 +216,8 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                     break;
                 case 0:
                     sendResult(true);
+                    Toast.makeText(getActivity(), "签离成功", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
                     break;
                 case 1:
                     sendResult(false);

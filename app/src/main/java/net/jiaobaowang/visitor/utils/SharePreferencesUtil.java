@@ -32,4 +32,8 @@ public class SharePreferencesUtil {
     public int getInt(String key) {
         return mSharedPreferences.getInt(key, 0);
     }
+
+    public String getString(String key) {
+        return mSharedPreferences.getString(key, "");
+    }
 }
