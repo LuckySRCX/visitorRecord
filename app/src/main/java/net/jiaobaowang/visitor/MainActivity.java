@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import net.jiaobaowang.visitor.login.LoginActivity;
-import net.jiaobaowang.visitor.manage.ManageActivity;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";

@@ -3,6 +3,7 @@ package net.jiaobaowang.visitor.manage;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -42,6 +44,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
+ * 签离详情界面
  * Created by rocka on 2018/1/15.
  */
 
@@ -57,11 +60,11 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     private String mToken;
     private OkHttpClient mOkHttpClient;
     private MyHandler mHandler;
+    private ProgressDialog mDialog;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.e("----onCreateDialog---", "你好");
         View v = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_off_detail, null, false);
         initialView(v);
         dialog = new AlertDialog.Builder(getActivity())
@@ -128,8 +131,8 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     @Override
     public void onStart() {
         super.onStart();
-        if (dialog != null) {
-            dialog.getWindow().setLayout(950, ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (dialog != null && dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(550, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 
@@ -155,6 +158,9 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     }
 
     private void requestSignOff() {
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setMessage("加载中");
+        mDialog.show();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -166,32 +172,35 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LEAVE).post(body).build();
                     Response response = mOkHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
+                        mHandler.sendEmptyMessage(-1);
                         throw new IOException("Exception" + response);
                     } else {
                         dealResult(response.body().string());
                     }
                 } catch (Exception e) {
                     Log.e("ERROR", "获取信息错误", e);
+                    mHandler.sendEmptyMessage(-1);
                 }
             }
         }).start();
     }
 
+    SignOffResult result;
+
     private void dealResult(String string) {
         Gson gson = new Gson();
-        SignOffResult result = gson.fromJson(string, SignOffResult.class);
+        result = gson.fromJson(string, SignOffResult.class);
         if (result.getCode().equals("0000")) {
             mHandler.sendEmptyMessage(0);
         } else {
-            mHandler.sendEmptyMessage(1);
+            mHandler.sendEmptyMessage(-1);
         }
-        dialog.dismiss();
     }
 
     class MyHandler extends Handler {
         private Context mContext;
 
-        public MyHandler(Context context) {
+        MyHandler(Context context) {
             super();
             mContext = context;
         }
@@ -199,12 +208,22 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
+                case -1:
+                    if (result != null && result.getMsg() != null) {
+                        Toast.makeText(getActivity(), result.getMsg(), Toast.LENGTH_LONG).show();
+                    }
+                    break;
                 case 0:
                     sendResult(true);
                     break;
                 case 1:
                     sendResult(false);
                     break;
+                default:
+                    break;
+            }
+            if (mDialog.isShowing()) {
+                mDialog.dismiss();
             }
         }
     }
@@ -247,7 +266,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
+        DownloadImageTask(ImageView bmImage) {
             this.bmImage = bmImage;
         }
 

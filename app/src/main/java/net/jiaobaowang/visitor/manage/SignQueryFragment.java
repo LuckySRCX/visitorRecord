@@ -1,6 +1,7 @@
 package net.jiaobaowang.visitor.manage;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -79,6 +80,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     private boolean isLastPage;
     OkHttpClient okHttpClient = new OkHttpClient();
     MyHandler mMyHandler;
+    private ProgressDialog mDialog;
 
     public SignQueryFragment() {
         // Required empty public constructor
@@ -125,7 +127,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
 
     private void setSpinner(Spinner spinner, int resId) {
         String[] options = getResources().getStringArray(resId);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.visit_spinner_item, options);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.visit_spinner_item, options);
         adapter.setDropDownViewResource(R.layout.visit_drop_down_item);
         spinner.setAdapter(adapter);
     }
@@ -136,10 +138,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         List<VisitRecord> records = recordLab.getVisitRecords();
         mRecyclerAdapter = new QueryRecyclerAdapter(mRecyclerView, records);
         mRecyclerView.setAdapter(mRecyclerAdapter);
-        setListener(recordLab, records);
+        setListener(records);
     }
 
-    private void setListener(final VisitRecordLab recordLab, final List<VisitRecord> records) {
+    private void setListener(final List<VisitRecord> records) {
         mRecyclerAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
@@ -151,14 +153,13 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     }
                 });
 
-                new Handler().postDelayed(new Runnable() {
+                new Handler().post(new Runnable() {
                     @Override
                     public void run() {
                         records.remove(records.size() - 1);
                         queryRecords();
                     }
-                }, 1000);
-
+                });
             }
         });
     }
@@ -178,8 +179,8 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onClick(View v) {
         Date minDate = null;
-        Date selectDate = null;
-        int code = 0;
+        Date selectDate;
+        int code;
 
         switch (v.getId()) {
             case R.id.sign_in_beginContainer:
@@ -214,6 +215,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         final String keywords = mText_keywords.getText().toString().trim();
         final int leaveFlag = mSpinner_visitorState.getSelectedItemPosition() - 1;
         final int identityType = mSpinner_identity.getSelectedItemPosition() - 1;
+        mDialog = new ProgressDialog(getActivity());
+        mDialog.setMessage("加载中...");
+        mDialog.show();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -230,21 +234,25 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
+                        mMyHandler.sendEmptyMessage(-1);
                         throw new IOException("Exception" + response);
                     } else {
                         resultDealt(response.body().string());
                     }
                 } catch (Exception e) {
+                    mMyHandler.sendEmptyMessage(-1);
                     Log.d("ERROR", "请求数据错误", e);
                 }
             }
         }).start();
     }
 
+    ListResult listResult;
+
     private void resultDealt(String string) {
         Log.d(TAG, string);
         Gson gson = new Gson();
-        ListResult listResult = gson.fromJson(string, ListResult.class);
+        listResult = gson.fromJson(string, ListResult.class);
         if (listResult.getCode().equals("0000")) {
             isLastPage = listResult.getData().isLastPage();
             if (pageIndex == 1) {
@@ -258,7 +266,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 pageIndex++;
             }
         } else {
-            Toast.makeText(getActivity(), "无请求数据", Toast.LENGTH_LONG).show();
+            mMyHandler.sendEmptyMessage(-1);
         }
     }
 
@@ -276,6 +284,11 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         public void handleMessage(Message msg) {
             Log.d(TAG, "获取的信息为：" + String.valueOf(msg.what));
             switch (msg.what) {
+                case -1:
+                    if (listResult != null && listResult.getMsg() != null) {
+                        Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    }
+                    break;
                 case 0:
                     Log.d(TAG, VisitRecordLab.get(mContext).getVisitRecords().toString());
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -287,6 +300,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     break;
                 default:
                     break;
+            }
+            if (mDialog.isShowing()) {
+                mDialog.dismiss();
             }
         }
     }
@@ -372,7 +388,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         private ImageView mIconPrint;
 
 
-        public QueryViewHolder(LayoutInflater inflater, ViewGroup parent) {
+        QueryViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.visit_record_item, parent, false));
             mCellContainer = itemView.findViewById(R.id.cell_container);
             mVisitorName = itemView.findViewById(R.id.visitor_name);
@@ -393,7 +409,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             mIconDetail.setVisibility(View.GONE);
         }
 
-        public void bind(VisitRecord record, int position) {
+        void bind(VisitRecord record, int position) {
             mVisitorName.setText(record.getVisitor_name());
             mVisitorCounter.setText(record.getVisitor_counter());
             mVisitReason.setText(record.getNote());
@@ -452,12 +468,12 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     class LoadingMoreHolder extends RecyclerView.ViewHolder {
         ProgressBar mBar;
 
-        public LoadingMoreHolder(LayoutInflater inflater, ViewGroup parent) {
+        LoadingMoreHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.item_loading, parent, false));
             mBar = itemView.findViewById(R.id.progress_bar);
         }
 
-        public void bind() {
+        void bind() {
             mBar.setIndeterminate(true);
         }
     }
@@ -468,11 +484,11 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         private final int VIEW_TYPE_LOADING = 1;
         private OnLoadMoreListener onLoadMoreListener;
 
-        public void setOnLoadMoreListener(OnLoadMoreListener OnLoadMoreListener) {
+        void setOnLoadMoreListener(OnLoadMoreListener OnLoadMoreListener) {
             this.onLoadMoreListener = OnLoadMoreListener;
         }
 
-        public QueryRecyclerAdapter(RecyclerView recyclerView, List<VisitRecord> records) {
+        QueryRecyclerAdapter(RecyclerView recyclerView, List<VisitRecord> records) {
             mVisitRecords = records;
             final LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

@@ -1,14 +1,13 @@
 package net.jiaobaowang.visitor.entity;
 
-import net.jiaobaowang.visitor.base.FlagObject;
-
 import java.util.List;
 
 /**
+ * 登录后返回的RspDataModel
  * Created by rocka on 2018/1/22.
  */
 
-public class SchoolLoginRspData extends FlagObject {
+public class SchoolLoginRspData {
     private int schid;//学校id
     private String schname;//学校名称
     private int utid;//用户id
@@ -19,6 +18,8 @@ public class SchoolLoginRspData extends FlagObject {
     private List<SchoolGradeModel> grds;//年级列表
     private List<SchoolClassModel> clss;//班级列表
     private int utp;//
+    private String urolestr;
+    private String urolestrext;
     private String utoken;
 
     public int getSchid() {
@@ -99,6 +100,22 @@ public class SchoolLoginRspData extends FlagObject {
 
     public void setUtp(int utp) {
         this.utp = utp;
+    }
+
+    public String getUrolestr() {
+        return urolestr;
+    }
+
+    public void setUrolestr(String urolestr) {
+        this.urolestr = urolestr;
+    }
+
+    public String getUrolestrext() {
+        return urolestrext;
+    }
+
+    public void setUrolestrext(String urolestrext) {
+        this.urolestrext = urolestrext;
     }
 
     public String getUtoken() {
