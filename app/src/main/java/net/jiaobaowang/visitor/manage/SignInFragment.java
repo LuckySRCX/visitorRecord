@@ -27,6 +27,9 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UploadManager;
 import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.R;
@@ -34,6 +37,8 @@ import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.entity.AddFormResult;
 import net.jiaobaowang.visitor.entity.QiNiuCommand;
+import net.jiaobaowang.visitor.entity.QiNiuUpToken;
+import net.jiaobaowang.visitor.entity.QiNiuUpTokenResult;
 import net.jiaobaowang.visitor.entity.SchoolClassModel;
 import net.jiaobaowang.visitor.entity.SchoolClassStuModel;
 import net.jiaobaowang.visitor.entity.SchoolClassStuResult;
@@ -47,13 +52,16 @@ import net.jiaobaowang.visitor.entity.SchoolGradeClassResult;
 import net.jiaobaowang.visitor.entity.SchoolGradeModel;
 import net.jiaobaowang.visitor.entity.SchoolGradeResult;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
+import net.jiaobaowang.visitor.utils.DESUtil;
 import net.jiaobaowang.visitor.utils.DialogUtils;
-import net.jiaobaowang.visitor.utils.EncryptUtil;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 import net.jiaobaowang.visitor.utils.Tools;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoResult;
 
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,6 +101,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private boolean isNeedPrint = false;//是否需要打印
     private IdentityInfo idCardInfo;//二代身份证信息
     private Bitmap headImage;//身份证头像
+    private String headImageUrl;//身份证头像Url
 
     private OkHttpClient mOkHttpClient = new OkHttpClient();
     private OnGetIdentityInfoListener onGetIdentityInfoListener;
@@ -113,6 +122,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private ArrayAdapter<SchoolClassModel> classesAdapter;
     private ArrayAdapter<SchoolClassStuModel> studentNameAdapter;
     private ArrayAdapter<SchoolClassTeaModel> headMasterAdapter;
+    private ProgressDialog submitDataDialog;
 
     public SignInFragment() {
     }
@@ -287,7 +297,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             case R.id.save_btn://保存
                 isNeedPrint = false;
                 checkSaveData();
-                //new GetQiNiuTokenTask().execute();
                 break;
             case R.id.print_tape_btn://保存并打印
                 isNeedPrint = true;
@@ -370,6 +379,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private void clearVisitorInfo() {
         idCardInfo = null;
         headImage = null;
+        headImageUrl = null;
         idCardHeadTv.setText(getResources().getString(R.string.id_card_image));
         nameEt.setText("");
         maleRb.setChecked(true);
@@ -397,6 +407,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         classesAc.setText("");
         studentNameAc.setText("");
         headMasterAc.setText("");
+        teacherNameAdapter.clear();
+        classesAdapter.clear();
+        studentNameAdapter.clear();
+        headMasterAdapter.clear();
     }
 
     /**
@@ -454,7 +468,16 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 return;
             }
         }
-        setSubmitData();
+        submitDataDialog = new ProgressDialog(mContext);
+        submitDataDialog.setMessage("正在提交数据，请等待...");
+        submitDataDialog.setCancelable(false);
+        submitDataDialog.show();
+        headImageUrl = null;
+        if (headImage == null) {
+            setSubmitData();
+        } else {
+            new GetQiNiuTokenTask().execute();
+        }
     }
 
     /**
@@ -514,6 +537,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         if (!"".equals(certificate_Int)) {
             params.add("certificate_Int", certificate_Int);
         }
+        if (headImageUrl != null) {
+            Log.i(TAG, "img_url:" + headImageUrl);
+            params.add("img_url", headImageUrl);
+        }
+
         //地址
         String address = addressEt.getText().toString().trim();
         if (!"".equals(address)) {
@@ -552,20 +580,39 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         new SubmitDataTask(params).execute();
     }
 
+    /**
+     * 上传照片
+     *
+     * @param qiNiuUpToken 七牛token
+     */
+    private void UpLoadFile(QiNiuUpToken qiNiuUpToken) {
+        Log.i(TAG, "UpLoadFile");
+        headImageUrl = qiNiuUpToken.getDomain() + qiNiuUpToken.getKey();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        headImage.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        UploadManager uploadManager = new UploadManager();
+        uploadManager.put(data, qiNiuUpToken.getKey(), qiNiuUpToken.getToken(), new UpCompletionHandler() {
+            @Override
+            public void complete(String key, ResponseInfo info, JSONObject response) {
+                Log.i(TAG, "complete:" + key + ",\r\n " + info + ",\r\n " + response);
+                if (info.isOK()) {
+                    Log.i(TAG, "Upload Success");
+                    setSubmitData();
+                } else {
+                    Log.i(TAG, "Upload Fail");
+                    submitDataDialog.dismiss();
+                    DialogUtils.showAlert(mContext, "上传照片失败：" + response);
+                }
+            }
+        }, null);
+    }
+
     private class SubmitDataTask extends AsyncTask<Void, Void, String[]> {
         private FormBody.Builder params;
-        ProgressDialog submitDataDialog;
 
         SubmitDataTask(FormBody.Builder params) {
             this.params = params;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            submitDataDialog = new ProgressDialog(mContext);
-            submitDataDialog.setMessage("正在提交数据，请等待...");
-            submitDataDialog.setCancelable(false);
-            submitDataDialog.show();
         }
 
         @Override
@@ -623,28 +670,19 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         protected String[] doInBackground(Void... Void) {
             Log.i(TAG, "doInBackground");
             String result[] = new String[2];
-            String Key = "idcardimage/" + System.currentTimeMillis() + (int) (Math.random() * 1000) + ".jpg";
-
-            QiNiuCommand command = new QiNiuCommand("pb", "idcardimage/1234567890.jpg", "", "");
+            String key = System.currentTimeMillis() + (int) (Math.random() * 1000) + ".jpg";
+            QiNiuCommand command = new QiNiuCommand("pb", key, "", "");
             List<QiNiuCommand> commands = new ArrayList<>();
             commands.add(command);
             Gson gson = new Gson();
             String commandJson = gson.toJson(commands);
             Log.i(TAG, "commandJson:" + commandJson);
+            String Param = DESUtil.DesEncrypt(VisitorConfig.QINIU_VISITOR_SYSTEM_SECRET_KEY, commandJson);
+            RequestBody body = new FormBody.Builder()
+                    .add("AppID", VisitorConfig.QINIU_VISITOR_SYSTEM_APP_ID)
+                    .add("Param", Param)
+                    .build();
             try {
-                String desStr = EncryptUtil.desEncrypt(commandJson, "jsy01170");
-                Log.i(TAG, "desStr1:" + desStr);
-                String Param = stringToHexString(desStr);
-                Log.i(TAG, "Param:" + Param);
-                //Param = "B4B4B921A4AE7A434DC7C1BBF11ACD25EB3C58227E55A06BF94DE8F359CE400FA8414A9F5B20BF34DF4405D29F4D3270D00465D3FB48799968DE48798B34AD2C1019C0C72FA8FD19CC4FEA9E6F3253C9394BA0C064770E62F5B751343FED28403B990CD71B176B605A3F750D3B07CC4579F305020351F295B3874589B5B3948F83B4C244B64815F23BB727A5C4DD4C0CC253395868D4CA4D38A7739D46152AC6";
-                Log.i(TAG, "Url:" + VisitorConfig.QINIU_GET_UPLOAD_TOKEN);
-                TreeMap<String, String> map = new TreeMap<>();
-                map.put("AppID", "10");
-                map.put("Param", Param);
-                String json = gson.toJson(map);
-                Log.i(TAG, "json:" + json);
-                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                RequestBody body = RequestBody.create(JSON, json);
                 Request request = new Request.Builder()
                         .url(VisitorConfig.QINIU_GET_UPLOAD_TOKEN)
                         .post(body)
@@ -666,25 +704,23 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         }
 
         @Override
-        protected void onPostExecute(String resultStr[]) {
-            Log.i(TAG, "onPostExecute:" + resultStr[0] + " " + resultStr[1]);
+        protected void onPostExecute(String result[]) {
+            Log.i(TAG, "onPostExecute:" + result[0] + " " + result[1]);
+            if ("1".equals(result[0])) {
+                Gson gson = new Gson();
+                QiNiuUpTokenResult qiNiuUpTokenResult = gson.fromJson(result[1], QiNiuUpTokenResult.class);
+                if (qiNiuUpTokenResult.getStatus().equals("1")) {
+                    List<QiNiuUpToken> qiNiuUpTokenList = qiNiuUpTokenResult.getData();
+                    UpLoadFile(qiNiuUpTokenList.get(0));
+                } else {
+                    submitDataDialog.dismiss();
+                    DialogUtils.showAlert(mContext, "上传照片获取token失败：" + qiNiuUpTokenResult.getMessage());
+                }
+            } else {
+                submitDataDialog.dismiss();
+                DialogUtils.showAlert(mContext, "上传照片获取token失败：" + result[1]);
+            }
         }
-    }
-
-    /**
-     * 字符串转16进制字符串
-     *
-     * @param strPart 字符串
-     * @return 16进制字符串
-     */
-    public static String stringToHexString(String strPart) {
-        StringBuffer hexString = new StringBuffer();
-        for (int i = 0; i < strPart.length(); i++) {
-            int ch = (int) strPart.charAt(i);
-            String strHex = Integer.toHexString(ch);
-            hexString.append(strHex);
-        }
-        return hexString.toString();
     }
 
     private class SignInTask extends AsyncTask<Void, Void, String[]> {
