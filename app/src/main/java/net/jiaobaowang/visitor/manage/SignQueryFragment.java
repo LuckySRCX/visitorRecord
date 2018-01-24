@@ -254,20 +254,27 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         Log.d(TAG, string);
         Gson gson = new Gson();
         listResult = gson.fromJson(string, ListResult.class);
-        if (listResult.getCode().equals("0000")) {
-            isLastPage = listResult.getData().isLastPage();
-            if (pageIndex == 1) {
-                VisitRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
-                mMyHandler.sendEmptyMessage(0);
-            } else {
-                VisitRecordLab.get(getActivity()).addVisitRecords(listResult.getData().getList());
-                mMyHandler.sendEmptyMessage(1);
-            }
-            if (!isLastPage) {
-                pageIndex++;
-            }
-        } else {
-            mMyHandler.sendEmptyMessage(-1);
+        switch (listResult.getCode()) {
+            case "0000":
+                isLastPage = listResult.getData().isLastPage();
+                if (pageIndex == 1) {
+                    VisitRecordLab.get(getActivity()).setVisitRecords(listResult.getData().getList());
+                    mMyHandler.sendEmptyMessage(0);
+                } else {
+                    VisitRecordLab.get(getActivity()).addVisitRecords(listResult.getData().getList());
+                    mMyHandler.sendEmptyMessage(1);
+                }
+                if (!isLastPage) {
+                    pageIndex++;
+                }
+                break;
+            case "0031":
+                VisitRecordLab.get(getActivity()).clearVisitRecords();
+                mMyHandler.sendEmptyMessage(2);
+                break;
+            default:
+                mMyHandler.sendEmptyMessage(-1);
+                break;
         }
     }
 
@@ -298,6 +305,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 case 1:
                     mRecyclerAdapter.notifyDataSetChanged();
                     mRecyclerAdapter.setLoaded();
+                    break;
+                case 2:
+                    Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    mRecyclerAdapter.notifyDataSetChanged();
                     break;
                 default:
                     break;
