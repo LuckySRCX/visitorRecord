@@ -410,9 +410,11 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 
         switch (requestCode) {
             case REQUEST_SIBFGIN_CODE:
+                mDateSIBegin = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
                 setTime(mDateSIBegin, data);
                 break;
             case REQUEST_SIOFF_CODE:
+                mDateSIEnd = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
                 setTime(mDateSIEnd, data);
                 break;
             case REQUEST_SIGN_OFF_CODE:
@@ -431,7 +433,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void setTime(Date date, Intent data) {
-        date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+
         mSelectText.setText(formatDate(date));
     }
 
