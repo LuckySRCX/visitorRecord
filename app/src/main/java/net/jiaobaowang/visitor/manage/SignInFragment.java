@@ -490,8 +490,11 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private void setSubmitData() {
         FormBody.Builder params = new FormBody.Builder();
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
-        String token = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
-        params.add("token", token);
+        params.add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""));
+        params.add("uuid", Tools.getDeviceId(getActivity()));
+        params.add("uid", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UID, ""));
+        params.add("uname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UUNAME, ""));
+        params.add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)));
         //访客姓名
         params.add("visitor_name", nameEt.getText().toString().trim());
         //访客性别

@@ -3,13 +3,13 @@
     android:id="@+id/fg_sign_in_ll"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="16dp"
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
     tools:context="net.jiaobaowang.visitor.manage.SignInFragment">
 
     <ScrollView
@@ -88,7 +88,8 @@
 
                                     <AutoCompleteTextView
                                         android:id="@+id/department_ac"
-                                        style="@style/auto_complete_text_view" />
+                                        style="@style/auto_complete_text_view"
+                                        android:maxLength="20" />
 
                                     <TextView
                                         android:id="@+id/department_tv"
@@ -118,7 +119,8 @@
 
                                     <AutoCompleteTextView
                                         android:id="@+id/teacher_name_ac"
-                                        style="@style/auto_complete_text_view" />
+                                        style="@style/auto_complete_text_view"
+                                        android:maxLength="20" />
 
                                     <TextView
                                         android:id="@+id/teacher_name_tv"
@@ -158,7 +160,8 @@
 
                                     <AutoCompleteTextView
                                         android:id="@+id/grade_ac"
-                                        style="@style/auto_complete_text_view" />
+                                        style="@style/auto_complete_text_view"
+                                        android:maxLength="20" />
 
                                     <TextView
                                         android:id="@+id/grade_tv"
@@ -183,7 +186,8 @@
 
                                     <AutoCompleteTextView
                                         android:id="@+id/classes_ac"
-                                        style="@style/auto_complete_text_view" />
+                                        style="@style/auto_complete_text_view"
+                                        android:maxLength="20" />
 
                                     <TextView
                                         android:id="@+id/classes_tv"
@@ -211,7 +215,8 @@
 
                                     <AutoCompleteTextView
                                         android:id="@+id/student_name_ac"
-                                        style="@style/auto_complete_text_view" />
+                                        style="@style/auto_complete_text_view"
+                                        android:maxLength="20" />
 
                                     <TextView
                                         android:id="@+id/student_name_tv"
@@ -239,7 +244,8 @@
 
                                     <AutoCompleteTextView
                                         android:id="@+id/head_master_ac"
-                                        style="@style/auto_complete_text_view" />
+                                        style="@style/auto_complete_text_view"
+                                        android:maxLength="20" />
 
                                     <TextView
                                         android:id="@+id/head_master_tv"

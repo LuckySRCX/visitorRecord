@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 
 import com.google.zxing.other.BeepManager;
@@ -172,7 +171,6 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
                 if (data != null) {
                     String qrCode = data.getStringExtra("qrCode");
                     onGetQRCodeResult.getQRCodeResult(1, "成功", qrCode);
-
                 }
             } else {
                 onGetQRCodeResult.getQRCodeResult(0, "条码/二维码：扫描失败", "");

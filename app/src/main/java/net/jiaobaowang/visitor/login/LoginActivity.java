@@ -132,6 +132,7 @@ public class LoginActivity extends AppCompatActivity {
         Response response = okHttpClient.newCall(request).execute();
         if (response.isSuccessful()) {
             String s = response.body().string();
+            Log.i(TAG,s);
             SharePreferencesUtil preferencesUtil = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
             preferencesUtil.putString(VisitorConfig.VISIT_LOCAL_USERINFO, s);
             SchoolLoginResult result = gson.fromJson(s, SchoolLoginResult.class);
@@ -223,6 +224,8 @@ public class LoginActivity extends AppCompatActivity {
                         case "0000":
                             SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
                             util.putString(VisitorConfig.VISIT_LOCAL_TOKEN, data.getRspData().getUtoken());
+                            util.putString(VisitorConfig.VISIT_LOCAL_USERINFO_UID, data.getRspData().getUid());
+                            util.putString(VisitorConfig.VISIT_LOCAL_USERINFO_UUNAME, data.getRspData().getUtname());
                             Intent intent = new Intent();
                             intent.setClass(mContext, HomeActivity.class);
                             startActivity(intent);
