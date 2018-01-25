@@ -35,11 +35,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.menu_personal_setting:
                 return true;
             case R.id.menu_quit:
+                quitSystem();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void quitSystem() {
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(LoginActivity.EXTRA_DATA, true);
+        intent.setClass(HomeActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onClick(View v) {

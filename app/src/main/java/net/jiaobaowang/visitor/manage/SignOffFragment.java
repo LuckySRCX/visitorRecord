@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -139,8 +141,24 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         setSpinner(mSpinner_identity, R.array.person_identity);
         onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
         onGetQRCodeListener = (OnGetQRCodeListener) getActivity();
-        queryRecords(false);
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        pageIndex = 1;
+        queryRecords(false);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     private void setSpinner(Spinner spinner, int resId) {
@@ -188,6 +206,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         view.setOnClickListener(this);
     }
 
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -232,8 +251,17 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             default:
                 break;
         }
-        mSignOffContainer.requestFocus();
+        requireFocus(v);
 
+    }
+
+    private void requireFocus(View v) {
+        v.setFocusable(true);
+        v.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
+        }
     }
 
     private void queryRecords(boolean isCode) {
