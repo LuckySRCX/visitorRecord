@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -44,6 +45,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * 签离详情界面
  * Created by rocka on 2018/1/15.
@@ -58,7 +61,6 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     private AlertDialog dialog;
     private TextView mOffTimeText;
     private Date mSelectLeaveTime;
-    private String mToken;
     private OkHttpClient mOkHttpClient;
     private MyHandler mHandler;
     private ProgressDialog mDialog;
@@ -117,7 +119,6 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         }
         mOkHttpClient = new OkHttpClient();
         mHandler = new MyHandler(getActivity());
-        mToken = Tools.getToken(getActivity());
     }
 
     public static OffDetailFragment newInstance(VisitRecord visitRecord) {
@@ -165,8 +166,13 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
             @Override
             public void run() {
                 try {
+                    SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
                     FormBody body = new FormBody.Builder()
-                            .add("token", mToken)
+                            .add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""))
+                            .add("uuid", Tools.getDeviceId(getActivity()))
+                            .add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)))
+                            .add("uname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UUNAME, ""))
+                            .add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)))
                             .add("id", mVisitRecord.getId() + "")
                             .add("leave_time", TimeFormat.formatTime(mSelectLeaveTime)).build();
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LEAVE).post(body).build();

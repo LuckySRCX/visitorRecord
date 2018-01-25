@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,6 +58,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * 访客签离界面
  * A simple {@link Fragment} subclass.
@@ -84,7 +87,6 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private OffRecyclerAdapter mRecyclerAdapter;
     private EditText mText_keywords;
     private Spinner mSpinner_identity;
-    private String mToken;
     private int pageIndex = 1;
     private int pageSize = 20;
     private boolean isLastPage;
@@ -116,7 +118,6 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMyHandler = new MyHandler(SignOffFragment.this.getActivity());
-        mToken = Tools.getToken(getActivity());
     }
 
     @Override
@@ -275,8 +276,13 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             @Override
             public void run() {
                 try {
+                    SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
                     RequestBody body = new FormBody.Builder()
-                            .add("token", mToken)
+                            .add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""))
+                            .add("uuid", Tools.getDeviceId(getActivity()))
+                            .add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)))
+                            .add("uname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UUNAME, ""))
+                            .add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)))
                             .add("pageNumber", pageIndex + "")
                             .add("pageSize", pageSize + "")
                             .add("keyword", keywords)

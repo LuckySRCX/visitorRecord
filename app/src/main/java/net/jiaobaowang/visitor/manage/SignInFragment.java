@@ -757,6 +757,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 case REQUEST_FLAG_DEPARTMENT_USER:
                     Log.i(TAG, "doInBackground:获取部门成员");
                     url = VisitorConfig.VISITOR_API_DEPARTMENT_USER;
+                    map.put("uidstat", "-1");
                     map.put("dptids", data);
                     break;
                 case REQUEST_FLAG_GRADE:

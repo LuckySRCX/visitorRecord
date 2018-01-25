@@ -64,28 +64,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
         Log.i(TAG, "setDetailFragment:" + id);
         if (id > 0) {
             mPager.setCurrentItem(id - 1);
-            switch (id) {
-                case 1:
-                    onGetIdentityInfoResult = mInFragment;
-                    if (mInFragment == null) {
-                        Log.i(TAG, "mInFragment:null");
-                    }
-                    break;
-                case 2:
-                    onGetIdentityInfoResult = null;
-                    onGetQRCodeResult = null;
-                    break;
-                case 3:
-                    onGetIdentityInfoResult = mOffFragment;
-                    onGetQRCodeResult = mOffFragment;
-                    break;
-                default:
-                    onGetIdentityInfoResult = mInFragment;
-                    onGetQRCodeResult = null;
-                    break;
-            }
         }
-
     }
 
     @Override
@@ -189,11 +168,13 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
 
     @Override
     public void getIdentityInfo() {
+        initInterface();
         new GetIDInfoTask().execute();
     }
 
     @Override
     public void getQRCode() {
+        initInterface();
         if (TianBoUtils.checkPackage(ManageActivity.this, "com.telpo.tps550.api")) {
             Intent intent = new Intent();
             intent.setClassName("com.telpo.tps550.api", "com.telpo.tps550.api.barcode.Capture");
@@ -204,6 +185,19 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
             }
         } else {
             onGetQRCodeResult.getQRCodeResult(0, getResources().getString(R.string.qrcode_fail), "");
+        }
+    }
+
+    /**
+     * 初始化返回身份证信息，条码的页面
+     */
+    private void initInterface() {
+        if (curId == 1) {//来访登记
+            onGetIdentityInfoResult = mInFragment;
+            onGetQRCodeResult = null;
+        } else {//访客签离
+            onGetIdentityInfoResult = mOffFragment;
+            onGetQRCodeResult = mOffFragment;
         }
     }
 
