@@ -40,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_FLAG_SHAKEHAND = 0;
     private static final int REQUEST_FLAG_LOGIN = 1;
+    public static final String EXTRA_DATA = "net.jiaobaowang.visitor.LoginActivity.extra_data";
     OkHttpClient okHttpClient = new OkHttpClient();
     String mUserName;
     String mPassword;
@@ -49,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getIntent() != null && getIntent().getBooleanExtra(EXTRA_DATA, false)) {
+            finish();
+        }
         setContentView(R.layout.activity_login);
         findViewById(R.id.login_btn).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 
@@ -34,6 +35,10 @@ import net.jiaobaowang.visitor.visitor_interface.OnGetQRCodeResult;
  */
 public class ManageActivity extends BaseFragmentActivity implements NavigationFragment.OnFragmentInteractionListener, OnGetIdentityInfoListener, OnGetQRCodeListener {
     private static final String TAG = "ManageActivity";
+    public static final String SIGN_IN_FRAGMENT = "SignInFragment";
+    public static final String SIGN_QUERY_FRAGMENT = "SignQueryFragment";
+    public static final String SIGN_OFF_FRAGMENT = "SignOffFragment";
+
     public static final String EXTRA_CODE = "net.jiaobaowang.visitor.extra.home_Code";
     private int curId;//当前fragment的id
     private IdentityInfo identityInfo;//身份证信息
@@ -43,6 +48,9 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     private OnGetQRCodeResult onGetQRCodeResult;
     private VisitViewPager mPager;
     ManageViewPagerAdapter adapter;
+    private SignQueryFragment mQueryFragment;
+    private SignOffFragment mOffFragment;
+    private SignInFragment mInFragment;
 
     @Override
     public void onFragmentInteraction(int id) {
@@ -69,6 +77,11 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         curId = getIntent().getIntExtra(ManageActivity.EXTRA_CODE, 1);
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mInFragment = (SignInFragment) getSupportFragmentManager().getFragment(savedInstanceState, SIGN_IN_FRAGMENT);
+            mQueryFragment = (SignQueryFragment) getSupportFragmentManager().getFragment(savedInstanceState, SIGN_QUERY_FRAGMENT);
+            mOffFragment = (SignOffFragment) getSupportFragmentManager().getFragment(savedInstanceState, SIGN_OFF_FRAGMENT);
+        }
         mPager = findViewById(R.id.fragment_detail);
         mPager.setCanScroll(false);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -76,6 +89,14 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
         mPager.setAdapter(adapter);
         setDetailFragment(curId);
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, SIGN_QUERY_FRAGMENT, mQueryFragment);
+        getSupportFragmentManager().putFragment(outState, SIGN_OFF_FRAGMENT, mOffFragment);
+    }
+
 
     @Override
     protected void onResume() {
@@ -101,7 +122,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
         }).start();
     }
 
-    class ManageViewPagerAdapter extends FragmentPagerAdapter {
+    class ManageViewPagerAdapter extends FragmentStatePagerAdapter {
 
         public ManageViewPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -112,14 +133,28 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
             Fragment fragment;
             switch (position) {
                 case 0:
-                    fragment = SignInFragment.newInstance();
+                    if (mInFragment != null) {
+                        fragment = mInFragment;
+                    } else {
+                        fragment = SignInFragment.newInstance();
+                    }
+
                     onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
                     break;
                 case 1:
-                    fragment = SignQueryFragment.newInstance();
+                    if (mQueryFragment != null) {
+                        fragment = mQueryFragment;
+                    } else {
+                        fragment = SignQueryFragment.newInstance();
+                    }
+
                     break;
                 case 2:
-                    fragment = SignOffFragment.newInstance();
+                    if (mOffFragment != null) {
+                        fragment = mOffFragment;
+                    } else {
+                        fragment = SignOffFragment.newInstance();
+                    }
                     onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
                     onGetQRCodeResult = (OnGetQRCodeResult) fragment;
                     break;

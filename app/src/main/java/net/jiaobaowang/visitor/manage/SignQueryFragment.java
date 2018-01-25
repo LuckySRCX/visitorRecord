@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -61,6 +63,7 @@ import okhttp3.Response;
  */
 public class SignQueryFragment extends BaseFragment implements View.OnClickListener {
     private static SignQueryFragment mQueryFragment;
+    private static final String OUT_STAT_PAGE = "sign_query_fragment.page";
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
     private LinearLayout mQueryContainer;
@@ -110,6 +113,21 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(OUT_STAT_PAGE, pageIndex);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            pageIndex = 1;
+            queryRecords();
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_query, container, false);
@@ -128,7 +146,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         setSpinner(mSpinner_identity, R.array.person_identity);
         setSpinner(mSpinner_visitorState, R.array.is_leave_option);
         mRecyclerView = v.findViewById(R.id.recycler_query);
-        queryRecords();
+//        queryRecords();
         return v;
     }
 
@@ -178,10 +196,6 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         view.setOnClickListener(this);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 
     @Override
     public void onClick(View v) {
@@ -216,8 +230,17 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             default:
                 break;
         }
-        mQueryContainer.requestFocus();
+        requireFocus(v);
 
+    }
+
+    private void requireFocus(View v) {
+        v.setFocusable(true);
+        v.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
+        }
     }
 
     private void queryRecords() {
@@ -345,6 +368,13 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         dialog.show(fragmentManager, DIALOG_DATE);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+        pageIndex = 1;
+        queryRecords();
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
