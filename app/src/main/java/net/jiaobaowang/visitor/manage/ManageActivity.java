@@ -91,6 +91,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, SIGN_IN_FRAGMENT, mInFragment);
         getSupportFragmentManager().putFragment(outState, SIGN_QUERY_FRAGMENT, mQueryFragment);
         getSupportFragmentManager().putFragment(outState, SIGN_OFF_FRAGMENT, mOffFragment);
     }
@@ -128,38 +129,30 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
 
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment;
             switch (position) {
                 case 0:
-                    if (mInFragment != null) {
-                        fragment = mInFragment;
-                    } else {
-                        fragment = SignInFragment.newInstance();
+                    if (mInFragment == null) {
+                        mInFragment = SignInFragment.newInstance();
                     }
+                    onGetIdentityInfoResult = (OnGetIdentityInfoResult) mInFragment;
+                    return mInFragment;
 
-                    onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
-                    break;
                 case 1:
-                    if (mQueryFragment != null) {
-                        fragment = mQueryFragment;
-                    } else {
-                        fragment = SignQueryFragment.newInstance();
+                    if (mQueryFragment == null) {
+                        mQueryFragment = SignQueryFragment.newInstance();
                     }
-
-                    break;
+                    return mQueryFragment;
                 case 2:
-                    if (mOffFragment != null) {
-                        fragment = mOffFragment;
-                    } else {
-                        fragment = SignOffFragment.newInstance();
+                    if (mOffFragment == null) {
+
+                        mOffFragment = SignOffFragment.newInstance();
                     }
-                    onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
-                    onGetQRCodeResult = (OnGetQRCodeResult) fragment;
-                    break;
+                    onGetIdentityInfoResult = (OnGetIdentityInfoResult) mOffFragment;
+                    onGetQRCodeResult = (OnGetQRCodeResult) mOffFragment;
+                    return mOffFragment;
                 default:
                     return null;
             }
-            return fragment;
 
         }
 
