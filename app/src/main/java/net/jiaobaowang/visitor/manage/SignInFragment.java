@@ -492,7 +492,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
         params.add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""));
         params.add("uuid", Tools.getDeviceId(getActivity()));
-        params.add("uid", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UID, ""));
+        params.add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)));
         params.add("uname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UUNAME, ""));
         params.add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)));
         //访客姓名

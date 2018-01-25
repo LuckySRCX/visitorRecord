@@ -61,9 +61,31 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     }
 
     private void setDetailFragment(int id) {
+        Log.i(TAG, "setDetailFragment:" + id);
         if (id > 0) {
             mPager.setCurrentItem(id - 1);
+            switch (id) {
+                case 1:
+                    onGetIdentityInfoResult = mInFragment;
+                    if (mInFragment == null) {
+                        Log.i(TAG, "mInFragment:null");
+                    }
+                    break;
+                case 2:
+                    onGetIdentityInfoResult = null;
+                    onGetQRCodeResult = null;
+                    break;
+                case 3:
+                    onGetIdentityInfoResult = mOffFragment;
+                    onGetQRCodeResult = mOffFragment;
+                    break;
+                default:
+                    onGetIdentityInfoResult = mInFragment;
+                    onGetQRCodeResult = null;
+                    break;
+            }
         }
+
     }
 
     @Override
@@ -134,9 +156,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
                     if (mInFragment == null) {
                         mInFragment = SignInFragment.newInstance();
                     }
-                    onGetIdentityInfoResult = (OnGetIdentityInfoResult) mInFragment;
                     return mInFragment;
-
                 case 1:
                     if (mQueryFragment == null) {
                         mQueryFragment = SignQueryFragment.newInstance();
@@ -144,11 +164,8 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
                     return mQueryFragment;
                 case 2:
                     if (mOffFragment == null) {
-
                         mOffFragment = SignOffFragment.newInstance();
                     }
-                    onGetIdentityInfoResult = (OnGetIdentityInfoResult) mOffFragment;
-                    onGetQRCodeResult = (OnGetQRCodeResult) mOffFragment;
                     return mOffFragment;
                 default:
                     return null;
