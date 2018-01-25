@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 
 import com.google.zxing.other.BeepManager;
@@ -19,6 +21,7 @@ import com.telpo.tps550.api.idcard.IdentityInfo;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.BaseFragmentActivity;
 import net.jiaobaowang.visitor.common.VisitorConstant;
+import net.jiaobaowang.visitor.custom_view.VisitViewPager;
 import net.jiaobaowang.visitor.utils.TianBoUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
@@ -38,6 +41,8 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     private BeepManager beepManager;//bee声音
     private OnGetIdentityInfoResult onGetIdentityInfoResult;
     private OnGetQRCodeResult onGetQRCodeResult;
+    private VisitViewPager mPager;
+    ManageViewPagerAdapter adapter;
 
     @Override
     public void onFragmentInteraction(int id) {
@@ -50,32 +55,9 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     }
 
     private void setDetailFragment(int id) {
-        Fragment fragment;
-        switch (id) {
-            case 1://SignIn
-                fragment = SignInFragment.newInstance();
-                onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
-                break;
-            case 2://query
-                fragment = SignQueryFragment.newInstance();
-                break;
-            case 3://signOff
-                fragment = SignOffFragment.newInstance();
-                onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
-                onGetQRCodeResult = (OnGetQRCodeResult) fragment;
-                break;
-            default:
-                fragment = SignInFragment.newInstance();
-                onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
-                break;
+        if (id > 0) {
+            mPager.setCurrentItem(id - 1);
         }
-
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fg_detail = fm.findFragmentById(R.id.fragment_detail);
-        if (fg_detail != null) {
-            fm.beginTransaction().remove(fg_detail).commit();
-        }
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_detail, fragment).commit();
     }
 
     @Override
@@ -87,6 +69,11 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         curId = getIntent().getIntExtra(ManageActivity.EXTRA_CODE, 1);
         super.onCreate(savedInstanceState);
+        mPager = findViewById(R.id.fragment_detail);
+        mPager.setCanScroll(false);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        adapter = new ManageViewPagerAdapter(fragmentManager);
+        mPager.setAdapter(adapter);
         setDetailFragment(curId);
     }
 
@@ -112,6 +99,41 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
                 }
             }
         }).start();
+    }
+
+    class ManageViewPagerAdapter extends FragmentPagerAdapter {
+
+        public ManageViewPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Fragment fragment;
+            switch (position) {
+                case 0:
+                    fragment = SignInFragment.newInstance();
+                    onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
+                    break;
+                case 1:
+                    fragment = SignQueryFragment.newInstance();
+                    break;
+                case 2:
+                    fragment = SignOffFragment.newInstance();
+                    onGetIdentityInfoResult = (OnGetIdentityInfoResult) fragment;
+                    onGetQRCodeResult = (OnGetQRCodeResult) fragment;
+                    break;
+                default:
+                    return null;
+            }
+            return fragment;
+
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
     }
 
     @Override

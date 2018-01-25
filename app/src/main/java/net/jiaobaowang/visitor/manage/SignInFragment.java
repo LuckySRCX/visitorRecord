@@ -82,6 +82,7 @@ import static android.content.Context.MODE_PRIVATE;
  * 访客登记
  */
 public class SignInFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, OnGetIdentityInfoResult {
+    private static SignInFragment sSignInFragment;
     private static final String TAG = "SignInFragment";
     private static final String REQUEST_FLAG_DEPARTMENT = "0";//部门
     private static final String REQUEST_FLAG_DEPARTMENT_USER = "1";//教职工
@@ -128,7 +129,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     public static SignInFragment newInstance() {
-        return new SignInFragment();
+        if (sSignInFragment == null) {
+            sSignInFragment = new SignInFragment();
+        }
+        return sSignInFragment;
     }
 
     @Override

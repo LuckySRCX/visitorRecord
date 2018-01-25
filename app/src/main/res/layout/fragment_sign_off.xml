@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sign_off_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
@@ -7,7 +8,6 @@
     android:orientation="vertical"
     android:padding="@dimen/default_padding"
     tools:context="net.jiaobaowang.visitor.manage.SignQueryFragment">
-
 
 
     <LinearLayout
@@ -35,10 +35,12 @@
             android:background="@drawable/query_btn"
             android:text="@string/read_card"
             android:textColor="@drawable/query_btn_text" />
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
+
         <Button
             android:id="@+id/back_up"
             android:layout_width="80dp"
@@ -69,10 +71,10 @@
             style="@style/query_edit_text"
             android:layout_width="90dp"
             android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
             android:hint="@string/keywords_hint"
             android:inputType="text"
-            android:singleLine="false"
-            android:focusableInTouchMode="true"/>
+            android:singleLine="false" />
 
         <TextView
             style="@style/inputHintStyle"
@@ -164,9 +166,9 @@
 
 
         <!--<TextView-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1" />-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1" />-->
 
         <Button
             android:id="@+id/btn_query"

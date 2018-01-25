@@ -60,8 +60,10 @@ import okhttp3.Response;
  * create an instance of this fragment.
  */
 public class SignQueryFragment extends BaseFragment implements View.OnClickListener {
+    private static SignQueryFragment mQueryFragment;
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
+    private LinearLayout mQueryContainer;
     private TextView mSignInBegin;
     private TextView mSignInEnd;
     private TextView mSelectText;
@@ -94,7 +96,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
      * @return A new instance of fragment SignQueryFragment.
      */
     public static SignQueryFragment newInstance() {
-        return new SignQueryFragment();
+        if (mQueryFragment == null) {
+            mQueryFragment = new SignQueryFragment();
+        }
+        return mQueryFragment;
     }
 
     @Override
@@ -108,6 +113,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_query, container, false);
+        mQueryContainer = v.findViewById(R.id.sign_query_container);
         mSignInBegin = v.findViewById(R.id.sign_in_begin);
         mSignInEnd = v.findViewById(R.id.sign_in_end);
         setTextView(mSignInBegin, mDateSIBegin);
@@ -200,6 +206,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 showDialog(code, selectDate, minDate);
                 break;
             case R.id.back_up:
+
                 getActivity().onBackPressed();
                 break;
             case R.id.btn_query:
@@ -209,6 +216,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             default:
                 break;
         }
+        mQueryContainer.requestFocus();
 
     }
 

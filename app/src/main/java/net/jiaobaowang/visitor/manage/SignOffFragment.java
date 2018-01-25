@@ -65,12 +65,14 @@ import okhttp3.Response;
  * create an instance of this fragment.
  */
 public class SignOffFragment extends BaseFragment implements View.OnClickListener, OnGetIdentityInfoResult, OnGetQRCodeResult {
+    private static SignOffFragment sOffFragment;
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
     private boolean isCodeOff = false;
     private TextView mSelectText;
     private TextView mSignInBegin;
     private TextView mSignInEnd;
+    private LinearLayout mSignOffContainer;
     private final int REQUEST_SIBFGIN_CODE = 0;
     private final int REQUEST_SIOFF_CODE = 1;
     private final int REQUEST_SIGN_OFF_CODE = 3;
@@ -102,7 +104,10 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
      * @return A new instance of fragment SignOffFragment.
      */
     public static SignOffFragment newInstance() {
-        return new SignOffFragment();
+        if (sOffFragment == null) {
+            sOffFragment = new SignOffFragment();
+        }
+        return sOffFragment;
     }
 
     @Override
@@ -116,6 +121,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_off, container, false);
+        mSignOffContainer = v.findViewById(R.id.sign_off_container);
         mSignInBegin = v.findViewById(R.id.sign_in_begin);
         mSignInEnd = v.findViewById(R.id.sign_in_end);
         setTextView(mSignInBegin, mDateSIBegin);
@@ -217,6 +223,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 queryRecords(false);
                 break;
             case R.id.qrcode_btn:
+                mSignOffContainer.requestFocus();
                 onGetQRCodeListener.getQRCode();
                 break;
             case R.id.id_card_read_btn:
@@ -225,6 +232,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             default:
                 break;
         }
+        mSignOffContainer.requestFocus();
 
     }
 
