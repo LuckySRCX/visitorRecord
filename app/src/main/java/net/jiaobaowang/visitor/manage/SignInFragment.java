@@ -9,8 +9,10 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextWatcher;
 import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -87,7 +89,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private static final String REQUEST_FLAG_DEPARTMENT = "0";//部门
     private static final String REQUEST_FLAG_DEPARTMENT_USER = "1";//教职工
     private static final String REQUEST_FLAG_GRADE = "2";//年级
-    private static final String REQUEST_FLAG_CLASS = "3";//班级
+    private static final String REQUEST_FLAG_GRADE_CLASS = "3";//班级
     private static final String REQUEST_FLAG_CLASS_STUDENT = "4";//学生
     private static final String REQUEST_FLAG_CLASS_TEACHER = "5";//任课老师
     private SignInTask teacherTask;
@@ -204,6 +206,18 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         String[] visitorNumber = getResources().getStringArray(R.array.visitor_number);
         ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item, visitorNumber);
         visitorNumberAc.setAdapter(visitorNumberAdapter);
+        //部门
+        departmentAc.addTextChangedListener(new SignInACTextWatch(REQUEST_FLAG_DEPARTMENT));
+        //部门成员
+        teacherNameAc.addTextChangedListener(new SignInACTextWatch(REQUEST_FLAG_DEPARTMENT_USER));
+        //年级
+        gradeAc.addTextChangedListener(new SignInACTextWatch(REQUEST_FLAG_GRADE));
+        //班级
+        classesAc.addTextChangedListener(new SignInACTextWatch(REQUEST_FLAG_GRADE_CLASS));
+        //学生
+        studentNameAc.addTextChangedListener(new SignInACTextWatch(REQUEST_FLAG_CLASS_STUDENT));
+        //班主任
+        headMasterAc.addTextChangedListener(new SignInACTextWatch(REQUEST_FLAG_CLASS_TEACHER));
         //读取身份证
         onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
     }
@@ -452,10 +466,15 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             //教职工
             params.add("interviewee_type", "0");
             params.add("teacher_name", teacherNameAc.getText().toString().trim());
-
             String department_name = departmentAc.getText().toString().trim();
             if (!"".equals(department_name)) {
                 params.add("department_name", department_name);
+                if (selectDepart != null) {
+                    params.add("department_id", String.valueOf(selectDepart.getDptid()));
+                }
+            }
+            if (selectTeacher != null) {
+                params.add("teacher_id", String.valueOf(selectTeacher.getUtid()));
             }
         } else {
             params.add("interviewee_type", "1");
@@ -464,10 +483,22 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             String grade_name = gradeAc.getText().toString().trim();
             if (!"".equals(grade_name)) {
                 params.add("grade_name", grade_name);
+                if (selectGrade != null) {
+                    params.add("grade_code", String.valueOf(selectGrade.getGrdcode()));
+                }
             }
             String class_name = classesAc.getText().toString().trim();
             if (!"".equals(class_name)) {
                 params.add("class_name", class_name);
+                if (selectClass != null) {
+                    params.add("class_id", String.valueOf(selectClass.getClsid()));
+                }
+            }
+            if (selectStudent != null) {
+                params.add("student_id", String.valueOf(selectStudent.getStuid()));
+            }
+            if (selectHeadMaster != null) {
+                params.add("head_teacher_id", String.valueOf(selectHeadMaster.getUtid()));
             }
         }
         //出生日期
@@ -705,7 +736,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     Log.i(TAG, "doInBackground:获取年级");
                     url = VisitorConfig.VISITOR_API_GRADE;
                     break;
-                case REQUEST_FLAG_CLASS:
+                case REQUEST_FLAG_GRADE_CLASS:
                     Log.i(TAG, "doInBackground:获取年级下的班级");
                     url = VisitorConfig.VISITOR_API_GRADE_CLASS;
                     map.put("gradecodes", data);
@@ -837,12 +868,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                             ArrayAdapter<SchoolClassTeaModel> headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                             headMasterAc.setAdapter(headMasterAdapter);
                             Log.i(TAG, "点击年级：" + selectGrade.getGrdcode() + " " + selectGrade.getGrdname());
-                            studentTask = new SignInTask(REQUEST_FLAG_CLASS, String.valueOf(selectGrade.getGrdcode()));
+                            studentTask = new SignInTask(REQUEST_FLAG_GRADE_CLASS, String.valueOf(selectGrade.getGrdcode()));
                             studentTask.execute();
                         }
                     });
                     break;
-                case REQUEST_FLAG_CLASS://班级
+                case REQUEST_FLAG_GRADE_CLASS://班级
                     ArrayAdapter<SchoolClassModel> classesAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
@@ -933,6 +964,57 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                             selectHeadMaster = (SchoolClassTeaModel) parent.getItemAtPosition(position);
                         }
                     });
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 被访人信息输入框监听
+     */
+    private class SignInACTextWatch implements TextWatcher {
+        private String type;
+
+        SignInACTextWatch(String type) {
+            this.type = type;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            switch (type) {
+                case REQUEST_FLAG_DEPARTMENT://部门
+                    selectDepart = null;
+                    selectTeacher = null;
+                    break;
+                case REQUEST_FLAG_DEPARTMENT_USER://部门成员
+                    selectTeacher = null;
+                    break;
+                case REQUEST_FLAG_GRADE://年级
+                    selectGrade = null;
+                    selectClass = null;
+                    selectStudent = null;
+                    selectHeadMaster = null;
+                    break;
+                case REQUEST_FLAG_GRADE_CLASS://班级
+                    selectClass = null;
+                    selectStudent = null;
+                    selectHeadMaster = null;
+                    break;
+                case REQUEST_FLAG_CLASS_STUDENT://学生
+                    selectStudent = null;
+                    break;
+                case REQUEST_FLAG_CLASS_TEACHER://班主任
+                    selectHeadMaster = null;
                     break;
             }
         }
