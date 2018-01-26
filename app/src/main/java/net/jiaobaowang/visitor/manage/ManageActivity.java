@@ -105,13 +105,13 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mInFragment.isAdded()) {
+        if (mInFragment != null && mInFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, SIGN_IN_FRAGMENT, mInFragment);
         }
-        if (mQueryFragment.isAdded()) {
+        if (mQueryFragment != null && mQueryFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, SIGN_QUERY_FRAGMENT, mQueryFragment);
         }
-        if (mOffFragment.isAdded()) {
+        if (mOffFragment != null && mOffFragment.isAdded()) {
             getSupportFragmentManager().putFragment(outState, SIGN_OFF_FRAGMENT, mOffFragment);
         }
     }
