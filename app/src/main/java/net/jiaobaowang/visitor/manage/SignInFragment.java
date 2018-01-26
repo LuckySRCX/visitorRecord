@@ -434,7 +434,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         params.add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""));
         params.add("uuid", Tools.getDeviceId(getActivity()));
         params.add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)));
-        params.add("uname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UUNAME, ""));
+        params.add("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""));
         params.add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)));
         //访客姓名
         params.add("visitor_name", nameEt.getText().toString().trim());

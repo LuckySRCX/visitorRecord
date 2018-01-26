@@ -121,5 +121,5 @@ public class VisitorConfig {
     public static final String VISIT_LOCAL_USERINFO = "net.jiaobangwang.visitor.userInfo";//账号信息
     public static final String VISIT_LOCAL_USERINFO_UID = "net.jiaobaowang.visitor.userInfo.uid";//uid
     public static final String VISIT_LOCAL_USERINFO_UTID = "net.jiaobaowang.visitor.userInfo.uTid";//utid
-    public static final String VISIT_LOCAL_USERINFO_UUNAME= "net.jiaobaowang.visitor.userInfo.uname";//uname
+    public static final String VISIT_LOCAL_USERINFO_UTNAME= "net.jiaobaowang.visitor.userInfo.utname";//uname
 }

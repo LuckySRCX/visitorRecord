@@ -171,7 +171,7 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                             .add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""))
                             .add("uuid", Tools.getDeviceId(getActivity()))
                             .add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)))
-                            .add("uname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UUNAME, ""))
+                            .add("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""))
                             .add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)))
                             .add("id", mVisitRecord.getId() + "")
                             .add("leave_time", TimeFormat.formatTime(mSelectLeaveTime)).build();
