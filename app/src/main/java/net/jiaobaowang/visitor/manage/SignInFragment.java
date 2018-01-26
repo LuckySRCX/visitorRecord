@@ -117,12 +117,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     private AutoCompleteTextView credentialsTypeAc, reasonAc, visitorNumberAc;//证件类型//访问事由//访客人数
     private AutoCompleteTextView departmentAc, teacherNameAc;//教职工部门//教职工姓名
     private AutoCompleteTextView gradeAc, classesAc, studentNameAc, headMasterAc;//年级//班级//学生姓名//班主任姓名
-    private ArrayAdapter<SchoolDepartModel> departmentAdapter;
-    private ArrayAdapter<SchoolDepartUserModel> teacherNameAdapter;
-    private ArrayAdapter<SchoolGradeModel> gradeAdapter;
-    private ArrayAdapter<SchoolClassModel> classesAdapter;
-    private ArrayAdapter<SchoolClassStuModel> studentNameAdapter;
-    private ArrayAdapter<SchoolClassTeaModel> headMasterAdapter;
     private ProgressDialog submitDataDialog;
 
     public SignInFragment() {
@@ -210,81 +204,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         String[] visitorNumber = getResources().getStringArray(R.array.visitor_number);
         ArrayAdapter<String> visitorNumberAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item, visitorNumber);
         visitorNumberAc.setAdapter(visitorNumberAdapter);
-        //部门
-        departmentAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
-        departmentAc.setAdapter(departmentAdapter);
-        departmentAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                teacherTask.cancel(true);
-                selectDepart = (SchoolDepartModel) parent.getItemAtPosition(position);
-                teacherNameAdapter.clear();
-                Log.i(TAG, "点击部门：" + selectDepart.getDptid() + " " + selectDepart.getDptname());
-                teacherTask = new SignInTask(REQUEST_FLAG_DEPARTMENT_USER, String.valueOf(selectDepart.getDptid()));
-                teacherTask.execute();
-            }
-        });
-
-        //教职工姓名
-        teacherNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
-        teacherNameAc.setAdapter(teacherNameAdapter);
-        teacherNameAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectTeacher = (SchoolDepartUserModel) parent.getItemAtPosition(position);
-            }
-        });
-        //年级
-        gradeAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
-        gradeAc.setAdapter(gradeAdapter);
-        gradeAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                studentTask.cancel(true);
-                selectGrade = (SchoolGradeModel) parent.getItemAtPosition(position);
-                classesAdapter.clear();
-                studentNameAdapter.clear();
-                headMasterAdapter.clear();
-                Log.i(TAG, "点击年级：" + selectGrade.getGrdcode() + " " + selectGrade.getGrdname());
-                studentTask = new SignInTask(REQUEST_FLAG_CLASS, String.valueOf(selectGrade.getGrdcode()));
-                studentTask.execute();
-            }
-        });
-        //班级
-        classesAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
-        classesAc.setAdapter(classesAdapter);
-        classesAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                studentTask.cancel(true);
-                selectClass = (SchoolClassModel) parent.getItemAtPosition(position);
-                studentNameAdapter.clear();
-                headMasterAdapter.clear();
-                Log.i(TAG, "点击班级：" + selectClass.getClsid() + " " + selectClass.getClsname());
-                studentTask = new SignInTask(REQUEST_FLAG_CLASS_STUDENT, String.valueOf(selectClass.getClsid()));
-                studentTask.execute();
-                headMasterTask = new SignInTask(REQUEST_FLAG_CLASS_TEACHER, String.valueOf(selectClass.getClsid()));
-                headMasterTask.execute();
-            }
-        });
-        //学生姓名
-        studentNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
-        studentNameAc.setAdapter(studentNameAdapter);
-        studentNameAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectStudent = (SchoolClassStuModel) parent.getItemAtPosition(position);
-            }
-        });
-        //班主任
-        headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
-        headMasterAc.setAdapter(headMasterAdapter);
-        headMasterAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectHeadMaster = (SchoolClassTeaModel) parent.getItemAtPosition(position);
-            }
-        });
+        //读取身份证
         onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
     }
 
@@ -293,6 +213,23 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         teacherTask.execute();
         studentTask = new SignInTask(REQUEST_FLAG_GRADE, "");
         studentTask.execute();
+    }
+
+    /**
+     * 重置fragment页面
+     */
+    public void clearFragment() {
+        Log.i(TAG, "clearFragment");
+        mContext = getActivity();
+        initView(SignInFragment.this.getView());
+        clearVisitorInfo();
+        clearUserInfo();
+        ArrayAdapter<SchoolDepartModel> departmentAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+        departmentAc.setAdapter(departmentAdapter);
+        ArrayAdapter<SchoolGradeModel> gradeAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+        gradeAc.setAdapter(gradeAdapter);
+        typeTeacherRb.setChecked(true);
+        initData();
     }
 
     @Override
@@ -411,10 +348,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         classesAc.setText("");
         studentNameAc.setText("");
         headMasterAc.setText("");
-        teacherNameAdapter.clear();
-        classesAdapter.clear();
-        studentNameAdapter.clear();
-        headMasterAdapter.clear();
+        ArrayAdapter<SchoolDepartUserModel> teacherNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+        teacherNameAc.setAdapter(teacherNameAdapter);
+        ArrayAdapter<SchoolClassModel> classesAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+        classesAc.setAdapter(classesAdapter);
+        ArrayAdapter<SchoolClassStuModel> studentNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+        studentNameAc.setAdapter(studentNameAdapter);
+        ArrayAdapter<SchoolClassTeaModel> headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+        headMasterAc.setAdapter(headMasterAdapter);
     }
 
     /**
@@ -811,6 +752,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             Log.i(TAG, "onPostExecute:flag:" + flag + " result[0]:" + result[0] + " result[1]:" + result[1]);
             switch (flag) {
                 case REQUEST_FLAG_DEPARTMENT://部门
+                    ArrayAdapter<SchoolDepartModel> departmentAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolDepartResult schoolDepartResult = gson.fromJson(result[1], SchoolDepartResult.class);
@@ -825,9 +767,23 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     } else {
                         ToastUtils.showMessage(mContext, "获取部门失败：" + result[1]);
                     }
+                    departmentAc.setAdapter(departmentAdapter);
+                    departmentAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            teacherTask.cancel(true);
+                            selectDepart = (SchoolDepartModel) parent.getItemAtPosition(position);
+                            ArrayAdapter<SchoolDepartUserModel> teacherNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+                            teacherNameAc.setAdapter(teacherNameAdapter);
+                            Log.i(TAG, "点击部门：" + selectDepart.getDptid() + " " + selectDepart.getDptname());
+                            teacherTask = new SignInTask(REQUEST_FLAG_DEPARTMENT_USER, String.valueOf(selectDepart.getDptid()));
+                            teacherTask.execute();
+                        }
+                    });
                     break;
                 case REQUEST_FLAG_DEPARTMENT_USER://部门成员
                     //progressDialog.dismiss();
+                    ArrayAdapter<SchoolDepartUserModel> teacherNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolDepartUserResult schoolDepartUserResult = gson.fromJson(result[1], SchoolDepartUserResult.class);
@@ -835,6 +791,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                             if (schoolDepartUserResult.getRspData() != null) {
                                 List<SchoolDepartUserModel> departUserModelList = schoolDepartUserResult.getRspData().getUsers();
                                 teacherNameAdapter.addAll(departUserModelList);
+                                teacherNameAc.setAdapter(teacherNameAdapter);
                             }
                         } else {
                             ToastUtils.showMessage(mContext, "获取部门成员失败：" + schoolDepartUserResult.getRspTxt());
@@ -842,8 +799,16 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     } else {
                         ToastUtils.showMessage(mContext, "获取部门成员失败：" + result[1]);
                     }
+                    teacherNameAc.setAdapter(teacherNameAdapter);
+                    teacherNameAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            selectTeacher = (SchoolDepartUserModel) parent.getItemAtPosition(position);
+                        }
+                    });
                     break;
                 case REQUEST_FLAG_GRADE://年级
+                    ArrayAdapter<SchoolGradeModel> gradeAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolGradeResult schoolGradeResult = gson.fromJson(result[1], SchoolGradeResult.class);
@@ -851,6 +816,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                             if (schoolGradeResult.getRspData() != null) {
                                 List<SchoolGradeModel> gradeModelList = schoolGradeResult.getRspData().getGrds();
                                 gradeAdapter.addAll(gradeModelList);
+                                gradeAc.setAdapter(gradeAdapter);
                             }
                         } else {
                             ToastUtils.showMessage(mContext, "获取年级失败：" + schoolGradeResult.getRspTxt());
@@ -858,8 +824,26 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     } else {
                         ToastUtils.showMessage(mContext, "获取年级失败：" + result[1]);
                     }
+                    gradeAc.setAdapter(gradeAdapter);
+                    gradeAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            studentTask.cancel(true);
+                            selectGrade = (SchoolGradeModel) parent.getItemAtPosition(position);
+                            ArrayAdapter<SchoolClassModel> classesAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+                            classesAc.setAdapter(classesAdapter);
+                            ArrayAdapter<SchoolClassStuModel> studentNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+                            studentNameAc.setAdapter(studentNameAdapter);
+                            ArrayAdapter<SchoolClassTeaModel> headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+                            headMasterAc.setAdapter(headMasterAdapter);
+                            Log.i(TAG, "点击年级：" + selectGrade.getGrdcode() + " " + selectGrade.getGrdname());
+                            studentTask = new SignInTask(REQUEST_FLAG_CLASS, String.valueOf(selectGrade.getGrdcode()));
+                            studentTask.execute();
+                        }
+                    });
                     break;
                 case REQUEST_FLAG_CLASS://班级
+                    ArrayAdapter<SchoolClassModel> classesAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolGradeClassResult schoolGradeClassResult = gson.fromJson(result[1], SchoolGradeClassResult.class);
@@ -867,6 +851,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                             if (schoolGradeClassResult.getRspData() != null) {
                                 List<SchoolClassModel> schoolClassModelList = schoolGradeClassResult.getRspData().getClss();
                                 classesAdapter.addAll(schoolClassModelList);
+                                classesAc.setAdapter(classesAdapter);
                             }
                         } else {
                             ToastUtils.showMessage(mContext, "获取班级失败：" + schoolGradeClassResult.getRspTxt());
@@ -874,8 +859,26 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     } else {
                         ToastUtils.showMessage(mContext, "获取班级失败：" + result[1]);
                     }
+                    classesAc.setAdapter(classesAdapter);
+                    classesAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            studentTask.cancel(true);
+                            selectClass = (SchoolClassModel) parent.getItemAtPosition(position);
+                            ArrayAdapter<SchoolClassStuModel> studentNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+                            studentNameAc.setAdapter(studentNameAdapter);
+                            ArrayAdapter<SchoolClassTeaModel> headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
+                            headMasterAc.setAdapter(headMasterAdapter);
+                            Log.i(TAG, "点击班级：" + selectClass.getClsid() + " " + selectClass.getClsname());
+                            studentTask = new SignInTask(REQUEST_FLAG_CLASS_STUDENT, String.valueOf(selectClass.getClsid()));
+                            studentTask.execute();
+                            headMasterTask = new SignInTask(REQUEST_FLAG_CLASS_TEACHER, String.valueOf(selectClass.getClsid()));
+                            headMasterTask.execute();
+                        }
+                    });
                     break;
                 case REQUEST_FLAG_CLASS_STUDENT://班级学生
+                    ArrayAdapter<SchoolClassStuModel> studentNameAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolClassStuResult schoolClassStuResult = gson.fromJson(result[1], SchoolClassStuResult.class);
@@ -883,6 +886,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                             if (schoolClassStuResult.getRspData() != null) {
                                 List<SchoolClassStuModel> schoolClassModelList = schoolClassStuResult.getRspData().getClssstus();
                                 studentNameAdapter.addAll(schoolClassModelList);
+                                studentNameAc.setAdapter(studentNameAdapter);
                             }
                         } else {
                             ToastUtils.showMessage(mContext, "获取学生失败：" + schoolClassStuResult.getRspTxt());
@@ -890,8 +894,16 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     } else {
                         ToastUtils.showMessage(mContext, "获取学生失败：" + result[1]);
                     }
+                    studentNameAc.setAdapter(studentNameAdapter);
+                    studentNameAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            selectStudent = (SchoolClassStuModel) parent.getItemAtPosition(position);
+                        }
+                    });
                     break;
                 case REQUEST_FLAG_CLASS_TEACHER://班级任课老师
+                    ArrayAdapter<SchoolClassTeaModel> headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolClassTeaResult schoolClassTeaResult = gson.fromJson(result[1], SchoolClassTeaResult.class);
@@ -906,6 +918,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                     }
                                 }
                                 headMasterAdapter.addAll(headMasterList);
+                                headMasterAc.setAdapter(headMasterAdapter);
                             }
                         } else {
                             ToastUtils.showMessage(mContext, "获取老师失败：" + schoolClassTeaResult.getRspTxt());
@@ -913,6 +926,13 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     } else {
                         ToastUtils.showMessage(mContext, "获取老师失败：" + result[1]);
                     }
+                    headMasterAc.setAdapter(headMasterAdapter);
+                    headMasterAc.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            selectHeadMaster = (SchoolClassTeaModel) parent.getItemAtPosition(position);
+                        }
+                    });
                     break;
             }
         }

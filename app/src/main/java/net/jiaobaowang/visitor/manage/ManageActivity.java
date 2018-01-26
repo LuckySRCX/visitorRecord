@@ -2,6 +2,7 @@ package net.jiaobaowang.visitor.manage;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -11,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 
 import com.google.zxing.other.BeepManager;
 import com.telpo.tps550.api.TelpoException;
@@ -55,8 +57,19 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
         if (id == 0) {
             finish();
         } else if (curId != id) {
+            //隐藏键盘
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            try {
+                inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             curId = id;
             setDetailFragment(id);
+            if (id == 1 && mInFragment != null) {
+                mInFragment.clearFragment();
+            }
         }
     }
 
