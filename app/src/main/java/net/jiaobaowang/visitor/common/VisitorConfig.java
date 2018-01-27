@@ -64,9 +64,9 @@ public class VisitorConfig {
      */
     public static final String VISITOR_API_DEPARTMENT_USER = VISITOR_ZB_MAIN_URL + "/DepartUser";
     /**
-     * 获取token
+     * 总部token续订
      */
-    public static final String VISITOR_API_GET_TOKEN = VISITOR_GX_MAIN_URL + "/api/getToken";
+    public static final String VISITOR_API_TOKEN_RESET = VISITOR_ZB_MAIN_URL + "/TokenReset";
 
     /**
      * 添加访客记录
