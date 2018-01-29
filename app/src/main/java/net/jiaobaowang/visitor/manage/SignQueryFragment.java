@@ -134,6 +134,12 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        mIsVisible = isVisibleToUser;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_query, container, false);
@@ -159,7 +165,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void setRefreshListener() {
-        mRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent,R.color.colorRed);
+        mRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent, R.color.colorRed);
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
