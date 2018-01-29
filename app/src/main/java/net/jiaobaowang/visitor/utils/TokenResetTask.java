@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 
 import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.entity.TokenResetResult;
+import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import java.io.IOException;
 import java.util.TreeMap;
@@ -28,10 +29,12 @@ import static android.content.Context.MODE_PRIVATE;
 public class TokenResetTask extends AsyncTask<Void, Void, String[]> {
     private Context mContext;
     private OkHttpClient mOkHttpClient;
+    private TaskCallBack mTaskCallBack;
 
-    public TokenResetTask(Context context, OkHttpClient okHttpClient) {
+    public TokenResetTask(Context context, OkHttpClient okHttpClient, TaskCallBack taskCallBack) {
         this.mContext = context;
         this.mOkHttpClient = okHttpClient;
+        this.mTaskCallBack = taskCallBack;
     }
 
     @Override
@@ -74,6 +77,7 @@ public class TokenResetTask extends AsyncTask<Void, Void, String[]> {
     @Override
     protected void onPostExecute(String[] result) {
         Log.i("TokenResetTask", "onPostExecute:" + result[0] + " " + result[1]);
+        String[] callBack = new String[2];
         if ("1".equals(result[0])) {
             Gson gson = new Gson();
             TokenResetResult tokenResetResult = gson.fromJson(result[1], TokenResetResult.class);
@@ -81,11 +85,18 @@ public class TokenResetTask extends AsyncTask<Void, Void, String[]> {
                 Log.i("TokenResetTask", "更新令牌成功");
                 SharePreferencesUtil spu = new SharePreferencesUtil(mContext, VisitorConfig.VISIT_LOCAL_STORAGE);
                 spu.putString(VisitorConfig.VISIT_LOCAL_TOKEN, tokenResetResult.getRspData());
+                callBack[0] = "1";
+                callBack[1] = "成功";
             } else {
                 Log.i("TokenResetTask", "更新令牌失败");
+                callBack[0] = "0";
+                callBack[1] = tokenResetResult.getRspTxt();
             }
         } else {
             Log.i("TokenResetTask", "更新令牌失败");
+            callBack[0] = "0";
+            callBack[1] = result[1];
         }
+        mTaskCallBack.CallBack(callBack);
     }
 }
