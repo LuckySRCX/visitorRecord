@@ -96,6 +96,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private OnGetIdentityInfoListener onGetIdentityInfoListener;
     private OnGetQRCodeListener onGetQRCodeListener;
     private ProgressDialog mDialog;
+    private boolean mIsVisible;
 
     public SignOffFragment() {
         // Required empty public constructor
@@ -142,14 +143,19 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         setSpinner(mSpinner_identity, R.array.person_identity);
         onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
         onGetQRCodeListener = (OnGetQRCodeListener) getActivity();
+        queryRecords(false);
         return v;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        pageIndex = 1;
-        queryRecords(false);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        mIsVisible = isVisibleToUser;
     }
 
     @Override
@@ -372,8 +378,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             //失败
             DialogUtils.showAlert(getActivity(), msg);
         } else {
-            mText_keywords.setText(qrCode);
             restoreData();
+            mText_keywords.setText(qrCode);
             queryRecords(true);
         }
     }
@@ -382,6 +388,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
      * 重置数据
      */
     private void restoreData() {
+        mText_keywords.setText("");
         mSpinner_identity.setSelection(0);
         mSignInBegin.setText("");
         mSignInEnd.setText("");
@@ -418,6 +425,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     mRecyclerAdapter.notifyDataSetChanged();
                     mRecyclerAdapter.setLoaded();
                     if (isCodeOff) {
+                        if (mDialog.isShowing()) {
+                            mDialog.dismiss();
+                        }
                         showDetail(listResult.getData().getList().get(0));
                     }
                     break;
@@ -425,7 +435,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     if (mRecyclerAdapter != null) {
                         mRecyclerAdapter.notifyDataSetChanged();
                     }
-                    Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    if (mIsVisible) {
+                        Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    }
                     break;
                 default:
                     break;
@@ -522,6 +534,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onDetach() {
         super.onDetach();
+        restoreData();
     }
 
     class OffViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

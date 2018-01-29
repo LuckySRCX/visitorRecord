@@ -89,6 +89,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     OkHttpClient okHttpClient = new OkHttpClient();
     MyHandler mMyHandler;
     private ProgressDialog mDialog;
+    private boolean mIsVisible;
 
     public SignQueryFragment() {
         // Required empty public constructor
@@ -147,7 +148,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         setSpinner(mSpinner_identity, R.array.person_identity);
         setSpinner(mSpinner_visitorState, R.array.is_leave_option);
         mRecyclerView = v.findViewById(R.id.recycler_query);
-//        queryRecords();
+        queryRecords();
         return v;
     }
 
@@ -347,7 +348,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     if (mRecyclerAdapter != null) {
                         mRecyclerAdapter.notifyDataSetChanged();
                     }
-                    Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    if(mIsVisible){
+                        Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    }
+
                     break;
                 default:
                     break;
@@ -378,8 +382,8 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        pageIndex = 1;
-        queryRecords();
+//        pageIndex = 1;
+//        queryRecords();
     }
 
     @Override
@@ -419,12 +423,26 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+    }
 
+    /**
+     * 重置数据
+     */
+    private void restoreData() {
+        mText_keywords.setText("");
+        mSpinner_visitorState.setSelection(0);
+        mSpinner_identity.setSelection(0);
+        mSignInBegin.setText("");
+        mSignInEnd.setText("");
+        mDateSIBegin = null;
+        mDateSIEnd = null;
+        pageIndex = 1;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        restoreData();
     }
 
     class QueryViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
