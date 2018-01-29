@@ -34,7 +34,9 @@ import net.jiaobaowang.visitor.custom_view.DatePickerFragment;
 import net.jiaobaowang.visitor.entity.SignOffResult;
 import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.utils.TimeFormat;
+import net.jiaobaowang.visitor.utils.TokenResetTask;
 import net.jiaobaowang.visitor.utils.Tools;
+import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -196,10 +198,26 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
     private void dealResult(String string) {
         Gson gson = new Gson();
         result = gson.fromJson(string, SignOffResult.class);
-        if (result.getCode().equals("0000")) {
-            mHandler.sendEmptyMessage(0);
-        } else {
-            mHandler.sendEmptyMessage(-1);
+        switch (result.getCode()) {
+            case "0000":
+                mHandler.sendEmptyMessage(0);
+                break;
+            case "0006":
+                new TokenResetTask(getActivity(), mOkHttpClient, new TaskCallBack() {
+                    @Override
+                    public void CallBack(String[] result) {
+                        if (result[1].equals("1")) {
+                            requestSignOff();
+                        } else {
+                            mHandler.sendEmptyMessage(6);
+                        }
+                    }
+                });
+                break;
+            default:
+                mHandler.sendEmptyMessage(-1);
+                break;
+
         }
     }
 
@@ -226,6 +244,9 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                     break;
                 case 1:
                     sendResult(false);
+                    break;
+                case 6://token续订错误
+                    Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;

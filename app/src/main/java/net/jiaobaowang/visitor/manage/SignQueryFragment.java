@@ -40,7 +40,9 @@ import net.jiaobaowang.visitor.entity.VisitRecord;
 import net.jiaobaowang.visitor.entity.VisitRecordLab;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.printer.VisitorFormDetailsActivity;
+import net.jiaobaowang.visitor.utils.TokenResetTask;
 import net.jiaobaowang.visitor.utils.Tools;
+import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -306,6 +308,20 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     pageIndex++;
                 }
                 break;
+            case "0006":
+                new TokenResetTask(getActivity(), okHttpClient, new TaskCallBack() {
+                    @Override
+                    public void CallBack(String[] result) {
+                        if (result[1].equals("1")) {
+                            queryRecords();
+                        } else {
+                            if (mIsVisible) {
+                                mMyHandler.sendEmptyMessage(6);
+                            }
+                        }
+                    }
+                });
+                break;
             case "0031":
                 VisitRecordLab.get(getActivity()).clearVisitRecords();
                 mMyHandler.sendEmptyMessage(2);
@@ -348,10 +364,13 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     if (mRecyclerAdapter != null) {
                         mRecyclerAdapter.notifyDataSetChanged();
                     }
-                    if(mIsVisible){
+                    if (mIsVisible) {
                         Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
                     }
 
+                    break;
+                case 6://token续订错误
+                    Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;
