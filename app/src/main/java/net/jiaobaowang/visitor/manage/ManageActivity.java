@@ -95,6 +95,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
             mOffFragment = (SignOffFragment) getSupportFragmentManager().getFragment(savedInstanceState, SIGN_OFF_FRAGMENT);
         }
         mPager = findViewById(R.id.fragment_detail);
+        mPager.setOffscreenPageLimit(2);
         mPager.setCanScroll(false);
         FragmentManager fragmentManager = getSupportFragmentManager();
         adapter = new ManageViewPagerAdapter(fragmentManager);

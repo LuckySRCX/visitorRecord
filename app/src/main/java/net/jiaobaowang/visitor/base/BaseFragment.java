@@ -17,7 +17,7 @@ public abstract class BaseFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TAG = getClass().getSimpleName();
-        Log.e(TAG, "*******is created********");
+        Log.e(TAG, "*******onCreate********");
     }
 
     @Override
