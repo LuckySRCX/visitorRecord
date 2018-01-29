@@ -57,9 +57,11 @@ import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DESUtil;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
+import net.jiaobaowang.visitor.utils.TokenResetTask;
 import net.jiaobaowang.visitor.utils.Tools;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoResult;
+import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import org.json.JSONObject;
 
@@ -618,26 +620,40 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         }
 
         @Override
-        protected void onPostExecute(String resultStr[]) {
-            submitDataDialog.dismiss();
-            Log.i(TAG, resultStr[0] + " " + resultStr[1]);
-            if (resultStr[0].equals("1")) {
+        protected void onPostExecute(String[] results) {
+            Log.i(TAG, results[0] + " " + results[1]);
+            if ("1".equals(results[0])) {
                 Gson gson = new Gson();
-                AddFormResult result = gson.fromJson(resultStr[1], AddFormResult.class);
-                if (result.getCode().equals("0000")) {
+                AddFormResult addFormResult = gson.fromJson(results[1], AddFormResult.class);
+                if ("0000".equals(addFormResult.getCode())) {
+                    submitDataDialog.dismiss();
                     ToastUtils.showMessage(mContext, "保存访客记录成功");
                     clearVisitorInfo();
                     clearUserInfo();
                     if (isNeedPrint) {
                         Intent intent = new Intent(mContext, PrinterActivity.class);
-                        intent.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, result.getVisitor());
+                        intent.putExtra(VisitorConstant.INTENT_PUT_EXTRA_DATA, addFormResult.getVisitor());
                         startActivity(intent);
                     }
+                } else if ("0006".equals(addFormResult.getCode())) {
+                    new TokenResetTask(mContext, mOkHttpClient, new TaskCallBack() {
+                        @Override
+                        public void CallBack(String[] result) {
+                            if ("1".equals(result[0])) {
+                                setSubmitData();
+                            } else {
+                                submitDataDialog.dismiss();
+                                DialogUtils.showAlert(mContext, "保存访客记录失败：令牌已过期或不存在");
+                            }
+                        }
+                    });
                 } else {
-                    DialogUtils.showAlert(mContext, "保存访客记录失败：" + result.getMsg());
+                    submitDataDialog.dismiss();
+                    DialogUtils.showAlert(mContext, "保存访客记录失败：" + addFormResult.getMsg());
                 }
             } else {
-                DialogUtils.showAlert(mContext, "保存访客记录失败：" + resultStr[1]);
+                submitDataDialog.dismiss();
+                DialogUtils.showAlert(mContext, "保存访客记录失败：" + results[1]);
             }
         }
     }
@@ -781,17 +797,20 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         @Override
         protected void onPostExecute(String[] result) {
             Log.i(TAG, "onPostExecute:flag:" + flag + " result[0]:" + result[0] + " result[1]:" + result[1]);
+            boolean needTokenReset = false;
             switch (flag) {
                 case REQUEST_FLAG_DEPARTMENT://部门
                     ArrayAdapter<SchoolDepartModel> departmentAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolDepartResult schoolDepartResult = gson.fromJson(result[1], SchoolDepartResult.class);
-                        if (schoolDepartResult.getRspCode().equals("0000")) {
+                        if ("0000".equals(schoolDepartResult.getRspCode())) {
                             if (schoolDepartResult.getRspData() != null) {
                                 List<SchoolDepartModel> departModelList = schoolDepartResult.getRspData().getDpts();
                                 departmentAdapter.addAll(departModelList);
                             }
+                        } else if ("0006".equals(schoolDepartResult.getRspCode())) {
+                            needTokenReset = true;
                         } else {
                             ToastUtils.showMessage(mContext, "获取部门失败：" + schoolDepartResult.getRspTxt());
                         }
@@ -818,12 +837,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolDepartUserResult schoolDepartUserResult = gson.fromJson(result[1], SchoolDepartUserResult.class);
-                        if (schoolDepartUserResult.getRspCode().equals("0000")) {
+                        if ("0000".equals(schoolDepartUserResult.getRspCode())) {
                             if (schoolDepartUserResult.getRspData() != null) {
                                 List<SchoolDepartUserModel> departUserModelList = schoolDepartUserResult.getRspData().getUsers();
                                 teacherNameAdapter.addAll(departUserModelList);
                                 teacherNameAc.setAdapter(teacherNameAdapter);
                             }
+                        } else if ("0006".equals(schoolDepartUserResult.getRspCode())) {
+                            needTokenReset = true;
                         } else {
                             ToastUtils.showMessage(mContext, "获取部门成员失败：" + schoolDepartUserResult.getRspTxt());
                         }
@@ -843,12 +864,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolGradeResult schoolGradeResult = gson.fromJson(result[1], SchoolGradeResult.class);
-                        if (schoolGradeResult.getRspCode().equals("0000")) {
+                        if ("0000".equals(schoolGradeResult.getRspCode())) {
                             if (schoolGradeResult.getRspData() != null) {
                                 List<SchoolGradeModel> gradeModelList = schoolGradeResult.getRspData().getGrds();
                                 gradeAdapter.addAll(gradeModelList);
                                 gradeAc.setAdapter(gradeAdapter);
                             }
+                        } else if ("0006".equals(schoolGradeResult.getRspCode())) {
+                            needTokenReset = true;
                         } else {
                             ToastUtils.showMessage(mContext, "获取年级失败：" + schoolGradeResult.getRspTxt());
                         }
@@ -878,12 +901,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolGradeClassResult schoolGradeClassResult = gson.fromJson(result[1], SchoolGradeClassResult.class);
-                        if (schoolGradeClassResult.getRspCode().equals("0000")) {
+                        if ("0000".equals(schoolGradeClassResult.getRspCode())) {
                             if (schoolGradeClassResult.getRspData() != null) {
                                 List<SchoolClassModel> schoolClassModelList = schoolGradeClassResult.getRspData().getClss();
                                 classesAdapter.addAll(schoolClassModelList);
                                 classesAc.setAdapter(classesAdapter);
                             }
+                        } else if ("0006".equals(schoolGradeClassResult.getRspCode())) {
+                            needTokenReset = true;
                         } else {
                             ToastUtils.showMessage(mContext, "获取班级失败：" + schoolGradeClassResult.getRspTxt());
                         }
@@ -913,12 +938,14 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolClassStuResult schoolClassStuResult = gson.fromJson(result[1], SchoolClassStuResult.class);
-                        if (schoolClassStuResult.getRspCode().equals("0000")) {
+                        if ("0000".equals(schoolClassStuResult.getRspCode())) {
                             if (schoolClassStuResult.getRspData() != null) {
                                 List<SchoolClassStuModel> schoolClassModelList = schoolClassStuResult.getRspData().getClssstus();
                                 studentNameAdapter.addAll(schoolClassModelList);
                                 studentNameAc.setAdapter(studentNameAdapter);
                             }
+                        } else if ("0006".equals(schoolClassStuResult.getRspCode())) {
+                            needTokenReset = true;
                         } else {
                             ToastUtils.showMessage(mContext, "获取学生失败：" + schoolClassStuResult.getRspTxt());
                         }
@@ -938,7 +965,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                     if ("1".equals(result[0])) {
                         Gson gson = new Gson();
                         SchoolClassTeaResult schoolClassTeaResult = gson.fromJson(result[1], SchoolClassTeaResult.class);
-                        if (schoolClassTeaResult.getRspCode().equals("0000")) {
+                        if ("0000".equals(schoolClassTeaResult.getRspCode())) {
                             if (schoolClassTeaResult.getRspData() != null) {
                                 List<SchoolClassTeaModel> schoolClassTeaModelList = schoolClassTeaResult.getRspData().getClssusers();
                                 List<SchoolClassTeaModel> headMasterList = new ArrayList<>();
@@ -951,6 +978,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                 headMasterAdapter.addAll(headMasterList);
                                 headMasterAc.setAdapter(headMasterAdapter);
                             }
+                        } else if ("0006".equals(schoolClassTeaResult.getRspCode())) {
+                            needTokenReset = true;
                         } else {
                             ToastUtils.showMessage(mContext, "获取老师失败：" + schoolClassTeaResult.getRspTxt());
                         }
@@ -965,6 +994,72 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                         }
                     });
                     break;
+            }
+            Log.i(TAG, "needTokenReset：" + needTokenReset);
+            if (needTokenReset) {
+                new TokenResetTask(mContext, mOkHttpClient, new TaskCallBack() {
+                    @Override
+                    public void CallBack(String[] result) {
+                        switch (flag) {
+                            case REQUEST_FLAG_DEPARTMENT:
+                                if ("1".equals(result[0])) {
+                                    teacherTask = new SignInTask(REQUEST_FLAG_DEPARTMENT, "");
+                                    teacherTask.execute();
+                                } else {
+                                    ToastUtils.showMessage(mContext, "获取部门失败：令牌已过期或不存在");
+                                }
+                                break;
+                            case REQUEST_FLAG_DEPARTMENT_USER:
+                                if ("1".equals(result[0])) {
+                                    if (selectDepart != null) {
+                                        teacherTask = new SignInTask(REQUEST_FLAG_DEPARTMENT_USER, String.valueOf(selectDepart.getDptid()));
+                                        teacherTask.execute();
+                                    }
+                                } else {
+                                    ToastUtils.showMessage(mContext, "获取部门成员失败：令牌已过期或不存在");
+                                }
+                                break;
+                            case REQUEST_FLAG_GRADE:
+                                if ("1".equals(result[0])) {
+                                    studentTask = new SignInTask(REQUEST_FLAG_GRADE, "");
+                                    studentTask.execute();
+                                } else {
+                                    ToastUtils.showMessage(mContext, "获取年级失败：令牌已过期或不存在");
+                                }
+                                break;
+                            case REQUEST_FLAG_GRADE_CLASS:
+                                if ("1".equals(result[0])) {
+                                    if (selectGrade != null) {
+                                        studentTask = new SignInTask(REQUEST_FLAG_GRADE_CLASS, String.valueOf(selectGrade.getGrdcode()));
+                                        studentTask.execute();
+                                    }
+                                } else {
+                                    ToastUtils.showMessage(mContext, "获取班级失败：令牌已过期或不存在");
+                                }
+                                break;
+                            case REQUEST_FLAG_CLASS_STUDENT:
+                                if ("1".equals(result[0])) {
+                                    if (selectClass != null) {
+                                        studentTask = new SignInTask(REQUEST_FLAG_CLASS_STUDENT, String.valueOf(selectClass.getClsid()));
+                                        studentTask.execute();
+                                    }
+                                } else {
+                                    ToastUtils.showMessage(mContext, "获取学生失败：令牌已过期或不存在");
+                                }
+                                break;
+                            case REQUEST_FLAG_CLASS_TEACHER:
+                                if ("1".equals(result[0])) {
+                                    if (selectClass != null) {
+                                        headMasterTask = new SignInTask(REQUEST_FLAG_CLASS_TEACHER, String.valueOf(selectClass.getClsid()));
+                                        headMasterTask.execute();
+                                    }
+                                } else {
+                                    ToastUtils.showMessage(mContext, "获取老师失败：令牌已过期或不存在");
+                                }
+                                break;
+                        }
+                    }
+                }).execute();
             }
         }
     }
