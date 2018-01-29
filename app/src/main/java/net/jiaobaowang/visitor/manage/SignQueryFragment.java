@@ -11,6 +11,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -78,6 +79,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     private EditText mText_keywords;
     private Spinner mSpinner_visitorState;
     private Spinner mSpinner_identity;
+    private SwipeRefreshLayout mRefreshLayout;
     private final int REQUEST_SIBFGIN_CODE = 0;
     private final int REQUEST_SIOFF_CODE = 1;
     private static final String DIALOG_DATE = "DialogDate";
@@ -150,8 +152,21 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         setSpinner(mSpinner_identity, R.array.person_identity);
         setSpinner(mSpinner_visitorState, R.array.is_leave_option);
         mRecyclerView = v.findViewById(R.id.recycler_query);
+        mRefreshLayout = v.findViewById(R.id.swipe_refresh);
+        setRefreshListener();
         queryRecords();
         return v;
+    }
+
+    private void setRefreshListener() {
+        mRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent,R.color.colorRed);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                pageIndex = 1;
+                queryRecords();
+            }
+        });
     }
 
     private void setSpinner(Spinner spinner, int resId) {
@@ -378,6 +393,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             if (mDialog.isShowing()) {
                 mDialog.dismiss();
             }
+            if (mRefreshLayout.isRefreshing()) {
+                mRefreshLayout.setRefreshing(false);
+            }
+
         }
     }
 

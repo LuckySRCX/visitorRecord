@@ -12,6 +12,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -89,6 +90,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private OffRecyclerAdapter mRecyclerAdapter;
     private EditText mText_keywords;
     private Spinner mSpinner_identity;
+    private SwipeRefreshLayout mRefreshLayout;
     private int pageIndex = 1;
     private int pageSize = 20;
     private boolean isLastPage;
@@ -145,8 +147,21 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         setSpinner(mSpinner_identity, R.array.person_identity);
         onGetIdentityInfoListener = (OnGetIdentityInfoListener) getActivity();
         onGetQRCodeListener = (OnGetQRCodeListener) getActivity();
+        mRefreshLayout = v.findViewById(R.id.swipe_refresh);
+        setRefreshListener();
         queryRecords(false);
         return v;
+    }
+
+    private void setRefreshListener() {
+        mRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent,R.color.colorRed);
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                pageIndex = 1;
+                queryRecords(false);
+            }
+        });
     }
 
     @Override
@@ -462,6 +477,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             }
             if (mDialog.isShowing()) {
                 mDialog.dismiss();
+            }
+            if (mRefreshLayout.isRefreshing()) {
+                mRefreshLayout.setRefreshing(false);
             }
         }
     }
