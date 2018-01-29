@@ -154,7 +154,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void setRefreshListener() {
-        mRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent,R.color.colorRed);
+        mRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorAccent, R.color.colorRed);
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -290,9 +290,11 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
 
     private void queryRecords(boolean isCode) {
         isCodeOff = isCode;
-        mDialog = new ProgressDialog(getActivity());
-        mDialog.setMessage("加载中...");
-        mDialog.show();
+        if (!mRefreshLayout.isRefreshing()) {
+            mDialog = new ProgressDialog(getActivity());
+            mDialog.setMessage("加载中...");
+            mDialog.show();
+        }
         final String keywords = mText_keywords.getText().toString().trim();
         final int identityType = mSpinner_identity.getSelectedItemPosition() - 1;
         new Thread(new Runnable() {
@@ -475,7 +477,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 default:
                     break;
             }
-            if (mDialog.isShowing()) {
+            if (mDialog != null && mDialog.isShowing()) {
                 mDialog.dismiss();
             }
             if (mRefreshLayout.isRefreshing()) {

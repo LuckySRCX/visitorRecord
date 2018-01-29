@@ -272,9 +272,11 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         final String keywords = mText_keywords.getText().toString().trim();
         final int leaveFlag = mSpinner_visitorState.getSelectedItemPosition() - 1;
         final int identityType = mSpinner_identity.getSelectedItemPosition() - 1;
-        mDialog = new ProgressDialog(getActivity());
-        mDialog.setMessage("加载中...");
-        mDialog.show();
+        if (!mRefreshLayout.isRefreshing()) {
+            mDialog = new ProgressDialog(getActivity());
+            mDialog.setMessage("加载中...");
+            mDialog.show();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -396,7 +398,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 default:
                     break;
             }
-            if (mDialog.isShowing()) {
+            if (mDialog != null && mDialog.isShowing()) {
                 mDialog.dismiss();
             }
             if (mRefreshLayout.isRefreshing()) {
