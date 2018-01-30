@@ -144,7 +144,6 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
         switch (v.getId()) {
             case R.id.off_detail_sure:
                 requestSignOff();
-//                dialog.dismiss();
                 break;
             case R.id.off_detail_cancel:
                 dialog.dismiss();
@@ -152,7 +151,6 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
             case R.id.off_detail_offTime:
                 break;
             case R.id.off_detail_offTimeContainer:
-//                dialog.dismiss();
                 showTimePicker();
                 break;
             default:
