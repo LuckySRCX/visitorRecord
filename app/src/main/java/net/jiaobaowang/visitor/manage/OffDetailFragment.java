@@ -40,6 +40,7 @@ import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.Date;
 
 import okhttp3.FormBody;
@@ -184,8 +185,12 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                         dealResult(response.body().string());
                     }
                 } catch (Exception e) {
-                    Log.e("ERROR", "获取信息错误", e);
-                    mHandler.sendEmptyMessage(-1);
+                    Log.d("ERROR", "请求数据错误", e);
+                    if (e instanceof SocketTimeoutException) {
+                        mHandler.sendEmptyMessage(5);
+                    } else {
+                        mHandler.sendEmptyMessage(-1);
+                    }
                 }
             }
         }).start();
@@ -242,6 +247,9 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                     break;
                 case 1:
                     sendResult(false);
+                    break;
+                case 5://服务器连接失败
+                    Toast.makeText(getActivity(), "服务器连接失败,请稍后再试！", Toast.LENGTH_LONG).show();
                     break;
                 case 6://token续订错误
                     Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();

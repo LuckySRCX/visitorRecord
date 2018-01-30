@@ -46,6 +46,7 @@ import net.jiaobaowang.visitor.utils.Tools;
 import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -304,8 +305,12 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                         resultDealt(response.body().string());
                     }
                 } catch (Exception e) {
-                    mMyHandler.sendEmptyMessage(-1);
                     Log.d("ERROR", "请求数据错误", e);
+                    if (e instanceof SocketTimeoutException) {
+                        mMyHandler.sendEmptyMessage(5);
+                    } else {
+                        mMyHandler.sendEmptyMessage(-1);
+                    }
                 }
             }
         }).start();
@@ -391,6 +396,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                         Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
                     }
 
+                    break;
+                case 5://服务器连接失败
+                    Toast.makeText(getActivity(), "服务器连接失败，请稍后再试！", Toast.LENGTH_LONG).show();
                     break;
                 case 6://token续订错误
                     Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();
