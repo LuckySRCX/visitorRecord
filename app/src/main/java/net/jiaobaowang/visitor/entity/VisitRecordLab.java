@@ -30,17 +30,10 @@ public class VisitRecordLab {
         return mVisitRecords;
     }
 
-    public void addTenVisits() {
-        VisitRecord visitRecord = new VisitRecord();
-        visitRecord.setVisitor_name("新增访客");
-    }
-
-    private void addVisit(VisitRecord record) {
-        mVisitRecords.add(record);
-    }
 
     public void setVisitRecords(List<VisitRecord> visitRecords) {
-        mVisitRecords = visitRecords;
+        mVisitRecords.clear();
+        mVisitRecords.addAll(visitRecords);
     }
 
     public void addVisitRecords(List<VisitRecord> list) {

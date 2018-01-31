@@ -185,11 +185,17 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
 
 
     private void updateUI() {
-        VisitRecordLab recordLab = VisitRecordLab.get(getActivity());
-        List<VisitRecord> records = recordLab.getVisitRecords();
-        mRecyclerAdapter = new QueryRecyclerAdapter(mRecyclerView, records);
-        mRecyclerView.setAdapter(mRecyclerAdapter);
-        setListener(records);
+        if (mRecyclerView.getAdapter() == null) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            VisitRecordLab recordLab = VisitRecordLab.get(getActivity());
+            List<VisitRecord> records = recordLab.getVisitRecords();
+            mRecyclerAdapter = new QueryRecyclerAdapter(mRecyclerView, records);
+            mRecyclerView.setAdapter(mRecyclerAdapter);
+            setListener(records);
+        } else {
+            mRecyclerAdapter.notifyDataSetChanged();
+        }
+
     }
 
     private void setListener(final List<VisitRecord> records) {
@@ -381,12 +387,11 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     break;
                 case 0:
                     Log.d(TAG, VisitRecordLab.get(mContext).getVisitRecords().toString());
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
                     updateUI();
                     break;
                 case 1:
                     mRecyclerAdapter.notifyDataSetChanged();
-
                     break;
                 case 2:
                     if (mRecyclerAdapter != null) {
@@ -636,8 +641,11 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     super.onScrolled(recyclerView, dx, dy);
                     totalItemCount = manager.getItemCount();
                     lastVisibleItem = manager.findLastVisibleItemPosition();
+                    Log.d(TAG, "总数:" + totalItemCount);
+                    Log.d(TAG, "当前数目:" + lastVisibleItem);
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
                         if (isLastPage) {
+                            Toast.makeText(getActivity(), "已加载所有数据！", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         if (onLoadMoreListener != null) {

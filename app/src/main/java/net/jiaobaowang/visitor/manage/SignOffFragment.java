@@ -194,11 +194,16 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void updateUI() {
-        OffRecordLab recordLab = OffRecordLab.get(getActivity());
-        List<VisitRecord> records = recordLab.getVisitRecords();
-        mRecyclerAdapter = new OffRecyclerAdapter(mRecyclerView, records);
-        mRecyclerView.setAdapter(mRecyclerAdapter);
-        setListener(records);
+        if (mRecyclerView.getAdapter() == null) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            OffRecordLab recordLab = OffRecordLab.get(getActivity());
+            List<VisitRecord> records = recordLab.getVisitRecords();
+            mRecyclerAdapter = new OffRecyclerAdapter(mRecyclerView, records);
+            mRecyclerView.setAdapter(mRecyclerAdapter);
+            setListener(records);
+        } else {
+            mRecyclerAdapter.notifyDataSetChanged();
+        }
     }
 
     private void setListener(final List<VisitRecord> records) {
@@ -213,13 +218,13 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                         mRecyclerAdapter.notifyItemInserted(records.size() - 1);
                     }
                 });
-                new Handler().postDelayed(new Runnable() {
+                new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        records.remove(records.size() - 1);
                         queryRecords(false);
+                        records.remove(records.size() - 1);
                     }
-                }, 1000);
+                });
             }
         });
     }
@@ -371,7 +376,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 });
                 break;
             case "0031":
-                isLastPage= true;
+                isLastPage = true;
                 mMyHandler.sendEmptyMessage(2);
                 OffRecordLab.get(getActivity()).clearVisitRecords();
                 break;
@@ -458,12 +463,10 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     break;
                 case 0:
                     Log.d(TAG, OffRecordLab.get(mContext).getVisitRecords().toString());
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     updateUI();
                     break;
                 case 1:
                     mRecyclerAdapter.notifyDataSetChanged();
-                    mRecyclerAdapter.setLoaded();
                     if (isCodeOff) {
                         if (mDialog.isShowing()) {
                             mDialog.dismiss();
@@ -701,6 +704,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         OffRecyclerAdapter(RecyclerView recyclerView, List<VisitRecord> records) {
             mVisitRecords = records;
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
@@ -709,6 +713,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     lastVisibleItem = manager.findLastVisibleItemPosition();
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
                         if (isLastPage) {
+                            Toast.makeText(getActivity(), "已加载素有数据！", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         if (mLoadMoreListener != null) {
