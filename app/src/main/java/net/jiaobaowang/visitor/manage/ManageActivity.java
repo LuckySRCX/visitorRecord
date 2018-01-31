@@ -51,7 +51,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     private SignQueryFragment mQueryFragment;
     private SignOffFragment mOffFragment;
     private SignInFragment mInFragment;
-    private boolean canReadIdCard = true;
+    private boolean canReadIdCard = false;
 
     @Override
     public void onFragmentInteraction(int id) {
@@ -122,15 +122,8 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     @Override
     protected void onResume() {
         super.onResume();
-        if (canReadIdCard) {
-            beepManager = new BeepManager(ManageActivity.this, R.raw.beep);
-            try {
-                IdCard.open(ManageActivity.this);
-            } catch (TelpoException e) {
-                e.printStackTrace();
-                canReadIdCard = false;
-                ToastUtils.showMessage(ManageActivity.this, R.string.identify_read_fail);
-            }
+        if (!canReadIdCard) {
+            new OpenReadIdCardTask().execute();
         }
     }
 
@@ -141,6 +134,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
             beepManager.close();
             beepManager = null;
             IdCard.close();
+            canReadIdCard = false;
         }
     }
 
@@ -183,7 +177,11 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     @Override
     public void getIdentityInfo() {
         initInterface();
-        new GetIDInfoTask().execute();
+        if (canReadIdCard) {
+            new GetIDInfoTask().execute();
+        } else {
+            ToastUtils.showMessage(ManageActivity.this, R.string.identify_read_fail);
+        }
     }
 
     @Override
@@ -227,6 +225,32 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
                 }
             } else {
                 onGetQRCodeResult.getQRCodeResult(0, "条码/二维码：扫描失败", "");
+            }
+        }
+    }
+
+    private class OpenReadIdCardTask extends AsyncTask<Void, Integer, TelpoException> {
+        @Override
+        protected TelpoException doInBackground(Void... voids) {
+            TelpoException result = null;
+            try {
+                IdCard.open(ManageActivity.this);
+            } catch (TelpoException e) {
+                e.printStackTrace();
+                result = e;
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(TelpoException result) {
+            super.onPostExecute(result);
+            if (result == null) {
+                beepManager = new BeepManager(ManageActivity.this, R.raw.beep);
+                canReadIdCard = true;
+            } else {
+                canReadIdCard = false;
+                ToastUtils.showMessage(ManageActivity.this, R.string.identify_read_fail);
             }
         }
     }
