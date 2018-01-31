@@ -195,7 +195,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         } else {
             mRecyclerAdapter.notifyDataSetChanged();
         }
-
+        mRecyclerView.scrollToPosition(0);
     }
 
     private void setListener(final List<VisitRecord> records) {

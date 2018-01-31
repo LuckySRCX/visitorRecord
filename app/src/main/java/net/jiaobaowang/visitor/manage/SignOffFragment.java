@@ -204,6 +204,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         } else {
             mRecyclerAdapter.notifyDataSetChanged();
         }
+        mRecyclerView.scrollToPosition(0);
     }
 
     private void setListener(final List<VisitRecord> records) {
