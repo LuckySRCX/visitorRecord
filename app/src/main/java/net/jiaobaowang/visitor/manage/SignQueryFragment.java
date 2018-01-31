@@ -385,7 +385,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     break;
                 case 1:
                     mRecyclerAdapter.notifyDataSetChanged();
-                    mRecyclerAdapter.setLoaded();
+
                     break;
                 case 2:
                     if (mRecyclerAdapter != null) {
@@ -404,6 +404,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     break;
                 default:
                     break;
+            }
+            if (mRecyclerAdapter != null) {
+                mRecyclerAdapter.setLoaded();
             }
             if (mDialog != null && mDialog.isShowing()) {
                 mDialog.dismiss();

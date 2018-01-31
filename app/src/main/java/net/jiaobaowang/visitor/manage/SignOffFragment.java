@@ -486,6 +486,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 default:
                     break;
             }
+            if (mRecyclerAdapter != null) {
+                mRecyclerAdapter.setLoaded();
+            }
             if (mDialog != null && mDialog.isShowing()) {
                 mDialog.dismiss();
             }
