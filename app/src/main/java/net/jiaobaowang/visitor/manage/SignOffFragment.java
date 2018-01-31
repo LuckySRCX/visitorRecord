@@ -713,7 +713,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     lastVisibleItem = manager.findLastVisibleItemPosition();
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
                         if (isLastPage) {
-                            Toast.makeText(getActivity(), "已加载素有数据！", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "已加载所有数据！", Toast.LENGTH_SHORT).show();
                             return;
                         }
                         if (mLoadMoreListener != null) {
