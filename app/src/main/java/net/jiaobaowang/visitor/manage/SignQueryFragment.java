@@ -350,6 +350,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 });
                 break;
             case "0031":
+                isLastPage = true;
                 VisitRecordLab.get(getActivity()).clearVisitRecords();
                 mMyHandler.sendEmptyMessage(2);
                 break;

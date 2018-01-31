@@ -370,6 +370,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     }
                 });
             case "0031":
+                isLastPage= true;
                 mMyHandler.sendEmptyMessage(2);
                 OffRecordLab.get(getActivity()).clearVisitRecords();
                 break;
