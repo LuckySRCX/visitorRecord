@@ -41,6 +41,7 @@ import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Date;
 
 import okhttp3.FormBody;
@@ -188,6 +189,8 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                     Log.d("ERROR", "请求数据错误", e);
                     if (e instanceof SocketTimeoutException) {
                         mHandler.sendEmptyMessage(5);
+                    } else if (e instanceof UnknownHostException) {
+                        mHandler.sendEmptyMessage(9);
                     } else {
                         mHandler.sendEmptyMessage(-1);
                     }
@@ -238,6 +241,8 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                 case -1:
                     if (result != null && result.getMsg() != null) {
                         Toast.makeText(getActivity(), result.getMsg(), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), "未知错误!", Toast.LENGTH_LONG).show();
                     }
                     break;
                 case 0:
@@ -253,6 +258,9 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
                     break;
                 case 6://token续订错误
                     Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();
+                    break;
+                case 9:
+                    Toast.makeText(getActivity(), "网络连接失败,请检查网络！", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;

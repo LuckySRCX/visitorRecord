@@ -25,6 +25,7 @@ import net.jiaobaowang.visitor.entity.ShakeHandResult;
 import net.jiaobaowang.visitor.utils.SharePreferencesUtil;
 import net.jiaobaowang.visitor.utils.Tools;
 
+import java.net.UnknownHostException;
 import java.util.TreeMap;
 
 import okhttp3.MediaType;
@@ -104,44 +105,60 @@ public class LoginActivity extends AppCompatActivity {
                 String result = response.body().string();
                 Log.d(result, "");
                 ShakeHandResult result1 = gson.fromJson(result, ShakeHandResult.class);
-                if (result1.getRspCode().equals("0000")) {
-                    Log.d("这事对的吗", result);
-                    result1.setFlag(REQUEST_FLAG_SHAKEHAND);
-                    return result1;
-                }
+                Log.d("这事对的吗", result);
+                result1.setFlag(REQUEST_FLAG_SHAKEHAND);
+                return result1;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if (e instanceof UnknownHostException) {
+                ShakeHandResult result = new ShakeHandResult();
+                result.setRspCode(String.valueOf(1099));
+                result.setRspTxt("网络连接失败，请检查网络");
+                result.setFlag(REQUEST_FLAG_SHAKEHAND);
+                return result;
+            }
         }
         return null;
     }
 
-    private SchoolLoginResult schoolLogin(ShakeHandData shakeHandData) throws Exception {
+    private SchoolLoginResult schoolLogin(ShakeHandData shakeHandData) {
         TreeMap<String, String> map = new TreeMap<>();
         map.put("uuid", Tools.getDeviceId(LoginActivity.this));
         map.put("shaketype", "login");
         map.put("appid", Tools.getAppId(LoginActivity.this));
         map.put("schid", String.valueOf(mSchoolId));
         map.put("utp", "0");
-        String uid = Tools.RSAEncrypt(mUserName, shakeHandData);
-        map.put("uid", uid);
-        String pw = Tools.RSAEncrypt(mPassword, shakeHandData);
-        map.put("pw", pw);
-        map.put("sign", Tools.getSign(map));
-        Gson gson = new Gson();
-        String json = gson.toJson(map);
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder().url(VisitorConfig.VISIT_SCHOOL_LOGIN).post(body).build();
-        Response response = okHttpClient.newCall(request).execute();
-        if (response.isSuccessful()) {
-            String s = response.body().string();
-            Log.i(TAG, s);
-            SharePreferencesUtil preferencesUtil = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
-            preferencesUtil.putString(VisitorConfig.VISIT_LOCAL_USERINFO, s);
-            SchoolLoginResult result = gson.fromJson(s, SchoolLoginResult.class);
-            result.setFlag(REQUEST_FLAG_LOGIN);
-            return result;
+        String uid = null;
+        try {
+            uid = Tools.RSAEncrypt(mUserName, shakeHandData);
+            map.put("uid", uid);
+            String pw = Tools.RSAEncrypt(mPassword, shakeHandData);
+            map.put("pw", pw);
+            map.put("sign", Tools.getSign(map));
+            Gson gson = new Gson();
+            String json = gson.toJson(map);
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(JSON, json);
+            Request request = new Request.Builder().url(VisitorConfig.VISIT_SCHOOL_LOGIN).post(body).build();
+            Response response = okHttpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                String s = response.body().string();
+                Log.i(TAG, s);
+                SharePreferencesUtil preferencesUtil = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
+                preferencesUtil.putString(VisitorConfig.VISIT_LOCAL_USERINFO, s);
+                SchoolLoginResult result = gson.fromJson(s, SchoolLoginResult.class);
+                result.setFlag(REQUEST_FLAG_LOGIN);
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e instanceof UnknownHostException) {
+                SchoolLoginResult result = new SchoolLoginResult();
+                result.setRspCode(String.valueOf(1099));
+                result.setRspTxt("网络连接失败，请检查网络");
+                return result;
+            }
         }
         return null;
     }
@@ -218,6 +235,9 @@ public class LoginActivity extends AppCompatActivity {
                     if (mShakeHandResult.getRspCode().equals("0000")) {
                         new LoginTask(mContext, REQUEST_FLAG_LOGIN).execute();
                     } else {
+                        if (mDialog.isShowing()) {
+                            mDialog.dismiss();
+                        }
                         Toast.makeText(mContext, mShakeHandResult.getRspTxt(), Toast.LENGTH_LONG).show();
                     }
                     break;
@@ -236,9 +256,15 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             break;
                         case "0005":
+                            if (mDialog.isShowing()) {
+                                mDialog.dismiss();
+                            }
                             Toast.makeText(mContext, "用户名、密码或学校id设置错误", Toast.LENGTH_LONG).show();
                             break;
                         default:
+                            if (mDialog.isShowing()) {
+                                mDialog.dismiss();
+                            }
                             Toast.makeText(mContext, data.getRspTxt(), Toast.LENGTH_LONG).show();
                             break;
                     }

@@ -47,6 +47,7 @@ import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -315,6 +316,8 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Log.d("ERROR", "请求数据错误", e);
                     if (e instanceof SocketTimeoutException) {
                         mMyHandler.sendEmptyMessage(5);
+                    } else if (e instanceof UnknownHostException) {
+                        mMyHandler.sendEmptyMessage(9);
                     } else {
                         mMyHandler.sendEmptyMessage(-1);
                     }
@@ -422,6 +425,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     break;
                 case 6://token续订错误
                     Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();
+                    break;
+                case 9:
+                    Toast.makeText(getActivity(), "网络连接失败,请检查网络！", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;
