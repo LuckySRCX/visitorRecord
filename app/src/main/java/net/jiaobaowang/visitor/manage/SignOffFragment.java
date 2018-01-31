@@ -456,7 +456,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         mDateSIBegin = null;
         mDateSIEnd = null;
         pageIndex = 1;
-        mRecyclerAdapter.setLoaded();
+        if(mRecyclerAdapter!=null){
+            mRecyclerAdapter.setLoaded();
+        }
     }
 
     /**

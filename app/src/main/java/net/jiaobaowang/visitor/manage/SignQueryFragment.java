@@ -520,7 +520,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         mDateSIBegin = null;
         mDateSIEnd = null;
         pageIndex = 1;
-        mRecyclerAdapter.setLoaded();
+        if(mRecyclerAdapter!=null){
+            mRecyclerAdapter.setLoaded();
+        }
     }
 
     @Override
