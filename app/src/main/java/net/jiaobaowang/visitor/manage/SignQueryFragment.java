@@ -73,7 +73,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     private static final String OUT_STAT_PAGE = "sign_query_fragment.page";
     private Date mDateSIBegin;//签到开始时间
     private Date mDateSIEnd;//签到结束时间
-    private LinearLayout mQueryContainer;
+    //    private LinearLayout mQueryContainer;
     private TextView mSignInBegin;
     private TextView mSignInEnd;
     private TextView mSelectText;
@@ -144,7 +144,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_sign_query, container, false);
-        mQueryContainer = v.findViewById(R.id.sign_query_container);
+//        mQueryContainer = v.findViewById(R.id.sign_query_container);
         mSignInBegin = v.findViewById(R.id.sign_in_begin);
         mSignInEnd = v.findViewById(R.id.sign_in_end);
         setTextView(mSignInBegin, mDateSIBegin);
@@ -246,7 +246,6 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 showDialog(code, selectDate, minDate);
                 break;
             case R.id.back_up:
-
                 getActivity().onBackPressed();
                 break;
             case R.id.btn_query:
@@ -386,7 +385,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     break;
                 case 1:
                     mRecyclerAdapter.notifyDataSetChanged();
-                    mRecyclerAdapter.setLoaded();
+
                     break;
                 case 2:
                     if (mRecyclerAdapter != null) {
@@ -405,6 +404,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     break;
                 default:
                     break;
+            }
+            if (mRecyclerAdapter != null) {
+                mRecyclerAdapter.setLoaded();
             }
             if (mDialog != null && mDialog.isShowing()) {
                 mDialog.dismiss();
@@ -491,6 +493,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         mDateSIBegin = null;
         mDateSIEnd = null;
         pageIndex = 1;
+        mRecyclerAdapter.setLoaded();
     }
 
     @Override

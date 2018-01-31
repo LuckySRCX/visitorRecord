@@ -395,8 +395,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             //失败
             DialogUtils.showAlert(getActivity(), msg);
         } else {
-            mText_keywords.setText(identityInfo.getName());
             restoreData();
+            mText_keywords.setText(identityInfo.getName());
             queryRecords(false);
         }
     }
@@ -432,6 +432,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         mDateSIBegin = null;
         mDateSIEnd = null;
         pageIndex = 1;
+        mRecyclerAdapter.setLoaded();
     }
 
     /**
@@ -484,6 +485,9 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     break;
                 default:
                     break;
+            }
+            if (mRecyclerAdapter != null) {
+                mRecyclerAdapter.setLoaded();
             }
             if (mDialog != null && mDialog.isShowing()) {
                 mDialog.dismiss();
