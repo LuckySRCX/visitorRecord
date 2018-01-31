@@ -51,6 +51,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     private SignQueryFragment mQueryFragment;
     private SignOffFragment mOffFragment;
     private SignInFragment mInFragment;
+    private boolean canReadIdCard = true;
 
     @Override
     public void onFragmentInteraction(int id) {
@@ -121,25 +122,26 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     @Override
     protected void onResume() {
         super.onResume();
-        beepManager = new BeepManager(ManageActivity.this, R.raw.beep);
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    IdCard.open(ManageActivity.this);
-                } catch (TelpoException e) {
-                    e.printStackTrace();
-                    ManageActivity.this.runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            ToastUtils.showMessage(ManageActivity.this, R.string.identify_read_fail);
-                        }
-                    });
-                }
+        if (canReadIdCard) {
+            beepManager = new BeepManager(ManageActivity.this, R.raw.beep);
+            try {
+                IdCard.open(ManageActivity.this);
+            } catch (TelpoException e) {
+                e.printStackTrace();
+                canReadIdCard = false;
+                ToastUtils.showMessage(ManageActivity.this, R.string.identify_read_fail);
             }
-        }).start();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (canReadIdCard) {
+            beepManager.close();
+            beepManager = null;
+            IdCard.close();
+        }
     }
 
     class ManageViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -176,14 +178,6 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
         public int getCount() {
             return 3;
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        beepManager.close();
-        beepManager = null;
-        IdCard.close();
     }
 
     @Override
