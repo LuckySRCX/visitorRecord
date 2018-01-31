@@ -304,12 +304,14 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
+                        removeLoading();
                         mMyHandler.sendEmptyMessage(-1);
                         throw new IOException("Exception" + response);
                     } else {
                         resultDealt(response.body().string());
                     }
                 } catch (Exception e) {
+                    removeLoading();
                     Log.d("ERROR", "请求数据错误", e);
                     if (e instanceof SocketTimeoutException) {
                         mMyHandler.sendEmptyMessage(5);
@@ -321,12 +323,25 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         }).start();
     }
 
+    private void removeLoading() {
+        if (pageIndex > 1) {
+            VisitRecordLab lab = VisitRecordLab.get(getActivity());
+            List<VisitRecord> records = lab.getVisitRecords();
+            if (records.get(records.size() - 1) == null) {
+                records.remove(records.size() - 1);
+            }
+        }
+
+    }
+
+
     ListResult listResult;
 
     private void resultDealt(String string) {
         Log.d(TAG, string);
         Gson gson = new Gson();
         listResult = gson.fromJson(string, ListResult.class);
+        removeLoading();
         switch (listResult.getCode()) {
             case "0000":
                 isLastPage = listResult.getData().isLastPage();
