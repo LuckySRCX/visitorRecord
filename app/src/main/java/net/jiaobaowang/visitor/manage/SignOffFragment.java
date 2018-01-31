@@ -369,6 +369,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                         }
                     }
                 });
+                break;
             case "0031":
                 isLastPage= true;
                 mMyHandler.sendEmptyMessage(2);
