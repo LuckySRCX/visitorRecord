@@ -105,6 +105,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private ProgressDialog mDialog;
     private boolean mIsVisible;
     private boolean mIsShowAllLoaded;
+    private int oldPageIndex=1;//断网情况下，获取原数据
 
     public SignOffFragment() {
         // Required empty public constructor
@@ -330,14 +331,14 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
                         mMyHandler.sendEmptyMessage(-1);
-                        removeLoading();
+                        pageIndex = oldPageIndex;
                         throw new IOException("Exception" + response);
                     } else {
                         resultDealt(response.body().string());
                     }
                 } catch (Exception e) {
-                    removeLoading();
                     Log.d("ERROR", "请求数据错误", e);
+                    pageIndex = oldPageIndex;
                     if (e instanceof SocketTimeoutException) {
                         mMyHandler.sendEmptyMessage(5);
                     } else if (e instanceof UnknownHostException || e instanceof ConnectException) {
@@ -351,14 +352,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void removeLoading() {
-        if (pageIndex > 1) {
-            OffRecordLab lab = OffRecordLab.get(getActivity());
-            List<VisitRecord> records = lab.getVisitRecords();
-            if (records.get(records.size() - 1) == null) {
-                records.remove(records.size() - 1);
-            }
-        }
-
+        OffRecordLab.get(getActivity()).removeLastRecord();
     }
 
     ListResult listResult;
@@ -405,6 +399,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 mMyHandler.sendEmptyMessage(-1);
                 break;
         }
+        oldPageIndex = pageIndex;
 
     }
 
@@ -484,13 +479,13 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     if (listResult != null && listResult.getMsg() != null) {
                         Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
                     }
+                    removeLoading();
                     break;
                 case 0:
                     Log.d(TAG, OffRecordLab.get(mContext).getVisitRecords().toString());
                     updateUI();
                     break;
                 case 1:
-                    mRecyclerAdapter.notifyDataSetChanged();
                     if (isCodeOff) {
                         if (mDialog.isShowing()) {
                             mDialog.dismiss();
@@ -499,24 +494,28 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     }
                     break;
                 case 2:
-                    if (mRecyclerAdapter != null) {
-                        mRecyclerAdapter.notifyDataSetChanged();
-                    }
+
                     if (mIsVisible) {
                         Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
                     }
                     break;
                 case 5://服务器连接失败
+                    removeLoading();
                     Toast.makeText(getActivity(), "服务器连接失败,请稍后再试", Toast.LENGTH_LONG).show();
                     break;
                 case 6://token续订错误
+                    removeLoading();
                     Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();
                     break;
                 case 9:
+                    removeLoading();
                     Toast.makeText(getActivity(), "网络连接失败,请检查网络！", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;
+            }
+            if (mRecyclerAdapter != null) {
+                mRecyclerAdapter.notifyDataSetChanged();
             }
             if (mRecyclerAdapter != null) {
                 mRecyclerAdapter.setLoaded();
@@ -738,6 +737,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
                     totalItemCount = manager.getItemCount();
                     lastVisibleItem = manager.findLastVisibleItemPosition();
+                    Log.d(TAG, "总数：" + totalItemCount);
+                    Log.d(TAG, "当前：" + lastVisibleItem);
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
                         if (isLastPage) {
                             if (mIsShowAllLoaded) {

@@ -98,6 +98,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     private ProgressDialog mDialog;
     private boolean mIsVisible;
     private boolean mIsShowLoaded;
+    private int oldPageIndex = 1;
 
     public SignQueryFragment() {
         // Required empty public constructor
@@ -216,7 +217,6 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        records.remove(records.size() - 1);
                         queryRecords();
                     }
                 });
@@ -310,15 +310,15 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
-                        removeLoading();
+                        pageIndex = oldPageIndex;
                         mMyHandler.sendEmptyMessage(-1);
                         throw new IOException("Exception" + response);
                     } else {
                         resultDealt(response.body().string());
                     }
                 } catch (Exception e) {
-                    removeLoading();
                     Log.d("ERROR", "请求数据错误", e);
+                    pageIndex = oldPageIndex;
                     if (e instanceof SocketTimeoutException) {
                         mMyHandler.sendEmptyMessage(5);
                     } else if (e instanceof UnknownHostException || e instanceof ConnectException) {
@@ -332,21 +332,12 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void removeLoading() {
-        if (pageIndex > 1) {
-            VisitRecordLab lab = VisitRecordLab.get(getActivity());
-            List<VisitRecord> records = lab.getVisitRecords();
-            if (records.get(records.size() - 1) == null) {
-                records.remove(records.size() - 1);
-            }
-        }
-
+        VisitRecordLab.get(getActivity()).removeLastRecord();
     }
-
 
     ListResult listResult;
 
     private void resultDealt(String string) {
-        Log.d(TAG, string);
         Gson gson = new Gson();
         listResult = gson.fromJson(string, ListResult.class);
         removeLoading();
@@ -387,6 +378,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 mMyHandler.sendEmptyMessage(-1);
                 break;
         }
+        oldPageIndex = pageIndex;
     }
 
     /**
@@ -407,35 +399,36 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     if (listResult != null && listResult.getMsg() != null) {
                         Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
                     }
+                    removeLoading();
                     break;
                 case 0:
                     Log.d(TAG, VisitRecordLab.get(mContext).getVisitRecords().toString());
-
                     updateUI();
                     break;
                 case 1:
-                    mRecyclerAdapter.notifyDataSetChanged();
                     break;
                 case 2:
-                    if (mRecyclerAdapter != null) {
-                        mRecyclerAdapter.notifyDataSetChanged();
-                    }
                     if (mIsVisible) {
                         Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
                     }
-
                     break;
                 case 5://服务器连接失败
+                    removeLoading();
                     Toast.makeText(getActivity(), "服务器连接失败，请稍后再试！", Toast.LENGTH_LONG).show();
                     break;
                 case 6://token续订错误
+                    removeLoading();
                     Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();
                     break;
                 case 9:
+                    removeLoading();
                     Toast.makeText(getActivity(), "网络连接失败,请检查网络！", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;
+            }
+            if (mRecyclerAdapter != null) {
+                mRecyclerAdapter.notifyDataSetChanged();
             }
             if (mRecyclerAdapter != null) {
                 mRecyclerAdapter.setLoaded();
@@ -659,11 +652,6 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
             mVisitRecords = records;
             final LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                }
-
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);

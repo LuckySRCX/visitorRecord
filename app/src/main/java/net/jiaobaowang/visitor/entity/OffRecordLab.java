@@ -31,7 +31,6 @@ public class OffRecordLab {
     }
 
 
-
     public void setVisitRecords(List<VisitRecord> visitRecords) {
         mVisitRecords.clear();
         mVisitRecords.addAll(visitRecords);
@@ -43,5 +42,11 @@ public class OffRecordLab {
 
     public void clearVisitRecords() {
         mVisitRecords.clear();
+    }
+
+    public void removeLastRecord() {
+        if (mVisitRecords.size() > 0 && mVisitRecords.get(mVisitRecords.size() - 1) == null) {
+            mVisitRecords.remove(mVisitRecords.size() - 1);
+        }
     }
 }

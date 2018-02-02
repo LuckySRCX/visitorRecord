@@ -43,4 +43,9 @@ public class VisitRecordLab {
     public void clearVisitRecords() {
         mVisitRecords.clear();
     }
+    public void removeLastRecord(){
+        if(mVisitRecords.size()>0&&mVisitRecords.get(mVisitRecords.size()-1)==null){
+            mVisitRecords.remove(mVisitRecords.size()-1);
+        }
+    }
 }
