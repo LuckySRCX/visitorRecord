@@ -50,6 +50,7 @@ import net.jiaobaowang.visitor.visitor_interface.OnGetQRCodeResult;
 import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -103,6 +104,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private OnGetQRCodeListener onGetQRCodeListener;
     private ProgressDialog mDialog;
     private boolean mIsVisible;
+    private boolean mIsShowAllLoaded;
 
     public SignOffFragment() {
         // Required empty public constructor
@@ -160,6 +162,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                mIsShowAllLoaded = true;
                 pageIndex = 1;
                 queryRecords(false);
             }
@@ -270,6 +273,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.btn_query:
                 pageIndex = 1;
+                mIsShowAllLoaded = true;
                 queryRecords(false);
                 break;
             case R.id.qrcode_btn:
@@ -336,7 +340,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     Log.d("ERROR", "请求数据错误", e);
                     if (e instanceof SocketTimeoutException) {
                         mMyHandler.sendEmptyMessage(5);
-                    } else if (e instanceof UnknownHostException) {
+                    } else if (e instanceof UnknownHostException || e instanceof ConnectException) {
                         mMyHandler.sendEmptyMessage(9);
                     } else {
                         mMyHandler.sendEmptyMessage(-1);
@@ -456,7 +460,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
         mDateSIBegin = null;
         mDateSIEnd = null;
         pageIndex = 1;
-        if(mRecyclerAdapter!=null){
+        mIsShowAllLoaded = false;
+        if (mRecyclerAdapter != null) {
             mRecyclerAdapter.setLoaded();
         }
     }
@@ -735,7 +740,10 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     lastVisibleItem = manager.findLastVisibleItemPosition();
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
                         if (isLastPage) {
-                            Toast.makeText(getActivity(), "已加载所有数据！", Toast.LENGTH_SHORT).show();
+                            if (mIsShowAllLoaded) {
+                                Toast.makeText(getActivity(), "已加载所有数据！", Toast.LENGTH_SHORT).show();
+                                mIsShowAllLoaded = false;
+                            }
                             return;
                         }
                         if (mLoadMoreListener != null) {

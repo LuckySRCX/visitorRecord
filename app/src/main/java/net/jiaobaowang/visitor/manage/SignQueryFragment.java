@@ -46,6 +46,7 @@ import net.jiaobaowang.visitor.utils.Tools;
 import net.jiaobaowang.visitor.visitor_interface.TaskCallBack;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -96,6 +97,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     MyHandler mMyHandler;
     private ProgressDialog mDialog;
     private boolean mIsVisible;
+    private boolean mIsShowLoaded;
 
     public SignQueryFragment() {
         // Required empty public constructor
@@ -276,6 +278,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void queryRecords() {
+        if (pageIndex == 1) {
+            mIsShowLoaded = true;
+        }
         final String keywords = mText_keywords.getText().toString().trim();
         final int leaveFlag = mSpinner_visitorState.getSelectedItemPosition() - 1;
         final int identityType = mSpinner_identity.getSelectedItemPosition() - 1;
@@ -316,7 +321,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Log.d("ERROR", "请求数据错误", e);
                     if (e instanceof SocketTimeoutException) {
                         mMyHandler.sendEmptyMessage(5);
-                    } else if (e instanceof UnknownHostException) {
+                    } else if (e instanceof UnknownHostException || e instanceof ConnectException) {
                         mMyHandler.sendEmptyMessage(9);
                     } else {
                         mMyHandler.sendEmptyMessage(-1);
@@ -520,7 +525,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
         mDateSIBegin = null;
         mDateSIEnd = null;
         pageIndex = 1;
-        if(mRecyclerAdapter!=null){
+        if (mRecyclerAdapter != null) {
             mRecyclerAdapter.setLoaded();
         }
     }
@@ -668,7 +673,10 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Log.d(TAG, "当前数目:" + lastVisibleItem);
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
                         if (isLastPage) {
-                            Toast.makeText(getActivity(), "已加载所有数据！", Toast.LENGTH_SHORT).show();
+                            if (mIsShowLoaded) {
+                                Toast.makeText(getActivity(), "已加载所有数据！", Toast.LENGTH_SHORT).show();
+                                mIsShowLoaded = false;
+                            }
                             return;
                         }
                         if (onLoadMoreListener != null) {
