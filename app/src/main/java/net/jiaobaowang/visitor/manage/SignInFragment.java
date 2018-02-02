@@ -56,6 +56,7 @@ import net.jiaobaowang.visitor.entity.SchoolGradeResult;
 import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DESUtil;
 import net.jiaobaowang.visitor.utils.DialogUtils;
+import net.jiaobaowang.visitor.utils.ErrorUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 import net.jiaobaowang.visitor.utils.TokenResetTask;
 import net.jiaobaowang.visitor.utils.Tools;
@@ -597,7 +598,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
 
         @Override
         protected String[] doInBackground(Void... Void) {
-            String result[] = new String[2];
+            String[] result = new String[2];
             try {
                 Request request = new Request.Builder()
                         .url(VisitorConfig.VISITOR_API_ADD)
@@ -613,8 +614,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                result[0] = "0";
-                result[1] = e.toString();
+                result = ErrorUtils.netErrorTranslate(e);
             }
             return result;
         }
@@ -663,7 +663,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         @Override
         protected String[] doInBackground(Void... Void) {
             Log.i(TAG, "doInBackground");
-            String result[] = new String[2];
+            String[] result = new String[2];
             String key = System.currentTimeMillis() + (int) (Math.random() * 1000) + ".jpg";
             QiNiuCommand command = new QiNiuCommand("pb", key, "", "");
             List<QiNiuCommand> commands = new ArrayList<>();
@@ -691,8 +691,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                result[0] = "0";
-                result[1] = e.toString();
+                result = ErrorUtils.netErrorTranslate(e);
             }
             return result;
         }
@@ -788,8 +787,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                result[0] = "0";
-                result[1] = e.toString();
+                result = ErrorUtils.netErrorTranslate(e);
             }
             return result;
         }
