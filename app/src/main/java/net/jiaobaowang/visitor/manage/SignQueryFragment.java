@@ -669,7 +669,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Log.d(TAG, "当前数目:" + lastVisibleItem);
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
                         if (isLastPage) {
-                            if (mIsShowLoaded) {
+                            if (mIsShowLoaded && mIsVisible) {
                                 Toast.makeText(getActivity(), "已加载所有数据！", Toast.LENGTH_SHORT).show();
                                 mIsShowLoaded = false;
                             }

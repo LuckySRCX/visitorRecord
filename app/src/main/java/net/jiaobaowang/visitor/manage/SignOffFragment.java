@@ -749,7 +749,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     Log.d(TAG, "当前：" + lastVisibleItem);
                     if (!isLoading && totalItemCount <= (lastVisibleItem + 1)) {
                         if (isLastPage) {
-                            if (mIsShowAllLoaded) {
+                            if (mIsShowAllLoaded && mIsVisible) {
                                 Toast.makeText(getActivity(), "已加载所有数据！", Toast.LENGTH_SHORT).show();
                                 mIsShowAllLoaded = false;
                             }
