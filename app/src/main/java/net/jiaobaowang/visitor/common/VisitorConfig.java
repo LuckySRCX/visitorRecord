@@ -18,7 +18,7 @@ public class VisitorConfig {
     /**
      * 广西主URL
      */
-    public static final String VISITOR_GX_MAIN_URL = "http://139.129.252.49:8080/visitor";
+    public static final String VISITOR_GX_MAIN_URL = "http://139.129.252.49:8181/visitor/api";
     /**
      * 握手
      */
@@ -71,15 +71,15 @@ public class VisitorConfig {
     /**
      * 添加访客记录
      */
-    public static final String VISITOR_API_ADD = VISITOR_GX_MAIN_URL + "/api/add";
+    public static final String VISITOR_API_ADD = VISITOR_GX_MAIN_URL + "/add";
     /**
      * 访客签离
      */
-    public static final String VISITOR_API_LEAVE = VISITOR_GX_MAIN_URL + "/api/leave";
+    public static final String VISITOR_API_LEAVE = VISITOR_GX_MAIN_URL + "/leave";
     /**
      * 获取访客列表
      */
-    public static final String VISITOR_API_LIST = VISITOR_GX_MAIN_URL + "/api/list";
+    public static final String VISITOR_API_LIST = VISITOR_GX_MAIN_URL + "/list";
     /**
      * 七牛获取上传token
      */
