@@ -43,11 +43,6 @@
             android:name=".printer.PrinterActivity"
             android:launchMode="singleTask"
             android:theme="@style/Theme.ActivityDialogStyle" />
-        <!--<activity-->
-        <!--android:name=".login.LoginActivity"-->
-        <!--android:label="@string/title_activity_login"-->
-        <!--android:theme="@style/Login_style"-->
-        <!--android:windowSoftInputMode="adjustResize" />-->
         <activity
             android:name=".login.HomeActivity"
             android:label="智慧校园管理系统"
