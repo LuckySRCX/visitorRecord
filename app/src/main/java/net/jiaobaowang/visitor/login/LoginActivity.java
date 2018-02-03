@@ -119,7 +119,11 @@ public class LoginActivity extends AppCompatActivity {
                 return result;
             }
         }
-        return null;
+        ShakeHandResult result = new ShakeHandResult();
+        result.setRspCode(String.valueOf(1099));
+        result.setRspTxt("未知错误！");
+        result.setFlag(REQUEST_FLAG_SHAKEHAND);
+        return result;
     }
 
     private SchoolLoginResult schoolLogin(ShakeHandData shakeHandData) {
@@ -157,10 +161,15 @@ public class LoginActivity extends AppCompatActivity {
                 SchoolLoginResult result = new SchoolLoginResult();
                 result.setRspCode(String.valueOf(1099));
                 result.setRspTxt("网络连接失败，请检查网络");
+                result.setFlag(REQUEST_FLAG_LOGIN);
                 return result;
             }
         }
-        return null;
+        SchoolLoginResult result = new SchoolLoginResult();
+        result.setRspCode(String.valueOf(1099));
+        result.setRspTxt("未知错误！");
+        result.setFlag(REQUEST_FLAG_LOGIN);
+        return result;
     }
 
 
