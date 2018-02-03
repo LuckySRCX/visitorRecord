@@ -330,7 +330,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
-                        mMyHandler.sendEmptyMessage(-1);
+//                        mMyHandler.sendEmptyMessage(-1);
                         pageIndex = oldPageIndex;
                         throw new IOException("Exception" + response);
                     } else {
@@ -517,7 +517,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     break;
                 case 11:
                     removeLoading();
-                    Toast.makeText(getActivity(), "服务器内部错误,请重新登录", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "服务器连接错误！", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;

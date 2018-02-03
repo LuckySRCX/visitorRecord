@@ -311,7 +311,7 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
                         pageIndex = oldPageIndex;
-                        mMyHandler.sendEmptyMessage(-1);
+//                        mMyHandler.sendEmptyMessage(-1);
                         throw new IOException("Exception" + response);
                     } else {
                         resultDealt(response.body().string());
@@ -323,9 +323,9 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                         mMyHandler.sendEmptyMessage(5);
                     } else if (e instanceof UnknownHostException || e instanceof ConnectException) {
                         mMyHandler.sendEmptyMessage(9);
-                    } else if(e instanceof IOException) {
+                    } else if (e instanceof IOException) {
                         mMyHandler.sendEmptyMessage(11);
-                    }else{
+                    } else {
                         mMyHandler.sendEmptyMessage(-1);
                     }
                 }
@@ -400,8 +400,8 @@ public class SignQueryFragment extends BaseFragment implements View.OnClickListe
                 case -1:
                     if (listResult != null && listResult.getMsg() != null) {
                         Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
-                    }else{
-                        Toast.makeText(getActivity(), "服务器连接失败!",Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), "服务器连接失败!", Toast.LENGTH_LONG).show();
                     }
                     removeLoading();
                     break;
