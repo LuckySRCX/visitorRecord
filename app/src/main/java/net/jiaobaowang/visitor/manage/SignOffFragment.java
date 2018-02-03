@@ -105,7 +105,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
     private ProgressDialog mDialog;
     private boolean mIsVisible;
     private boolean mIsShowAllLoaded;
-    private int oldPageIndex=1;//断网情况下，获取原数据
+    private int oldPageIndex = 1;//断网情况下，获取原数据
 
     public SignOffFragment() {
         // Required empty public constructor
@@ -330,7 +330,7 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {
-                        mMyHandler.sendEmptyMessage(-1);
+//                        mMyHandler.sendEmptyMessage(-1);
                         pageIndex = oldPageIndex;
                         throw new IOException("Exception" + response);
                     } else {
@@ -343,6 +343,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                         mMyHandler.sendEmptyMessage(5);
                     } else if (e instanceof UnknownHostException || e instanceof ConnectException) {
                         mMyHandler.sendEmptyMessage(9);
+                    } else if (e instanceof IOException) {
+                        mMyHandler.sendEmptyMessage(11);
                     } else {
                         mMyHandler.sendEmptyMessage(-1);
                     }
@@ -478,6 +480,8 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 case -1:
                     if (listResult != null && listResult.getMsg() != null) {
                         Toast.makeText(getActivity(), listResult.getMsg(), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), "服务器连接失败！", Toast.LENGTH_LONG).show();
                     }
                     removeLoading();
                     break;
@@ -510,6 +514,10 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
                 case 9:
                     removeLoading();
                     Toast.makeText(getActivity(), "网络连接失败,请检查网络！", Toast.LENGTH_LONG).show();
+                    break;
+                case 11:
+                    removeLoading();
+                    Toast.makeText(getActivity(), "服务器连接错误！", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;
