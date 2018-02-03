@@ -643,7 +643,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                 setSubmitData();
                             } else {
                                 submitDataDialog.dismiss();
-                                DialogUtils.showAlert(mContext, "保存访客记录失败：令牌已过期或不存在");
+                                DialogUtils.showAlert(mContext, "保存访客记录失败：令牌续订失败（" + result[1] + ")");
                             }
                         }
                     });
@@ -1004,7 +1004,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                     teacherTask = new SignInTask(REQUEST_FLAG_DEPARTMENT, "");
                                     teacherTask.execute();
                                 } else {
-                                    ToastUtils.showMessage(mContext, "获取部门失败：令牌已过期或不存在");
+                                    ToastUtils.showMessage(mContext, "获取部门失败：令牌续订失败（" + result[1] + ")");
                                 }
                                 break;
                             case REQUEST_FLAG_DEPARTMENT_USER:
@@ -1014,7 +1014,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                         teacherTask.execute();
                                     }
                                 } else {
-                                    ToastUtils.showMessage(mContext, "获取部门成员失败：令牌已过期或不存在");
+                                    ToastUtils.showMessage(mContext, "获取部门成员失败：令牌续订失败（" + result[1] + ")");
                                 }
                                 break;
                             case REQUEST_FLAG_GRADE:
@@ -1022,7 +1022,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                     studentTask = new SignInTask(REQUEST_FLAG_GRADE, "");
                                     studentTask.execute();
                                 } else {
-                                    ToastUtils.showMessage(mContext, "获取年级失败：令牌已过期或不存在");
+                                    ToastUtils.showMessage(mContext, "获取年级失败：令牌续订失败（" + result[1] + ")");
                                 }
                                 break;
                             case REQUEST_FLAG_GRADE_CLASS:
@@ -1032,7 +1032,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                         studentTask.execute();
                                     }
                                 } else {
-                                    ToastUtils.showMessage(mContext, "获取班级失败：令牌已过期或不存在");
+                                    ToastUtils.showMessage(mContext, "获取班级失败：令牌续订失败（" + result[1] + ")");
                                 }
                                 break;
                             case REQUEST_FLAG_CLASS_STUDENT:
@@ -1042,7 +1042,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                         studentTask.execute();
                                     }
                                 } else {
-                                    ToastUtils.showMessage(mContext, "获取学生失败：令牌已过期或不存在");
+                                    ToastUtils.showMessage(mContext, "获取学生失败：令牌续订失败（" + result[1] + ")");
                                 }
                                 break;
                             case REQUEST_FLAG_CLASS_TEACHER:
@@ -1052,7 +1052,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                                         headMasterTask.execute();
                                     }
                                 } else {
-                                    ToastUtils.showMessage(mContext, "获取老师失败：令牌已过期或不存在");
+                                    ToastUtils.showMessage(mContext, "获取老师失败：令牌续订失败（" + result[1] + ")");
                                 }
                                 break;
                         }
