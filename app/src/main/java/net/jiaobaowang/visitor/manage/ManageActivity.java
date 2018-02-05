@@ -21,8 +21,10 @@ import com.telpo.tps550.api.idcard.IdentityInfo;
 
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.BaseFragmentActivity;
+import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.common.VisitorConstant;
 import net.jiaobaowang.visitor.custom_view.VisitViewPager;
+import net.jiaobaowang.visitor.utils.SharePreferencesUtil;
 import net.jiaobaowang.visitor.utils.TianBoUtils;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoListener;
@@ -52,6 +54,8 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     private SignOffFragment mOffFragment;
     private SignInFragment mInFragment;
     private boolean canReadIdCard = false;
+    private boolean hasQuery;
+    private boolean hasSign;
 
     @Override
     public void onFragmentInteraction(int id) {
@@ -95,6 +99,9 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
             mQueryFragment = (SignQueryFragment) getSupportFragmentManager().getFragment(savedInstanceState, SIGN_QUERY_FRAGMENT);
             mOffFragment = (SignOffFragment) getSupportFragmentManager().getFragment(savedInstanceState, SIGN_OFF_FRAGMENT);
         }
+        SharePreferencesUtil util = new SharePreferencesUtil(ManageActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE, false);
+        hasQuery = util.getBoolean(VisitorConfig.VISIT_LOCAL_USER_QUERY);
+        hasSign = util.getBoolean(VisitorConfig.VISIT_LOCAL_USER_SIGN);
         mPager = findViewById(R.id.fragment_detail);
         mPager.setOffscreenPageLimit(2);
         mPager.setCanScroll(false);
@@ -148,20 +155,37 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    if (mInFragment == null) {
-                        mInFragment = SignInFragment.newInstance();
+                    if (hasSign) {
+                        if (mInFragment == null) {
+                            mInFragment = SignInFragment.newInstance();
+                        }
+                        return mInFragment;
+                    } else {
+                        if (mQueryFragment == null) {
+                            mQueryFragment = SignQueryFragment.newInstance();
+                        }
+                        return mQueryFragment;
                     }
-                    return mInFragment;
                 case 1:
-                    if (mQueryFragment == null) {
-                        mQueryFragment = SignQueryFragment.newInstance();
+                    if (hasSign) {
+                        if (mQueryFragment == null) {
+                            mQueryFragment = SignQueryFragment.newInstance();
+                        }
+                        return mQueryFragment;
+                    } else {
+                        return null;
                     }
-                    return mQueryFragment;
+
                 case 2:
-                    if (mOffFragment == null) {
-                        mOffFragment = SignOffFragment.newInstance();
+                    if (hasSign) {
+                        if (mOffFragment == null) {
+                            mOffFragment = SignOffFragment.newInstance();
+                        }
+                        return mOffFragment;
+                    } else {
+                        return null;
                     }
-                    return mOffFragment;
+
                 default:
                     return null;
             }
@@ -170,7 +194,11 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
 
         @Override
         public int getCount() {
-            return 3;
+            if (hasSign) {
+                return 3;
+            } else {
+                return 1;
+            }
         }
     }
 

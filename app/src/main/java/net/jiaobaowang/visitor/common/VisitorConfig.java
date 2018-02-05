@@ -122,4 +122,7 @@ public class VisitorConfig {
     public static final String VISIT_LOCAL_USERINFO_UID = "net.jiaobaowang.visitor.userInfo.uid";//uid
     public static final String VISIT_LOCAL_USERINFO_UTID = "net.jiaobaowang.visitor.userInfo.utid";//utid
     public static final String VISIT_LOCAL_USERINFO_UTNAME= "net.jiaobaowang.visitor.userInfo.utname";//uname
+    public static final String VISIT_LOCAL_USER_QUERY= "net.jiaobaowang.visitor.user.query";//uname
+    public static final String VISIT_LOCAL_USER_SIGN= "net.jiaobaowang.visitor.user.sign";//uname
+
 }

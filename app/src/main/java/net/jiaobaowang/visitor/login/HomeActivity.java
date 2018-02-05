@@ -7,16 +7,24 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.common.VisitorConfig;
 import net.jiaobaowang.visitor.manage.ManageActivity;
+import net.jiaobaowang.visitor.utils.SharePreferencesUtil;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
+    private boolean hasQueryPower;
+    private boolean hasSignPower;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        SharePreferencesUtil util = new SharePreferencesUtil(HomeActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE, false);
+        hasQueryPower = util.getBoolean(VisitorConfig.VISIT_LOCAL_USER_QUERY);
+        hasSignPower = util.getBoolean(VisitorConfig.VISIT_LOCAL_USER_SIGN);
         findViewById(R.id.visit_record).setOnClickListener(this);
         findViewById(R.id.visit_query).setOnClickListener(this);
         findViewById(R.id.visit_leave).setOnClickListener(this);
@@ -56,13 +64,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int selectId = 0;
         switch (v.getId()) {
             case R.id.visit_record:
-                selectId = 1;
+                if(hasSignPower){
+                    selectId=1;
+                }else {
+                    Toast.makeText(HomeActivity.this,"您无此权限！",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 break;
             case R.id.visit_query:
                 selectId = 2;
                 break;
             case R.id.visit_leave:
-                selectId = 3;
+                if(hasSignPower){
+                    selectId = 3;
+                }else {
+                    Toast.makeText(HomeActivity.this,"您无此权限！",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 break;
             default:
                 break;

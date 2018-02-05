@@ -29,6 +29,15 @@ public class SharePreferencesUtil {
         mEditor.apply();
     }
 
+    public void putBoolean(String key, boolean value) {
+        mEditor.putBoolean(key, value);
+        mEditor.apply();
+    }
+
+    public boolean getBoolean(String key) {
+        return mSharedPreferences.getBoolean(key, false);
+    }
+
     public int getInt(String key) {
         return mSharedPreferences.getInt(key, 0);
     }

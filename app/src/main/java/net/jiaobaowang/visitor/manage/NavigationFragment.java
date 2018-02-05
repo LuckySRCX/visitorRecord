@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 
 import net.jiaobaowang.visitor.R;
+import net.jiaobaowang.visitor.common.VisitorConfig;
+import net.jiaobaowang.visitor.utils.SharePreferencesUtil;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +23,9 @@ import net.jiaobaowang.visitor.R;
 public class NavigationFragment extends Fragment implements View.OnClickListener {
     private OnFragmentInteractionListener mListener;
     private final static String BC_CHECKED_ID = "checkedId";
+    private boolean hasQuery;
+    private boolean hasSign;
+
     public NavigationFragment() {
         // Required empty public constructor
     }
@@ -48,10 +53,26 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_navigation, container, false);
+        SharePreferencesUtil util = new SharePreferencesUtil(getActivity(), VisitorConfig.VISIT_LOCAL_STORAGE, false);
+        hasQuery = util.getBoolean(VisitorConfig.VISIT_LOCAL_USER_QUERY);
+        hasSign = util.getBoolean(VisitorConfig.VISIT_LOCAL_USER_SIGN);
+        RadioButton query = v.findViewById(R.id.btn_query);
+        RadioButton signOff = v.findViewById(R.id.btn_sign_off);
+        RadioButton signIn = v.findViewById(R.id.btn_sign_in);
         v.findViewById(R.id.btn_home).setOnClickListener(this);
-        v.findViewById(R.id.btn_sign_in).setOnClickListener(this);
-        v.findViewById(R.id.btn_query).setOnClickListener(this);
-        v.findViewById(R.id.btn_sign_off).setOnClickListener(this);
+        if (hasSign) {
+            signIn.setVisibility(View.VISIBLE);
+            query.setVisibility(View.VISIBLE);
+            signOff.setVisibility(View.VISIBLE);
+            signIn.setOnClickListener(this);
+            query.setOnClickListener(this);
+            signOff.setOnClickListener(this);
+        } else {
+            signIn.setVisibility(View.GONE);
+            query.setVisibility(View.VISIBLE);
+            signOff.setVisibility(View.GONE);
+            query.setOnClickListener(this);
+        }
         int checkId = 1;
         RadioButton rb;
         Bundle bundle = getArguments();

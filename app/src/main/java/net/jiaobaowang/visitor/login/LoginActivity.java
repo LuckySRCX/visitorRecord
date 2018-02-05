@@ -255,11 +255,22 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "获取登录信息成功");
                     switch (data.getRspCode()) {
                         case "0000":
+                            boolean hasQuery = hasPowerInPoint(11, data.getRspData().getUrolestr());
+                            boolean hasSign = hasPowerInPoint(12, data.getRspData().getUrolestr());
+                            if (!hasSign && !hasQuery) {
+                                Toast.makeText(mContext, "此用户无系统使用权限！", Toast.LENGTH_LONG).show();
+                                if (mDialog.isShowing()) {
+                                    mDialog.dismiss();
+                                }
+                                return;
+                            }
                             SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
                             util.putString(VisitorConfig.VISIT_LOCAL_TOKEN, data.getRspData().getUtoken());
                             util.putString(VisitorConfig.VISIT_LOCAL_USERINFO_UID, data.getRspData().getUid());
                             util.putInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, data.getRspData().getUtid());
                             util.putString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, data.getRspData().getUtname());
+                            util.putBoolean(VisitorConfig.VISIT_LOCAL_USER_QUERY, hasQuery);
+                            util.putBoolean(VisitorConfig.VISIT_LOCAL_USER_SIGN, hasSign);
                             Intent intent = new Intent();
                             intent.setClass(mContext, HomeActivity.class);
                             startActivity(intent);
@@ -284,6 +295,11 @@ public class LoginActivity extends AppCompatActivity {
             if (flag == REQUEST_FLAG_LOGIN && mDialog.isShowing()) {
                 mDialog.dismiss();
             }
+        }
+
+        private boolean hasPowerInPoint(int position, String text) {
+            Log.d(TAG, "" + text.charAt(position));
+            return text.charAt(position) == '1';
         }
 
         @Override
