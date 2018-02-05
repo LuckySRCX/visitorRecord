@@ -255,8 +255,8 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "获取登录信息成功");
                     switch (data.getRspCode()) {
                         case "0000":
-                            boolean hasQuery = hasPowerInPoint(11, data.getRspData().getUrolestr());
-                            boolean hasSign = hasPowerInPoint(12, data.getRspData().getUrolestr());
+                            boolean hasQuery = hasPowerInPoint(10, data.getRspData().getUrolestr());
+                            boolean hasSign = hasPowerInPoint(11, data.getRspData().getUrolestr());
                             if (!hasSign && !hasQuery) {
                                 Toast.makeText(mContext, "此用户无系统使用权限！", Toast.LENGTH_LONG).show();
                                 if (mDialog.isShowing()) {
