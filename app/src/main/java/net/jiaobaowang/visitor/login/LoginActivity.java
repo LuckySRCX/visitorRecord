@@ -298,6 +298,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         private boolean hasPowerInPoint(int position, String text) {
+            if (text == null) {
+                return false;
+            }
             Log.d(TAG, "" + text.charAt(position));
             return text.charAt(position) == '1';
         }
