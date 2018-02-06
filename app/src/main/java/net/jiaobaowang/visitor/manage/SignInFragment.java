@@ -379,11 +379,15 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      * 输入身份证信息
      */
     private void inputIdCardInfo() {
+        if (idCardInfo == null) {
+            return;
+        }
         credentialsTypeAc.setText("身份证");
         ImageSpan imgSpan = new ImageSpan(mContext, headImage);
         SpannableString spanString = new SpannableString("icon");
         spanString.setSpan(imgSpan, 0, 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         idCardHeadTv.setText(spanString);
+
         nameEt.setText(idCardInfo.getName());
         String sex = idCardInfo.getSex();
         if ("男 / M".equals(sex)) {
