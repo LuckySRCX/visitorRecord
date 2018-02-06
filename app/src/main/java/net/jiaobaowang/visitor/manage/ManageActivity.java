@@ -5,6 +5,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,6 +34,9 @@ import net.jiaobaowang.visitor.visitor_interface.OnGetIdentityInfoResult;
 import net.jiaobaowang.visitor.visitor_interface.OnGetQRCodeListener;
 import net.jiaobaowang.visitor.visitor_interface.OnGetQRCodeResult;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 /**
  * 访客管理界面
  */
@@ -56,6 +61,7 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
     private boolean canReadIdCard = false;
     private boolean hasQuery;
     private boolean hasSign;
+    UsbManager mUsbManager;
 
     @Override
     public void onFragmentInteraction(int id) {
@@ -303,6 +309,9 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
             TelpoException result = null;
             try {
                 publishProgress(1);
+                if(isUsb()) {
+                    IdCard.open(IdCard.IDREADER_TYPE_USB, ManageActivity.this);
+                }
                 identityInfo = IdCard.checkIdCard(1600);// luyq modify
                 if (identityInfo != null) {
                     byte[] image = IdCard.getIdCardImage();
@@ -357,5 +366,21 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
             identityInfo = null;
             identityImage = null;
         }
+    }
+    private boolean isUsb() {
+        mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> deviceHashMap = mUsbManager.getDeviceList();
+        Iterator<UsbDevice> iterator = deviceHashMap.values().iterator();
+
+        while (iterator.hasNext()) {
+            UsbDevice usbDevice = iterator.next();
+            int pid = usbDevice.getProductId();
+            int vid = usbDevice.getVendorId();
+
+            if (pid == IdCard.READER_PID && vid == IdCard.READER_VID) {
+                return true;
+            }
+        }
+        return false;
     }
 }
