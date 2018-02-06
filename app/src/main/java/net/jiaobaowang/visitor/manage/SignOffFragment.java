@@ -420,6 +420,10 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             //失败
             DialogUtils.showAlert(getActivity(), msg);
         } else {
+            if (identityInfo == null) {
+                DialogUtils.showAlert(getActivity(), "未能成功读取身份信息！");
+                return;
+            }
             restoreData();
             mText_keywords.setText(identityInfo.getName());
             queryRecords(false);

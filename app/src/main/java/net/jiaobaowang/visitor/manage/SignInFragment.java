@@ -325,6 +325,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         if (code == 0) {
             DialogUtils.showAlert(mContext, msg);
         } else {
+            if (idCardInfo == null) {
+                DialogUtils.showAlert(mContext, "未能成功读取身份信息！");
+                return;
+            }
             idCardInfo = identityInfo;
             headImage = identityImage;
             inputIdCardInfo();
@@ -379,9 +383,6 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      * 输入身份证信息
      */
     private void inputIdCardInfo() {
-        if (idCardInfo == null) {
-            return;
-        }
         credentialsTypeAc.setText("身份证");
         ImageSpan imgSpan = new ImageSpan(mContext, headImage);
         SpannableString spanString = new SpannableString("icon");
