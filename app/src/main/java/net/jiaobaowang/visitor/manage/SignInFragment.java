@@ -325,7 +325,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         if (code == 0) {
             DialogUtils.showAlert(mContext, msg);
         } else {
-            if (idCardInfo == null) {
+            if (identityInfo == null) {
                 DialogUtils.showAlert(mContext, "未能成功读取身份信息！");
                 return;
             }
