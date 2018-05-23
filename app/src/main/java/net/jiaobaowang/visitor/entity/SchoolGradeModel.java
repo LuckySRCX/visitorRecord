@@ -6,6 +6,7 @@ package net.jiaobaowang.visitor.entity;
  */
 
 public class SchoolGradeModel {
+    private int grdid;//年级ID
     private int grdcode;//年级代码
     private String grdname;//年级名称
     private int pcode;//父节点ID
@@ -37,5 +38,13 @@ public class SchoolGradeModel {
 
     public void setPcode(int pcode) {
         this.pcode = pcode;
+    }
+
+    public int getGrdid() {
+        return grdid;
+    }
+
+    public void setGrdid(int grdid) {
+        this.grdid = grdid;
     }
 }

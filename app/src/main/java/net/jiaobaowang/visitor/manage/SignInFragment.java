@@ -71,7 +71,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import okhttp3.FormBody;
@@ -451,119 +453,158 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
      * 设置需要保存的数据
      */
     private void setSubmitData() {
+        Map map =new HashMap();
         FormBody.Builder params = new FormBody.Builder();
         SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
-        params.add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""));
-        params.add("uuid", Tools.getDeviceId(getActivity()));
-        params.add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)));
-        params.add("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""));
-        params.add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)));
+        map.put("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""));
+        map.put("uuid", Tools.getDeviceId(getActivity()));
+        map.put("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)));
+        map.put("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""));
+        map.put("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)));
+//        params.add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""));
+//        params.add("uuid", Tools.getDeviceId(getActivity()));
+//        params.add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)));
+//        params.add("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""));
+//        params.add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)));
         //访客姓名
-        params.add("visitor_name", nameEt.getText().toString().trim());
+        map.put("visitor_name", nameEt.getText().toString().trim());
+//        params.add("visitor_name", nameEt.getText().toString().trim());
         //访客性别
         String visitor_sex = "1";
         if (femaleRb.isChecked()) {
             visitor_sex = "0";
         }
-        params.add("visitor_sex", visitor_sex);
+        map.put("visitor_sex", visitor_sex);
+        map.put("visitor_for", reasonAc.getText().toString().trim());
+        map.put("visitor_counter", visitorNumberAc.getText().toString().trim());
+//        params.add("visitor_sex", visitor_sex);
         //访问事由
-        params.add("visitor_for", reasonAc.getText().toString().trim());
+//        params.add("visitor_for", reasonAc.getText().toString().trim());
         //随行人数
-        params.add("visitor_counter", visitorNumberAc.getText().toString().trim());
+//        params.add("visitor_counter", visitorNumberAc.getText().toString().trim());
         if (typeTeacherRb.isChecked()) {
             //教职工
-            params.add("interviewee_type", "0");
-            params.add("teacher_name", teacherNameAc.getText().toString().trim());
+            map.put("interviewee_type", "0");
+            map.put("teacher_name", teacherNameAc.getText().toString().trim());
+//            params.add("interviewee_type", "0");
+//            params.add("teacher_name", teacherNameAc.getText().toString().trim());
             String department_name = departmentAc.getText().toString().trim();
             if (!"".equals(department_name)) {
-                params.add("department_name", department_name);
+                map.put("department_name", department_name);
+//                params.add("department_name", department_name);
                 if (selectDepart != null) {
-                    params.add("department_id", String.valueOf(selectDepart.getDptid()));
+                    map.put("department_id", String.valueOf(selectDepart.getDptid()));
+//                    params.add("department_id", String.valueOf(selectDepart.getDptid()));
                 }
             }
             if (selectTeacher != null) {
-                params.add("teacher_id", String.valueOf(selectTeacher.getUtid()));
+                map.put("teacher_id", String.valueOf(selectTeacher.getUtid()));
+//                params.add("teacher_id", String.valueOf(selectTeacher.getUtid()));
             }
         } else {
-            params.add("interviewee_type", "1");
-            params.add("student_name", studentNameAc.getText().toString().trim());
-            params.add("head_teacher_name", headMasterAc.getText().toString().trim());
+            map.put("interviewee_type", "1");
+            map.put("student_name", studentNameAc.getText().toString().trim());
+            map.put("head_teacher_name", headMasterAc.getText().toString().trim());
+//            params.add("interviewee_type", "1");
+//            params.add("student_name", studentNameAc.getText().toString().trim());
+//            params.add("head_teacher_name", headMasterAc.getText().toString().trim());
             String grade_name = gradeAc.getText().toString().trim();
             if (!"".equals(grade_name)) {
-                params.add("grade_name", grade_name);
+                map.put("grade_name", grade_name);
+//                params.add("grade_name", grade_name);
                 if (selectGrade != null) {
-                    params.add("grade_code", String.valueOf(selectGrade.getGrdcode()));
+                    map.put("grade_code", String.valueOf(selectGrade.getGrdcode()));
+//                    params.add("grade_code", String.valueOf(selectGrade.getGrdcode()));
                 }
             }
             String class_name = classesAc.getText().toString().trim();
             if (!"".equals(class_name)) {
-                params.add("class_name", class_name);
+                map.put("class_name", class_name);
+//                params.add("class_name", class_name);
                 if (selectClass != null) {
-                    params.add("class_id", String.valueOf(selectClass.getClsid()));
+                    map.put("class_id", String.valueOf(selectClass.getClsid()));
+//                    params.add("class_id", String.valueOf(selectClass.getClsid()));
                 }
             }
             if (selectStudent != null) {
-                params.add("student_id", String.valueOf(selectStudent.getStuid()));
+                map.put("student_id", String.valueOf(selectStudent.getStuid()));
+//                params.add("student_id", String.valueOf(selectStudent.getStuid()));
             }
             if (selectHeadMaster != null) {
-                params.add("head_teacher_id", String.valueOf(selectHeadMaster.getUtid()));
+                map.put("head_teacher_id", String.valueOf(selectHeadMaster.getUtid()));
+//                params.add("head_teacher_id", String.valueOf(selectHeadMaster.getUtid()));
             }
         }
         //出生日期
         String visitor_birthday = dateOfBirthEt.getText().toString().trim();
         if (!"".equals(visitor_birthday)) {
-            params.add("visitor_birthday", visitor_birthday);
+            map.put("visitor_birthday", visitor_birthday);
+//            params.add("visitor_birthday", visitor_birthday);
         }
         //证件类型
         String certificate_type = credentialsTypeAc.getText().toString().trim();
         if (!"".equals(certificate_type)) {
-            params.add("certificate_type", certificate_type);
+            map.put("certificate_type", certificate_type);
+//            params.add("certificate_type", certificate_type);
         }
         //证件号码
         String certificate_number = idNumberEt.getText().toString().trim();
         if (!"".equals(certificate_number)) {
-            params.add("certificate_number", certificate_number);
+            map.put("certificate_number", certificate_number);
+//            params.add("certificate_number", certificate_number);
         }
         if (headImageUrl != null) {
             Log.i(TAG, "img_url:" + headImageUrl);
-            params.add("img_url", headImageUrl);
+            map.put("img_url", headImageUrl);
+//            params.add("img_url", headImageUrl);
         }
         //地址
         String address = addressEt.getText().toString().trim();
         if (!"".equals(address)) {
-            params.add("address", address);
+            map.put("address", address);
+//            params.add("address", address);
         }
         //备注
         String note = remarksEt.getText().toString().trim();
         if (!"".equals(note)) {
-            params.add("note", note);
+            map.put("note", note);
+//            params.add("note", note);
         }
         //手机
         String visitor_phone = phoneNumberEt.getText().toString().trim();
         if (!"".equals(visitor_phone)) {
-            params.add("visitor_phone", visitor_phone);
+            map.put("visitor_phone", visitor_phone);
+//            params.add("visitor_phone", visitor_phone);
         }
         //随身物品
         String visitor_goods = belongingsEt.getText().toString().trim();
         if (!"".equals(visitor_goods)) {
-            params.add("visitor_goods", visitor_goods);
+            map.put("visitor_goods", visitor_goods);
+//            params.add("visitor_goods", visitor_goods);
         }
         //来访单位
         String unit_name = organizationEt.getText().toString().trim();
         if (!"".equals(unit_name)) {
-            params.add("unit_name", unit_name);
+            map.put("unit_name", unit_name);
+//            params.add("unit_name", unit_name);
         }
         //车牌号
         String plate_number = plateNumberEt.getText().toString().trim();
         if (!"".equals(plate_number)) {
-            params.add("plate_number", plate_number);
+            map.put("plate_number", plate_number);
+//            params.add("plate_number", plate_number);
         }
         //进入时间
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date curDate = new Date(System.currentTimeMillis());
         String in_time = sdf.format(curDate);
-        params.add("in_time", in_time);
-        new SubmitDataTask(params).execute();
+        map.put("in_time", in_time);
+//        params.add("in_time", in_time);
+        Gson gson = new Gson();
+        String json = gson.toJson(map);
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(JSON, json);
+        new SubmitDataTask(body).execute();
     }
 
     /**
@@ -595,10 +636,10 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private class SubmitDataTask extends AsyncTask<Void, Void, String[]> {
-        private FormBody.Builder params;
+        private RequestBody body;
 
-        SubmitDataTask(FormBody.Builder params) {
-            this.params = params;
+        SubmitDataTask(RequestBody body) {
+            this.body = body;
         }
 
         @Override
@@ -607,7 +648,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             try {
                 Request request = new Request.Builder()
                         .url(VisitorConfig.VISITOR_API_ADD)
-                        .post(params.build())
+                        .post(body)
                         .build();
                 Response response = mOkHttpClient.newCall(request).execute();
                 if (response.isSuccessful()) {
@@ -760,7 +801,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 case REQUEST_FLAG_GRADE_CLASS:
                     Log.i(TAG, "doInBackground:获取年级下的班级");
                     url = VisitorConfig.VISITOR_API_GRADE_CLASS;
-                    map.put("gradecodes", data);
+                    map.put("gradeids", data);
                     break;
                 case REQUEST_FLAG_CLASS_STUDENT:
                     Log.i(TAG, "doInBackground:获取班级下的学生");
@@ -894,8 +935,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                             studentNameAc.setAdapter(studentNameAdapter);
                             ArrayAdapter<SchoolClassTeaModel> headMasterAdapter = new ArrayAdapter<>(mContext, R.layout.visit_drop_down_item);
                             headMasterAc.setAdapter(headMasterAdapter);
-                            Log.i(TAG, "点击年级：" + selectGrade.getGrdcode() + " " + selectGrade.getGrdname());
-                            studentTask = new SignInTask(REQUEST_FLAG_GRADE_CLASS, String.valueOf(selectGrade.getGrdcode()));
+                            Log.i(TAG, "点击年级："+" "+selectGrade.getGrdid() +"  "+selectGrade.getGrdcode() + " " + selectGrade.getGrdname());
+                            studentTask = new SignInTask(REQUEST_FLAG_GRADE_CLASS, String.valueOf(selectGrade.getGrdid()));
                             studentTask.execute();
                         }
                     });
