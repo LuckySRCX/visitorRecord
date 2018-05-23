@@ -8,17 +8,17 @@ import okhttp3.MediaType;
 
 public class VisitorConfig {
     //学校用户系统各接口
-    private static final String VISIT_SCHOOL_MAIN = "https://jsypay.jiaobaowang.net/useradminwebapi/api/data/";
+    private static final String VISIT_SCHOOL_MAIN = "https://zhxy.jiaobaowang.net:8515/schadminwebapi/api/data/";
     public static final String VISIT_SCHOOL_SHAKEHAND = VISIT_SCHOOL_MAIN + "ShakeHand";
     public static final String VISIT_SCHOOL_LOGIN = VISIT_SCHOOL_MAIN + "Login";
     /**
      * 总部主URL
      */
-    public static final String VISITOR_ZB_MAIN_URL = "https://jsypay.jiaobaowang.net/useradminwebapi/api/data";
+    public static final String VISITOR_ZB_MAIN_URL = "https://zhxy.jiaobaowang.net:8515/schadminwebapi/api/data";
     /**
      * 广西主URL
      */
-    public static final String VISITOR_GX_MAIN_URL = "http://139.129.252.49:8181/visitor/api";
+    public static final String VISITOR_GX_MAIN_URL = "https://fangke.jiaobaowang.net/School/VisitorApi";
     /**
      * 握手
      */
@@ -115,6 +115,7 @@ public class VisitorConfig {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final String VISIT_LOCAL_STORAGE = "net.jiaobaowang.visitor.localStorage";//存储到本地的key
+    public static final String VISIT_LOCAL_STORAGE_UUID = "net.jiaobaowang.visitor.localStorage_uuid";//设备唯一识别码
     public static final String VISIT_LOCAL_SCHOOL_ID = "net.jiaobangwang.visitor.school_id";//学校id
     public static final String VISIT_LOCAL_TOKEN = "net.jiaobaowang.visitor.token";//token
     public static final String VISIT_LOCAL_SHAKEHAND = "net.jiaobaowang.visitor.shakeHand";//token

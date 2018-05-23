@@ -755,6 +755,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 case REQUEST_FLAG_GRADE:
                     Log.i(TAG, "doInBackground:获取年级");
                     url = VisitorConfig.VISITOR_API_GRADE;
+                    map.put("isfinish", "-1");
                     break;
                 case REQUEST_FLAG_GRADE_CLASS:
                     Log.i(TAG, "doInBackground:获取年级下的班级");

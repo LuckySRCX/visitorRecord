@@ -27,6 +27,7 @@ import net.jiaobaowang.visitor.utils.Tools;
 
 import java.net.UnknownHostException;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -55,6 +56,9 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
         setContentView(R.layout.activity_login);
+
+        SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
+        util.putString(VisitorConfig.VISIT_LOCAL_STORAGE_UUID, UUID.randomUUID().toString().toUpperCase());
         findViewById(R.id.login_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
