@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.qiniu.android.http.ResponseInfo;
@@ -57,6 +58,7 @@ import net.jiaobaowang.visitor.printer.PrinterActivity;
 import net.jiaobaowang.visitor.utils.DESUtil;
 import net.jiaobaowang.visitor.utils.DialogUtils;
 import net.jiaobaowang.visitor.utils.ErrorUtils;
+import net.jiaobaowang.visitor.utils.SharePreferencesUtil;
 import net.jiaobaowang.visitor.utils.ToastUtils;
 import net.jiaobaowang.visitor.utils.TokenResetTask;
 import net.jiaobaowang.visitor.utils.Tools;
@@ -255,12 +257,24 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.save_btn://保存
-                isNeedPrint = false;
-                checkSaveData();
+                SharePreferencesUtil util_save = new SharePreferencesUtil(getActivity(), VisitorConfig.VISIT_LOCAL_STORAGE,false);
+                String baseapps_save=util_save.getString(VisitorConfig.VISIT_LOCAL_BASEAPPS);
+                if(baseapps_save.contains("7")){
+                    isNeedPrint = false;
+                    checkSaveData();
+                }else{
+                    Toast.makeText(getActivity(), "服务状态被停用 不允许保存", Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.print_tape_btn://保存并打印
-                isNeedPrint = true;
-                checkSaveData();
+                SharePreferencesUtil util_print = new SharePreferencesUtil(getActivity(), VisitorConfig.VISIT_LOCAL_STORAGE,false);
+                String baseapps_print=util_print.getString(VisitorConfig.VISIT_LOCAL_BASEAPPS);
+                if(baseapps_print.contains("7")){
+                    isNeedPrint = false;
+                    checkSaveData();
+                }else{
+                    Toast.makeText(getActivity(), "服务状态被停用 不允许保存", Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.cancel_btn:
                 getActivity().finish();

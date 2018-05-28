@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +20,7 @@ import com.google.gson.Gson;
 import net.jiaobaowang.visitor.R;
 import net.jiaobaowang.visitor.base.FlagObject;
 import net.jiaobaowang.visitor.common.VisitorConfig;
+import net.jiaobaowang.visitor.entity.SchInfoResult;
 import net.jiaobaowang.visitor.entity.SchoolLoginResult;
 import net.jiaobaowang.visitor.entity.ShakeHandData;
 import net.jiaobaowang.visitor.entity.ShakeHandResult;
@@ -42,12 +44,14 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_FLAG_SHAKEHAND = 0;
     private static final int REQUEST_FLAG_LOGIN = 1;
+    private static final int REQUEST_FLAG_LOGIN_QX = 2;
     public static final String EXTRA_DATA = "net.jiaobaowang.visitor.LoginActivity.extra_data";
     OkHttpClient okHttpClient = new OkHttpClient();
     String mUserName;
     String mPassword;
     private int mSchoolId;
     ShakeHandResult mShakeHandResult;
+    SchInfoResult schInfoResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,6 +180,49 @@ public class LoginActivity extends AppCompatActivity {
         return result;
     }
 
+    private SchInfoResult getQx() {
+        TreeMap<String, String> map = new TreeMap<>();
+        map.put("uuid", Tools.getDeviceId(LoginActivity.this));
+        map.put("appid", Tools.getAppId(LoginActivity.this));
+//        String uid = null;
+        try {
+//            uid = Tools.RSAEncrypt(mUserName, shakeHandData);
+//            map.put("uid", uid);
+            SharedPreferences sp = LoginActivity.this.getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
+            String utoken = sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, "");
+            map.put("utoken", utoken);
+            map.put("sign", Tools.getSign(map));
+            Gson gson = new Gson();
+            String json = gson.toJson(map);
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(JSON, json);
+            Request request = new Request.Builder().url(VisitorConfig.VISIT_SCHOOL_LOGIN_QX).post(body).build();
+            Response response = okHttpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                String s = response.body().string();
+                Log.i(TAG, s);
+                SchInfoResult result = gson.fromJson(s, SchInfoResult.class);
+                result.setFlag(REQUEST_FLAG_LOGIN_QX);
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e instanceof UnknownHostException) {
+                SchInfoResult result = new SchInfoResult();
+                result.setRspCode(String.valueOf(1099));
+                result.setRspTxt("网络连接失败，请检查网络");
+                result.setFlag(REQUEST_FLAG_LOGIN_QX);
+                return result;
+            }
+        }
+        SchInfoResult result = new SchInfoResult();
+        result.setRspCode(String.valueOf(1099));
+        result.setRspTxt("未知错误！");
+        result.setFlag(REQUEST_FLAG_LOGIN_QX);
+        return result;
+    }
+
+
 
     private void showSetDialog() {
         final EditText editText = new EditText(this);
@@ -275,9 +322,7 @@ public class LoginActivity extends AppCompatActivity {
                             util.putString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, data.getRspData().getUtname());
                             util.putBoolean(VisitorConfig.VISIT_LOCAL_USER_QUERY, hasQuery);
                             util.putBoolean(VisitorConfig.VISIT_LOCAL_USER_SIGN, hasSign);
-                            Intent intent = new Intent();
-                            intent.setClass(mContext, HomeActivity.class);
-                            startActivity(intent);
+                            new LoginTask(LoginActivity.this, REQUEST_FLAG_LOGIN_QX).execute();
                             break;
                         case "0005":
                             if (mDialog.isShowing()) {
@@ -292,6 +337,26 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(mContext, data.getRspTxt(), Toast.LENGTH_LONG).show();
                             break;
                     }
+                    break;
+                case REQUEST_FLAG_LOGIN_QX:
+                    if (mDialog.isShowing()) {
+                        mDialog.dismiss();
+                    }
+                    schInfoResult = (SchInfoResult) flagObject;
+                    if (schInfoResult.getRspCode().equals("0000")) {
+                        if(schInfoResult.getRspData().getSourestat()==0){
+                            Toast.makeText(mContext, "访客服务被屏蔽 不允许登录", Toast.LENGTH_LONG).show();
+                        }else{
+                            SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
+                            util.putString(VisitorConfig.VISIT_LOCAL_BASEAPPS, schInfoResult.getRspData().getBaseapps());
+                            Intent intent = new Intent();
+                            intent.setClass(mContext, HomeActivity.class);
+                            startActivity(intent);
+                        }
+                    } else {
+                        Toast.makeText(mContext, schInfoResult.getRspTxt(), Toast.LENGTH_LONG).show();
+                    }
+
                     break;
                 default:
                     break;
@@ -321,6 +386,8 @@ public class LoginActivity extends AppCompatActivity {
                         e.printStackTrace();
                         return null;
                     }
+                case REQUEST_FLAG_LOGIN_QX:
+                    return getQx();
                 default:
                     return null;
             }
