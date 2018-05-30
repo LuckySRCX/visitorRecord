@@ -19,8 +19,9 @@ public class SchoolLoginRspData {
     private List<SchoolDepartModel> dpts;//部门列表
     private List<SchoolGradeModel> grds;//年级列表
     private List<SchoolClassModel> clss;//班级列表
+    private List<SchoolSubsModel> subs;//
     private int utp;//
-    private String subs;//
+
     private String urolestr;
     private String urolestrext;
     private String utoken;
@@ -153,11 +154,11 @@ public class SchoolLoginRspData {
         this.imgurl = imgurl;
     }
 
-    public String getSubs() {
+    public List<SchoolSubsModel> getSubs() {
         return subs;
     }
 
-    public void setSubs(String subs) {
+    public void setSubs(List<SchoolSubsModel> subs) {
         this.subs = subs;
     }
 

@@ -10,6 +10,7 @@ public class SchoolGradeModel {
     private int grdcode;//年级代码
     private String grdname;//年级名称
     private int pcode;//父节点ID
+    private int isfinish;
 
     @Override
     public String toString() {
@@ -46,5 +47,13 @@ public class SchoolGradeModel {
 
     public void setGrdid(int grdid) {
         this.grdid = grdid;
+    }
+
+    public int getIsfinish() {
+        return isfinish;
+    }
+
+    public void setIsfinish(int isfinish) {
+        this.isfinish = isfinish;
     }
 }

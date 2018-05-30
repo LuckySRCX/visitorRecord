@@ -6,11 +6,21 @@ package net.jiaobaowang.visitor.entity;
  */
 
 public class SchoolClassModel {
+    private int  grdid;
     private String  grdcode;
     private String subcode;
     private int clsid;
     private int isms;
     private String clsname;
+    private int isfinish;
+
+    public int getIsfinish() {
+        return isfinish;
+    }
+
+    public void setIsfinish(int isfinish) {
+        this.isfinish = isfinish;
+    }
 
     @Override
     public String toString() {
@@ -39,6 +49,14 @@ public class SchoolClassModel {
 
     public void setClsid(int clsid) {
         this.clsid = clsid;
+    }
+
+    public int getGrdid() {
+        return grdid;
+    }
+
+    public void setGrdid(int grdid) {
+        this.grdid = grdid;
     }
 
     public int getIsms() {
