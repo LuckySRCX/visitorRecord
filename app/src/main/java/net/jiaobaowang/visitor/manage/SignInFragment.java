@@ -258,8 +258,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
         switch (v.getId()) {
             case R.id.save_btn://保存
                 SharePreferencesUtil util_save = new SharePreferencesUtil(getActivity(), VisitorConfig.VISIT_LOCAL_STORAGE,false);
-                String baseapps_save=util_save.getString(VisitorConfig.VISIT_LOCAL_BASEAPPS);
-                if(baseapps_save.contains("7")){
+                String appeditstat_save=util_save.getString(VisitorConfig.VISIT_LOCAL_APPEDITSTAT);
+                if("1".equals(appeditstat_save)){
                     isNeedPrint = false;
                     checkSaveData();
                 }else{
@@ -268,8 +268,8 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 break;
             case R.id.print_tape_btn://保存并打印
                 SharePreferencesUtil util_print = new SharePreferencesUtil(getActivity(), VisitorConfig.VISIT_LOCAL_STORAGE,false);
-                String baseapps_print=util_print.getString(VisitorConfig.VISIT_LOCAL_BASEAPPS);
-                if(baseapps_print.contains("7")){
+                String appeditstat_print=util_print.getString(VisitorConfig.VISIT_LOCAL_APPEDITSTAT);
+                if("1".equals(appeditstat_print)){
                     isNeedPrint = false;
                     checkSaveData();
                 }else{

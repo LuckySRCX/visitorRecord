@@ -20,8 +20,7 @@ public class VisitorConfig {
     /**
      * 广西主URL
      */
-//    public static final String VISITOR_GX_MAIN_URL = "https://fangke.jiaobaowang.net/School/VisitorApi";
-    public static final String VISITOR_GX_MAIN_URL = "https://jbyj.jiaobaowang.net/SchoolOAService";//测试地址
+    public static final String VISITOR_GX_MAIN_URL = "https://fangke.jiaobaowang.net/School/VisitorApi";
     /**
      * 握手
      */
@@ -127,7 +126,7 @@ public class VisitorConfig {
     public static final String VISIT_LOCAL_STORAGE_UUID = "net.jiaobaowang.visitor.localStorage_uuid";//设备唯一识别码
     public static final String VISIT_LOCAL_SCHOOL_ID = "net.jiaobangwang.visitor.school_id";//学校id
     public static final String VISIT_LOCAL_TOKEN = "net.jiaobaowang.visitor.token";//token
-    public static final String VISIT_LOCAL_BASEAPPS = "net.jiaobaowang.visitor.baseapps";//token
+    public static final String VISIT_LOCAL_APPEDITSTAT = "net.jiaobaowang.visitor.appeditstat";//appeditstat
     public static final String VISIT_LOCAL_SHAKEHAND = "net.jiaobaowang.visitor.shakeHand";//token
     public static final String VISIT_LOCAL_USERINFO = "net.jiaobangwang.visitor.userInfo";//账号信息
     public static final String VISIT_LOCAL_USERINFO_UID = "net.jiaobaowang.visitor.userInfo.uid";//uid

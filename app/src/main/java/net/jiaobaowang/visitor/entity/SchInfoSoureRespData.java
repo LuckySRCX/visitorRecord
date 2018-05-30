@@ -3,7 +3,7 @@ package net.jiaobaowang.visitor.entity;
 import java.util.List;
 
 /**
- * 类名：.class
+ * 类名：SchInfoSoureRespData.class
  * 描述：
  * Created by：刘帅 on 2018/5/28.
  * --------------------------------------

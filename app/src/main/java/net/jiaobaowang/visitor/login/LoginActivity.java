@@ -322,6 +322,7 @@ public class LoginActivity extends AppCompatActivity {
                             util.putString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, data.getRspData().getUtname());
                             util.putBoolean(VisitorConfig.VISIT_LOCAL_USER_QUERY, hasQuery);
                             util.putBoolean(VisitorConfig.VISIT_LOCAL_USER_SIGN, hasSign);
+                            util.putString(VisitorConfig.VISIT_LOCAL_APPEDITSTAT, data.getRspData().getAppeditstat());
                             new LoginTask(LoginActivity.this, REQUEST_FLAG_LOGIN_QX).execute();
                             break;
                         case "0005":
@@ -344,11 +345,9 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     schInfoResult = (SchInfoResult) flagObject;
                     if (schInfoResult.getRspCode().equals("0000")) {
-                        if(schInfoResult.getRspData().getSourestat()==0){
+                        if(null==schInfoResult.getRspData().getBaseapps()||!schInfoResult.getRspData().getBaseapps().contains("1")){
                             Toast.makeText(mContext, "访客服务被屏蔽 不允许登录", Toast.LENGTH_LONG).show();
                         }else{
-                            SharePreferencesUtil util = new SharePreferencesUtil(LoginActivity.this, VisitorConfig.VISIT_LOCAL_STORAGE);
-                            util.putString(VisitorConfig.VISIT_LOCAL_BASEAPPS, schInfoResult.getRspData().getBaseapps());
                             Intent intent = new Intent();
                             intent.setClass(mContext, HomeActivity.class);
                             startActivity(intent);
