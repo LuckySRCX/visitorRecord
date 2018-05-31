@@ -345,7 +345,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     schInfoResult = (SchInfoResult) flagObject;
                     if (schInfoResult.getRspCode().equals("0000")) {
-                        if(null==schInfoResult.getRspData().getBaseapps()||!schInfoResult.getRspData().getBaseapps().contains("7")){
+                        String  param=schInfoResult.getRspData().getBaseapps();
+                        if(null==param||!param.contains("7")){
                             Toast.makeText(mContext, "访客服务被屏蔽 不允许登录", Toast.LENGTH_LONG).show();
                         }else{
                             Intent intent = new Intent();

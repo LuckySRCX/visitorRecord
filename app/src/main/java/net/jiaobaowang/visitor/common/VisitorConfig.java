@@ -8,15 +8,15 @@ import okhttp3.MediaType;
 
 public class VisitorConfig {
     //学校用户系统各接口
-//    private static final String VISIT_SCHOOL_MAIN = "https://zhxy.jiaobaowang.net:8515/schadminwebapi/api/data/";
-    private static final String VISIT_SCHOOL_MAIN = "https://jsypay.jiaobaowang.net/useradminwebapi/api/data/";//测试地址
+    private static final String VISIT_SCHOOL_MAIN = "https://zhxy.jiaobaowang.net:8515/schadminwebapi/api/data/";
+//    private static final String VISIT_SCHOOL_MAIN = "https://jsypay.jiaobaowang.net/useradminwebapi/api/data/";//测试地址
     public static final String VISIT_SCHOOL_SHAKEHAND = VISIT_SCHOOL_MAIN + "ShakeHand";
     public static final String VISIT_SCHOOL_LOGIN = VISIT_SCHOOL_MAIN + "Login";
     /**
      * 总部主URL
      */
-//    public static final String VISITOR_ZB_MAIN_URL = "https://zhxy.jiaobaowang.net:8515/schadminwebapi/api/data";
-    public static final String VISITOR_ZB_MAIN_URL = "https://jsypay.jiaobaowang.net/useradminwebapi/api/data";//测试地址
+    public static final String VISITOR_ZB_MAIN_URL = "https://zhxy.jiaobaowang.net:8515/schadminwebapi/api/data";
+//    public static final String VISITOR_ZB_MAIN_URL = "https://jsypay.jiaobaowang.net/useradminwebapi/api/data";//测试地址
     /**
      * 广西主URL
      */

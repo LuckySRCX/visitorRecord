@@ -259,7 +259,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
             case R.id.save_btn://保存
                 SharePreferencesUtil util_save = new SharePreferencesUtil(getActivity(), VisitorConfig.VISIT_LOCAL_STORAGE,false);
                 String appeditstat_save=util_save.getString(VisitorConfig.VISIT_LOCAL_APPEDITSTAT);
-                if("1".equals(appeditstat_save)){
+                if(appeditstat_save!=null&&"1".equals(appeditstat_save)){
                     isNeedPrint = false;
                     checkSaveData();
                 }else{
@@ -270,7 +270,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 SharePreferencesUtil util_print = new SharePreferencesUtil(getActivity(), VisitorConfig.VISIT_LOCAL_STORAGE,false);
                 String appeditstat_print=util_print.getString(VisitorConfig.VISIT_LOCAL_APPEDITSTAT);
                 if("1".equals(appeditstat_print)){
-                    isNeedPrint = false;
+                    isNeedPrint = true;
                     checkSaveData();
                 }else{
                     Toast.makeText(getActivity(), "服务状态被停用 不允许保存", Toast.LENGTH_LONG).show();
@@ -810,7 +810,7 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                 case REQUEST_FLAG_GRADE:
                     Log.i(TAG, "doInBackground:获取年级");
                     url = VisitorConfig.VISITOR_API_GRADE;
-                    map.put("isfinish", "-1");
+                    map.put("isfinish", "0");
                     break;
                 case REQUEST_FLAG_GRADE_CLASS:
                     Log.i(TAG, "doInBackground:获取年级下的班级");
@@ -926,6 +926,12 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                         if ("0000".equals(schoolGradeResult.getRspCode())) {
                             if (schoolGradeResult.getRspData() != null) {
                                 List<SchoolGradeModel> gradeModelList = schoolGradeResult.getRspData().getGrds();
+                                for(SchoolGradeModel model:gradeModelList){
+                                    int grdcode=model.getGrdcode();
+                                    if(grdcode<100){//根节点  TODO 这里不知道怎么根据年级父节点判断，只能判断位数，因为grdcode都是三、四位数，如果有一位数的情况，那就是作为本级子节点的父节点id，即本级根节点传过来的
+                                        gradeModelList.remove(model);
+                                    }
+                                }
                                 gradeAdapter.addAll(gradeModelList);
                                 gradeAc.setAdapter(gradeAdapter);
                             }
