@@ -926,12 +926,21 @@ public class SignInFragment extends Fragment implements View.OnClickListener, Co
                         if ("0000".equals(schoolGradeResult.getRspCode())) {
                             if (schoolGradeResult.getRspData() != null) {
                                 List<SchoolGradeModel> gradeModelList = schoolGradeResult.getRspData().getGrds();
-                                for(SchoolGradeModel model:gradeModelList){
+
+                                for (int i = 0; i <gradeModelList.size() ; i++) {
+                                    SchoolGradeModel model =gradeModelList.get(i);
                                     int grdcode=model.getGrdcode();
                                     if(grdcode<100){//根节点  TODO 这里不知道怎么根据年级父节点判断，只能判断位数，因为grdcode都是三、四位数，如果有一位数的情况，那就是作为本级子节点的父节点id，即本级根节点传过来的
                                         gradeModelList.remove(model);
                                     }
                                 }
+
+//                                for(SchoolGradeModel model:gradeModelList){
+//                                    int grdcode=model.getGrdcode();
+//                                    if(grdcode<100){//根节点  TODO 这里不知道怎么根据年级父节点判断，只能判断位数，因为grdcode都是三、四位数，如果有一位数的情况，那就是作为本级子节点的父节点id，即本级根节点传过来的
+//                                        gradeModelList.remove(model);
+//                                    }
+//                                }
                                 gradeAdapter.addAll(gradeModelList);
                                 gradeAc.setAdapter(gradeAdapter);
                             }
