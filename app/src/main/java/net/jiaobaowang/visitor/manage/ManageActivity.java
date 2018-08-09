@@ -173,35 +173,39 @@ public class ManageActivity extends BaseFragmentActivity implements NavigationFr
                         return mQueryFragment;
                     }
                 case 1:
-                    if (hasSign) {
+                    if (hasSign&&hasQuery) {
                         if (mQueryFragment == null) {
                             mQueryFragment = SignQueryFragment.newInstance();
                         }
                         return mQueryFragment;
-                    } else {
-                        return null;
-                    }
-
-                case 2:
-                    if (hasSign) {
+                    } else if(hasSign&&!hasQuery){
                         if (mOffFragment == null) {
                             mOffFragment = SignOffFragment.newInstance();
                         }
                         return mOffFragment;
-                    } else {
+                    }else{
                         return null;
                     }
-
+                case 2:
+                    if(hasSign&&hasQuery){
+                        if (mOffFragment == null) {
+                            mOffFragment = SignOffFragment.newInstance();
+                        }
+                        return mOffFragment;
+                    }else{
+                        return null;
+                    }
                 default:
                     return null;
             }
-
         }
 
         @Override
         public int getCount() {
-            if (hasSign) {
+            if (hasSign&&hasQuery) {
                 return 3;
+            }else if(hasSign&&!hasQuery){
+                return 2;
             } else {
                 return 1;
             }

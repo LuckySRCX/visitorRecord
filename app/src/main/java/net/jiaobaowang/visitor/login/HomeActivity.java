@@ -72,7 +72,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.visit_query:
-                selectId = 2;
+                if(hasQueryPower){
+                    selectId = 2;
+                }else {
+                    Toast.makeText(HomeActivity.this,"您无此权限！",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 break;
             case R.id.visit_leave:
                 if(hasSignPower){

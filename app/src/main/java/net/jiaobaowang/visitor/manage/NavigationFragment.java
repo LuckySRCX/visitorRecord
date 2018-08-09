@@ -60,14 +60,20 @@ public class NavigationFragment extends Fragment implements View.OnClickListener
         RadioButton signOff = v.findViewById(R.id.btn_sign_off);
         RadioButton signIn = v.findViewById(R.id.btn_sign_in);
         v.findViewById(R.id.btn_home).setOnClickListener(this);
-        if (hasSign) {
+        if (hasSign&&hasQuery) {
             signIn.setVisibility(View.VISIBLE);
             query.setVisibility(View.VISIBLE);
             signOff.setVisibility(View.VISIBLE);
             signIn.setOnClickListener(this);
             query.setOnClickListener(this);
             signOff.setOnClickListener(this);
-        } else {
+        } else if(hasSign&&!hasQuery){
+            signIn.setVisibility(View.VISIBLE);
+            query.setVisibility(View.GONE);
+            signOff.setVisibility(View.VISIBLE);
+            signIn.setOnClickListener(this);
+            signOff.setOnClickListener(this);
+        }else {
             signIn.setVisibility(View.GONE);
             query.setVisibility(View.VISIBLE);
             signOff.setVisibility(View.GONE);
