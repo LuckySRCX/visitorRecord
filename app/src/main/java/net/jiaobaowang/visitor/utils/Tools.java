@@ -2,7 +2,6 @@ package net.jiaobaowang.visitor.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.provider.Settings;
 import android.util.Base64;
 
 import net.jiaobaowang.visitor.common.VisitorConfig;
@@ -50,9 +49,14 @@ public class Tools {
     }
 
     public static String getDeviceId(Context context) {
+        SharePreferencesUtil util = new SharePreferencesUtil(context, VisitorConfig.VISIT_LOCAL_STORAGE, false);
+        return util.getString(VisitorConfig.VISIT_LOCAL_STORAGE_UUID);
+    }
+
+   /* public static String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-    }
+    }*/
 
     public static String getSign(TreeMap<String, String> map) throws InvalidKeyException, NoSuchAlgorithmException {
         ArrayList<String> arrayList = new ArrayList<>();

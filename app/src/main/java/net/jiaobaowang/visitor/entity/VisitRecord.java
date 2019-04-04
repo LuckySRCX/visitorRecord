@@ -21,7 +21,7 @@ public class VisitRecord implements Serializable {
     private String student_name;//:null,（学生姓名）
     private String update_time;//:2018-01-05 10;//:06,（更新时间）
     private int school_id;
-    private String grade_code;//:null,（年级id）
+    private int grade_id;//:null,（年级id）
     private int id;//:2018000003,（访客记录id）
     private String visitor_phone;//:null,（访问者电话）
     private String class_name;//:null,（班级名称）
@@ -149,12 +149,12 @@ public class VisitRecord implements Serializable {
         this.school_id = school_id;
     }
 
-    public String getGrade_code() {
-        return grade_code;
+    public int getGrade_id() {
+        return grade_id;
     }
 
-    public void setGrade_code(String grade_code) {
-        this.grade_code = grade_code;
+    public void setGrade_id(int grade_id) {
+        this.grade_id = grade_id;
     }
 
     public int getId() {

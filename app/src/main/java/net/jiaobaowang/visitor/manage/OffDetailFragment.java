@@ -43,10 +43,13 @@ import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -169,14 +172,26 @@ public class OffDetailFragment extends DialogFragment implements View.OnClickLis
             public void run() {
                 try {
                     SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
-                    FormBody body = new FormBody.Builder()
-                            .add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""))
-                            .add("uuid", Tools.getDeviceId(getActivity()))
-                            .add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)))
-                            .add("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""))
-                            .add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)))
-                            .add("id", mVisitRecord.getId() + "")
-                            .add("leave_time", TimeFormat.formatTime(mSelectLeaveTime)).build();
+                    Map map =new HashMap();
+                    map.put("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""));
+                    map.put("uuid", Tools.getDeviceId(getActivity()));
+                    map.put("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)));
+                    map.put("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""));
+                    map.put("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)));
+                    map.put("id", mVisitRecord.getId() + "");
+                    map.put("leave_time", TimeFormat.formatTime(mSelectLeaveTime));
+                    Gson gson = new Gson();
+                    String json = gson.toJson(map);
+                    MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                    RequestBody body = RequestBody.create(JSON, json);
+//                    FormBody body = new FormBody.Builder()
+//                            .add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""))
+//                            .add("uuid", Tools.getDeviceId(getActivity()))
+//                            .add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)))
+//                            .add("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""))
+//                            .add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)))
+//                            .add("id", mVisitRecord.getId() + "")
+//                            .add("leave_time", TimeFormat.formatTime(mSelectLeaveTime)).build();
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LEAVE).post(body).build();
                     Response response = mOkHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {

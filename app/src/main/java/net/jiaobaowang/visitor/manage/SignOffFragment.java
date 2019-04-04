@@ -55,10 +55,12 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -314,19 +316,39 @@ public class SignOffFragment extends BaseFragment implements View.OnClickListene
             public void run() {
                 try {
                     SharedPreferences sp = getActivity().getSharedPreferences(VisitorConfig.VISIT_LOCAL_STORAGE, MODE_PRIVATE);
-                    RequestBody body = new FormBody.Builder()
-                            .add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""))
-                            .add("uuid", Tools.getDeviceId(getActivity()))
-                            .add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)))
-                            .add("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""))
-                            .add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)))
-                            .add("pageNumber", pageIndex + "")
-                            .add("pageSize", pageSize + "")
-                            .add("keyword", keywords)
-                            .add("leave_flag", 0 + "")
-                            .add("interviewee_type", identityType + "")
-                            .add("in_start_time", formatDate(mDateSIBegin) == null ? "" : formatDate(mDateSIBegin))
-                            .add("in_end_time", formatDate(mDateSIEnd) == null ? "" : formatDate(mDateSIEnd)).build();
+                    System.out.println(sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""));
+                    Map map =new HashMap();
+                    map.put("token","");
+                    map.put("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""));
+                    map.put("uuid", Tools.getDeviceId(getActivity()));
+                    map.put("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)));
+                    map.put("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""));
+                    map.put("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)));
+                    map.put("pageNumber", pageIndex + "");
+                    map.put("pageSize", pageSize + "");
+                    map.put("keyword", keywords);
+                    map.put("leave_flag", 0 + "");
+                    map.put("interviewee_type", identityType + "");
+                    map.put("in_start_time", formatDate(mDateSIBegin) == null ? "" : formatDate(mDateSIBegin));
+                    map.put("in_end_time", formatDate(mDateSIEnd) == null ? "" : formatDate(mDateSIEnd));
+                    Gson gson = new Gson();
+                    String json = gson.toJson(map);
+                    MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                    RequestBody body = RequestBody.create(JSON, json);
+
+//                    RequestBody body = new FormBody.Builder()
+//                            .add("token", sp.getString(VisitorConfig.VISIT_LOCAL_TOKEN, ""))
+//                            .add("uuid", Tools.getDeviceId(getActivity()))
+//                            .add("utid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_USERINFO_UTID, 0)))
+//                            .add("utname", sp.getString(VisitorConfig.VISIT_LOCAL_USERINFO_UTNAME, ""))
+//                            .add("schid", String.valueOf(sp.getInt(VisitorConfig.VISIT_LOCAL_SCHOOL_ID, 0)))
+//                            .add("pageNumber", pageIndex + "")
+//                            .add("pageSize", pageSize + "")
+//                            .add("keyword", keywords)
+//                            .add("leave_flag", 0 + "")
+//                            .add("interviewee_type", identityType + "")
+//                            .add("in_start_time", formatDate(mDateSIBegin) == null ? "" : formatDate(mDateSIBegin))
+//                            .add("in_end_time", formatDate(mDateSIEnd) == null ? "" : formatDate(mDateSIEnd)).build();
                     Request request = new Request.Builder().url(VisitorConfig.VISITOR_API_LIST).post(body).build();
                     Response response = okHttpClient.newCall(request).execute();
                     if (!response.isSuccessful()) {

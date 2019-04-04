@@ -10,17 +10,29 @@ import java.util.List;
 public class SchoolLoginRspData {
     private int schid;//学校id
     private String schname;//学校名称
+    private String areano;//地区编号
     private int utid;//用户id
     private String uid;//登录账号
     private String utname;//昵称？？？
     private int sex;//性别
+    private String imgurl;//头像
     private List<SchoolDepartModel> dpts;//部门列表
     private List<SchoolGradeModel> grds;//年级列表
     private List<SchoolClassModel> clss;//班级列表
+    private List<SchoolSubsModel> subs;//
     private int utp;//
+
     private String urolestr;
     private String urolestrext;
     private String utoken;
+    private String appeditstat;
+    private String appxxtservstat;
+    private String appxxtname;
+    private String appxxtico;
+    private String appxxtdouser;
+    private String isadmin;
+    private String urolestrsoure;
+    private String urolestrxxt;
 
     public int getSchid() {
         return schid;
@@ -124,5 +136,93 @@ public class SchoolLoginRspData {
 
     public void setUtoken(String utoken) {
         this.utoken = utoken;
+    }
+
+    public String getAreano() {
+        return areano;
+    }
+
+    public void setAreano(String areano) {
+        this.areano = areano;
+    }
+
+    public String getImgurl() {
+        return imgurl;
+    }
+
+    public void setImgurl(String imgurl) {
+        this.imgurl = imgurl;
+    }
+
+    public List<SchoolSubsModel> getSubs() {
+        return subs;
+    }
+
+    public void setSubs(List<SchoolSubsModel> subs) {
+        this.subs = subs;
+    }
+
+    public String getAppeditstat() {
+        return appeditstat;
+    }
+
+    public void setAppeditstat(String appeditstat) {
+        this.appeditstat = appeditstat;
+    }
+
+    public String getAppxxtservstat() {
+        return appxxtservstat;
+    }
+
+    public void setAppxxtservstat(String appxxtservstat) {
+        this.appxxtservstat = appxxtservstat;
+    }
+
+    public String getAppxxtname() {
+        return appxxtname;
+    }
+
+    public void setAppxxtname(String appxxtname) {
+        this.appxxtname = appxxtname;
+    }
+
+    public String getAppxxtico() {
+        return appxxtico;
+    }
+
+    public void setAppxxtico(String appxxtico) {
+        this.appxxtico = appxxtico;
+    }
+
+    public String getAppxxtdouser() {
+        return appxxtdouser;
+    }
+
+    public void setAppxxtdouser(String appxxtdouser) {
+        this.appxxtdouser = appxxtdouser;
+    }
+
+    public String getIsadmin() {
+        return isadmin;
+    }
+
+    public void setIsadmin(String isadmin) {
+        this.isadmin = isadmin;
+    }
+
+    public String getUrolestrsoure() {
+        return urolestrsoure;
+    }
+
+    public void setUrolestrsoure(String urolestrsoure) {
+        this.urolestrsoure = urolestrsoure;
+    }
+
+    public String getUrolestrxxt() {
+        return urolestrxxt;
+    }
+
+    public void setUrolestrxxt(String urolestrxxt) {
+        this.urolestrxxt = urolestrxxt;
     }
 }
